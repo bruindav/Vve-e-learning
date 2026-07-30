@@ -4,12 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grip op de VvE-boekhouding</title>
-<link rel="icon" type="image/x-icon" href="../favicon.ico">
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
-<link rel="manifest" href="../site.webmanifest">
-<meta name="theme-color" content="#132228">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -288,8 +282,6 @@
   <div class="tagline">Een app van digidave</div>
 </div>
 
-<a href="../index.html" style="display:block; background:#0d1a1f; color:#9fb8c4; font-family:'IBM Plex Mono',monospace; font-size:12px; padding:9px 20px; text-decoration:none; border-bottom:1px solid #ffffff14;">&larr; Terug naar overzicht</a>
-
 <div class="progressbar">
   <span class="label">VOORTGANG</span>
   <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
@@ -363,9 +355,9 @@
         <div class="q">Controlevraag</div>
         <div class="q-text">Wat klopt er niet als de twee kanten van de balans niet gelijk zijn?</div>
         <div class="opts" data-quiz="1">
-          <button class="opt" data-correct="false">Dat is normaal, ze hoeven nooit gelijk te zijn</button>
+          <button class="opt" data-correct="false" data-explain="De twee kanten van de balans moeten juist per definitie exact gelijk zijn; een verschil wijst op een fout.">Dat is normaal, ze hoeven nooit gelijk te zijn</button>
           <button class="opt" data-correct="true">Er zit een fout in de boekhouding — de balans móet altijd sluiten</button>
-          <button class="opt" data-correct="false">Dat betekent automatisch dat er geld is verdwenen</button>
+          <button class="opt" data-correct="false" data-explain="Een onbalans wijst meestal op een boekhoudfout, niet automatisch op verdwenen geld.">Dat betekent automatisch dat er geld is verdwenen</button>
         </div>
         <div class="feedback"></div>
       </div>
@@ -412,9 +404,9 @@
         <div class="q">Controlevraag</div>
         <div class="q-text">Een VvE sluit het jaar af met een klein overschot. Wat is meestal de juiste bestemming?</div>
         <div class="opts" data-quiz="2">
-          <button class="opt" data-correct="false">Uitkeren aan de bestuursleden als vergoeding</button>
+          <button class="opt" data-correct="false" data-explain="Een overschot is van de VvE als geheel, niet van de bestuursleden persoonlijk.">Uitkeren aan de bestuursleden als vergoeding</button>
           <button class="opt" data-correct="true">Toevoegen aan het reservefonds of verrekenen met de bijdragen</button>
-          <button class="opt" data-correct="false">Niets mee doen, het verdwijnt vanzelf volgend jaar</button>
+          <button class="opt" data-correct="false" data-explain="Een overschot verdwijnt niet vanzelf; het moet bewust een bestemming krijgen.">Niets mee doen, het verdwijnt vanzelf volgend jaar</button>
         </div>
         <div class="feedback"></div>
       </div>
@@ -443,9 +435,9 @@
         <div class="q">Controlevraag</div>
         <div class="q-text">Waar toets je de hoogte van de reservefondsdotatie het beste aan?</div>
         <div class="opts" data-quiz="3">
-          <button class="opt" data-correct="false">Aan het saldo van vorig jaar, plus een ruwe schatting</button>
+          <button class="opt" data-correct="false" data-explain="Een ruwe schatting houdt geen rekening met wat er daadwerkelijk aan onderhoud gepland staat.">Aan het saldo van vorig jaar, plus een ruwe schatting</button>
           <button class="opt" data-correct="true">Aan het Meerjarenonderhoudsplan (MJOP)</button>
-          <button class="opt" data-correct="false">Aan wat andere VvE's in de straat doen</button>
+          <button class="opt" data-correct="false" data-explain="Elk gebouw heeft een ander onderhoudsprofiel; vergelijken met een andere VvE zegt niets over jullie situatie.">Aan wat andere VvE's in de straat doen</button>
         </div>
         <div class="feedback"></div>
       </div>
@@ -487,9 +479,9 @@
         <div class="q">Controlevraag</div>
         <div class="q-text">De werkelijke onderhoudskosten liggen structureel hoger dan begroot, jaar na jaar. Wat is de juiste conclusie?</div>
         <div class="opts" data-quiz="4">
-          <button class="opt" data-correct="false">Niets aan de hand, dat hoort erbij</button>
+          <button class="opt" data-correct="false" data-explain="Een enkele afwijking kan normaal zijn, maar een structureel patroon is juist een signaal dat er iets niet klopt.">Niets aan de hand, dat hoort erbij</button>
           <button class="opt" data-correct="true">De begroting sluit niet meer aan op de werkelijkheid en moet worden bijgesteld</button>
-          <button class="opt" data-correct="false">De penningmeester moet worden vervangen</button>
+          <button class="opt" data-correct="false" data-explain="Het probleem zit in de begroting zelf, niet per se in wie de cijfers bijhoudt.">De penningmeester moet worden vervangen</button>
         </div>
         <div class="feedback"></div>
       </div>
@@ -564,17 +556,15 @@
     const feedback = group.parentElement.querySelector('.feedback');
     group.querySelectorAll('.opt').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        if(answered[qid]) return;
         const correct = btn.getAttribute('data-correct') === 'true';
-        answered[qid] = {correct};
-        group.querySelectorAll('.opt').forEach(b=>{
-          b.disabled = true;
-          if(b.getAttribute('data-correct') === 'true'){ b.classList.add('correct'); }
-          else if(b === btn){ b.classList.add('wrong'); }
-        });
-        feedback.textContent = correct
-          ? 'Klopt — precies dit is het idee.'
-          : 'Niet helemaal — het goede antwoord is hierboven gemarkeerd.';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
         feedback.classList.add('show');
         updateProgress();
       });
