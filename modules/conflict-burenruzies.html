@@ -1,4 +1,4 @@
-<!-- fix 15 -->
+<!-- fix 16 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -170,11 +170,19 @@
   .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
 
   .done-banner{
-    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
-    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+    margin-top:22px; padding:30px 24px; border-radius:6px;
+    background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; display:none; flex-direction:column; align-items:center; text-align:center; gap:12px;
   }
   .done-banner.show{display:flex;}
-  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+  .done-illustration{display:block; margin-bottom:2px;}
+  .done-compliment{font-family:'Fraunces',serif; font-size:21px; font-weight:600; color:#fff;}
+  .done-text{font-size:13.5px; line-height:1.65; color:#dceee2; max-width:460px; margin:0;}
+  .done-score{
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:#cfe3d6; margin-top:6px;
+    padding-top:14px; border-top:1px solid #ffffff22; width:100%; max-width:460px;
+  }
+  .done-score .num{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px; color:#fff;}
 
   footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
 
@@ -442,8 +450,15 @@
   </section>
 
   <div class="done-banner" id="doneBanner">
-    <span class="num" id="doneScore">0/6</span>
-    <span>controlevragen goed beantwoord. Je hebt deze module over conflict en burenruzies doorlopen.</span>
+    <svg class="done-illustration" width="56" height="56" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="30" fill="#C98A2C"/>
+      <circle cx="24" cy="26" r="10" fill="#fff" opacity="0.95"/>
+      <circle cx="40" cy="26" r="10" fill="#fff" opacity="0.95"/>
+      <rect x="19" y="19" width="26" height="26" fill="#fff" opacity="0.95" transform="rotate(45 32 32)"/>
+    </svg>
+    <div class="done-compliment">Goed gedaan!</div>
+    <p class="done-text">Besturen van een VvE is vaak onzichtbaar werk &mdash; mensen merken het vooral als het niet gebeurt, en zeggen zelden hardop hoe blij ze zijn dat jij het oppakt. Soms ondankbaar, maar ook mooi: zoveel kunnen betekenen voor je buren. Bedankt daarvoor.</p>
+    <div class="done-score"><span class="num" id="doneScore">0/6</span> controlevragen goed beantwoord. Je hebt deze module over conflict en burenruzies doorlopen.</div>
   </div>
 
 </main>
