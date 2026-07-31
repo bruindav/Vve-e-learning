@@ -1,4 +1,4 @@
-<!-- fix 17 -->
+<!-- fix 18 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -65,7 +65,7 @@
 
   /* ---- clickable basis card ---- */
   .basis-card{
-    display:block; text-decoration:none; color:inherit;
+    position:relative; display:block; text-decoration:none; color:inherit;
     background:linear-gradient(180deg, #fff, var(--paper-dark));
     border:1px solid var(--rule-soft); border-radius:3px;
     box-shadow:0 1px 0 var(--rule-soft), 0 14px 30px -18px #00000080;
@@ -141,6 +141,12 @@
     white-space:nowrap;
   }
 
+  .card-done-badge{
+    display:none; position:absolute; top:-14px; right:-10px; width:44px; height:44px;
+    filter:drop-shadow(0 3px 6px #00000050); z-index:2;
+  }
+  .card-done-badge.show{display:block;}
+
   .closing{
     margin-top:36px; padding:22px 24px; background:var(--ink-navy); color:var(--cream-on-navy); border-radius:3px;
   }
@@ -214,6 +220,13 @@
 
   <div class="route-label">Route 1 · start hier</div>
   <a class="basis-card" href="modules/basis.html">
+      <svg class="card-done-badge" data-done-slug="basis" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
     <div class="row">
       <span class="badge">BASIS</span>
       <div>
@@ -241,6 +254,13 @@
   <div class="cards">
 
     <a class="card" href="modules/gevorderden.html">
+      <svg class="card-done-badge" data-done-slug="gevorderden" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 2</span>
@@ -263,6 +283,13 @@
     </a>
 
     <a class="card" href="modules/overeenkomsten-alv.html">
+      <svg class="card-done-badge" data-done-slug="overeenkomsten-alv" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 3</span>
@@ -285,6 +312,13 @@
     </a>
 
     <a class="card" href="modules/mjop.html">
+      <svg class="card-done-badge" data-done-slug="mjop" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 4</span>
@@ -307,6 +341,13 @@
     </a>
 
     <a class="card" href="modules/geld-risico.html">
+      <svg class="card-done-badge" data-done-slug="geld-risico" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 5</span>
@@ -329,6 +370,13 @@
     </a>
 
     <a class="card" href="modules/verduurzaming.html">
+      <svg class="card-done-badge" data-done-slug="verduurzaming" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 6</span>
@@ -357,6 +405,13 @@
 
   <div class="cards">
     <div class="card locked">
+      <svg class="card-done-badge" data-done-slug="statuten-reglementen" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 7</span>
@@ -379,6 +434,13 @@
     </div>
 
     <div class="card locked">
+      <svg class="card-done-badge" data-done-slug="kascommissie" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 8</span>
@@ -401,6 +463,13 @@
     </div>
 
     <div class="card locked">
+      <svg class="card-done-badge" data-done-slug="ledenadministratie-privacy" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 9</span>
@@ -423,6 +492,13 @@
     </div>
 
     <div class="card locked">
+      <svg class="card-done-badge" data-done-slug="bijdragen-incasso" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 10</span>
@@ -445,6 +521,13 @@
     </div>
 
     <div class="card locked">
+      <svg class="card-done-badge" data-done-slug="vve-en-omgeving" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 11</span>
@@ -467,6 +550,13 @@
     </div>
 
     <div class="card locked">
+      <svg class="card-done-badge" data-done-slug="conflict-burenruzies" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
+        <g fill="#fff">
+          <rect x="16" y="30" width="10" height="20" rx="3"/>
+          <path d="M28 30 V47 Q28 50 31 50 H42 Q46 50 47 46 L50 33 Q51 29 47 29 H37 L39 19 Q39 15 35 15 Q32 15 32 19 L28 30 Z"/>
+        </g>
+      </svg>
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 12</span>
@@ -523,6 +613,12 @@
       if (allDone) {
         document.getElementById('allDoneBanner').classList.add('show');
       }
+      document.querySelectorAll('.card-done-badge').forEach(function(badge){
+        var slug = badge.getAttribute('data-done-slug');
+        if (localStorage.getItem('vveModuleDone:' + slug) === '1') {
+          badge.classList.add('show');
+        }
+      });
     } catch (e) {}
   })();
 </script>
