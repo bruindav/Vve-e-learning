@@ -1,4 +1,4 @@
-<!-- fix 16 -->
+<!-- fix 17 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -255,6 +255,13 @@
     padding-top:14px; border-top:1px solid #ffffff22; width:100%; max-width:460px;
   }
   .done-score .num{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px; color:#fff;}
+  .done-actions{margin-top:8px; display:flex; justify-content:center;}
+  .done-btn{
+    font-family:'IBM Plex Sans', sans-serif; font-size:13.5px; font-weight:600; color:var(--ink-navy-deep);
+    background:var(--amber); border:none; padding:11px 20px; border-radius:3px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px; transition:background .15s ease;
+  }
+  .done-btn:hover{background:#e0a94b;}
 
   footer{
     text-align:center; color:#7d7460; font-size:12.5px;
@@ -534,8 +541,9 @@
       <rect x="19" y="19" width="26" height="26" fill="#fff" opacity="0.95" transform="rotate(45 32 32)"/>
     </svg>
     <div class="done-compliment">Goed gedaan!</div>
-    <p class="done-text">Besturen van een VvE is vaak onzichtbaar werk &mdash; mensen merken het vooral als het niet gebeurt, en zeggen zelden hardop hoe blij ze zijn dat jij het oppakt. Soms ondankbaar, maar ook mooi: zoveel kunnen betekenen voor je buren. Bedankt daarvoor.</p>
+    <p class="done-text">Je kunt nu de balans en de exploitatierekening lezen, snapt de rol van het reservefonds en het MJOP, en weet waar je op moet letten bij de begroting en de ALV.</p>
     <div class="done-score"><span class="num" id="doneScore">0/4</span> controlevragen goed beantwoord. Je hebt alle onderdelen doorlopen — deze checklist kun je meenemen naar de volgende ALV.</div>
+    <div class="done-actions"><a class="done-btn" href="../index.html">&larr; Terug naar overzicht</a></div>
   </div>
 
 </main>
@@ -565,6 +573,7 @@
       const answeredCount = Object.values(answered).filter(v=>v.correct).length;
       document.getElementById('doneScore').textContent = answeredCount + '/4';
       document.getElementById('doneBanner').classList.add('show');
+      try{ localStorage.setItem('vveModuleDone:basis','1'); }catch(e){}
     }
   }
 
