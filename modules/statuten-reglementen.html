@@ -1,4 +1,4 @@
-<!-- fix 5 -->
+<!-- fix 6 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -469,12 +469,58 @@
     </div>
   </section>
 
-  <!-- 9000 -->
+  <!-- 7000 -->
   <section class="account" id="acct-6" data-acct>
     <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">7000</span>
+      <div class="acct-title"><h2>Bedragen in de akte, en indexeren</h2><div class="kicker">Waar dat vastligt, en hoe je het bijhoudt</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Splitsingsakte en modelreglement noemen regelmatig concrete eurobedragen: het drempelbedrag waarboven het bestuur toestemming van de ALV nodig heeft, standaard boetebedragen bij overtredingen, een minimumrente bij te late betaling, en soms een verzekeringsgerelateerd bedrag. De vraag die vrijwel elk bestuur een keer tegenkomt: blijven die bedragen voor altijd hetzelfde, of horen ze mee te bewegen met de tijd?</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Modelreglement 2017 (en nieuwer)</h4>
+            <ul>
+              <li>Bevat een eigen indexeringsartikel</li>
+              <li>Bedragen worden jaarlijks automatisch herrekend</li>
+              <li>Basis: de consumentenprijsindex van het CBS</li>
+              <li>Geen apart ALV-besluit nodig om dit te laten gebeuren</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Oudere modelreglementen (1972–2006)</h4>
+            <ul>
+              <li>Kennen doorgaans géén automatische indexering</li>
+              <li>Bedragen blijven nominaal gelijk, tenzij actie wordt ondernomen</li>
+              <li>Vaak sinds de oprichting niet meer aangepast</li>
+            </ul>
+          </div>
+        </div>
+        <p>Bij Modelreglement 2017 werkt de indexering als een vaste rekenregel: het laatst geldende bedrag wordt elk jaar vermenigvuldigd met de verhouding tussen het prijsindexcijfer van het voorgaande jaar en het jaar daarvoor. Dat staat al in het reglement zelf — er is dus geen apart besluit van de vergadering voor nodig, het gebeurt automatisch. Werkt jullie VvE met een ouder modelreglement, dan ontbreekt die automatische rekenregel doorgaans, en blijft een bedrag dus letterlijk staan op het niveau van het jaar waarin de akte is gepasseerd.</p>
+        <div class="callout"><strong>Twee routes om een verouderd bedrag toch aan te passen:</strong> kijk eerst of het betreffende artikel zelf al ruimte biedt met een zinsnede als "tenzij de vergadering een ander bedrag heeft vastgesteld". Is dat zo, dan volstaat een gewoon ALV-besluit, vastgelegd in de notulen — geen notaris nodig. Biedt het artikel die ruimte niet, dan is een formele wijziging van de akte of het modelreglement nodig, met alles wat daarbij hoort (zie de vorige module: notariële akte, gekwalificeerde meerderheid, inschrijving bij het Kadaster).</div>
+        <p>Praktisch advies: leg het actueel geldende bedrag, en de datum waarop het voor het laatst is vastgesteld of herrekend, vast als vast agendapunt bij de jaarvergadering — bijvoorbeeld als bijlage bij het huishoudelijk reglement. Zo hoeft niemand elk jaar het hele reglement door te spitten om te weten welk bedrag nu geldt.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Jullie VvE werkt met Modelreglement 2017. Moet de ALV jaarlijks apart besluiten om de genoemde bedragen te indexeren?</div>
+        <div class="opts" data-quiz="7">
+          <button class="opt" data-correct="false" data-explain="Modelreglement 2017 bevat een eigen indexeringsartikel dat de bedragen automatisch herrekent op basis van de CBS-prijsindex; een apart ALV-besluit is daarvoor niet nodig.">Ja, zonder een jaarlijks ALV-besluit blijven de bedragen ongewijzigd</button>
+          <button class="opt" data-correct="true">Nee, Modelreglement 2017 herrekent de bedragen automatisch op basis van de CBS-prijsindex</button>
+          <button class="opt" data-correct="false" data-explain="Een notariële aktewijziging is alleen nodig als het reglement zelf geen indexerings- of aanpassingsmogelijkheid biedt; Modelreglement 2017 regelt dit al automatisch.">Ja, en dat kan alleen via een notariële wijziging van de akte</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9000 -->
+  <section class="account" id="acct-7" data-acct>
+    <div class="account-head" onclick="toggle(7)">
       <span class="acct-num">9000</span>
       <div class="acct-title"><h2>Checklist: statuten op orde</h2><div class="kicker">Wat elk bestuur zou moeten kunnen vinden</div></div>
-      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+      <span class="check" id="check-7">✓</span><span class="chevron">▸</span>
     </div>
     <div class="acct-body">
       <div class="acct-body-inner">
@@ -485,6 +531,7 @@
             <li><span class="dot"></span>Zijn eventuele afwijkingen op het modelreglement, zoals vermeld in de akte, in kaart gebracht?</li>
             <li><span class="dot"></span>Is er een actueel huishoudelijk reglement, en spreekt dat het modelreglement nergens tegen?</li>
             <li><span class="dot"></span>Is bekend welk quorum nodig is om het modelreglement te wijzigen, mocht dat ooit nodig zijn?</li>
+            <li><span class="dot"></span>Is bekend of de bedragen in het reglement automatisch indexeren, en zo niet: wanneer ze voor het laatst zijn bijgesteld?</li>
           </ul>
         </div>
         <p style="margin-top:16px;">Twijfel je over een van deze punten voor jullie eigen VvE? Stuur de splitsingsakte door, dan wordt dit verder voor jullie uitgezocht in plaats van in algemene termen.</p>
@@ -493,7 +540,7 @@
   </section>
 
   <div class="done-banner" id="doneBanner">
-    <span class="num" id="doneScore">0/6</span>
+    <span class="num" id="doneScore">0/7</span>
     <span>controlevragen goed beantwoord. Je hebt deze module over statuten en reglementen doorlopen.</span>
   </div>
 
@@ -502,7 +549,7 @@
 <footer>STATUTEN EN REGLEMENTEN — INTERNE E-LEARNING, VERVOLG OP DE VOORGAANDE MODULES</footer>
 
 <script>
-  const total = 7;
+  const total = 8;
   const opened = new Set();
   const answered = {};
 
@@ -522,7 +569,7 @@
     document.getElementById('progressCount').textContent = n+' / '+total;
     if(n === total){
       const answeredCount = Object.values(answered).filter(v=>v.correct).length;
-      document.getElementById('doneScore').textContent = answeredCount + '/6';
+      document.getElementById('doneScore').textContent = answeredCount + '/7';
       document.getElementById('doneBanner').classList.add('show');
     }
   }
