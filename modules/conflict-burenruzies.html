@@ -1,0 +1,501 @@
+<!-- fix 15 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<script>document.documentElement.style.visibility='hidden';try{if(localStorage.getItem('vveGateOk_v1')==='1'){document.documentElement.style.visibility='';}}catch(e){}</script>
+<script src="../assets/access-gate.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conflict, burenruzies en overlast door een bewoner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228;
+    --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1;
+    --paper-dark:#E2D8BF;
+    --rule:#2F4F44;
+    --rule-soft:#2F4F4433;
+    --ink-text:#2A2118;
+    --ink-fade:#5A5040;
+    --amber:#C98A2C;
+    --amber-deep:#a86f1c;
+    --debit:#a13d2c;
+    --credit:#3d6b52;
+    --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep);
+    border-bottom:1px solid #ffffff14;
+    padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{
+    font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em; font-family:'IBM Plex Sans', sans-serif;
+  }
+  .brandbar .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
+  }
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-split.three{grid-template-columns:1fr 1fr 1fr;}
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f; display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .escalation{margin:14px 0 4px; padding:0; list-style:none; counter-reset:esc;}
+  .escalation li{
+    font-size:14.5px; padding:12px 14px 12px 44px; margin-bottom:8px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .escalation li::before{
+    counter-increment:esc; content:counter(esc);
+    position:absolute; left:12px; top:11px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700;
+    color:#fff; background:var(--debit);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .escalation li strong{display:block; margin-bottom:2px;}
+  .escalation li span.note{font-size:12.5px; color:var(--ink-fade);}
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split, .ledger-split.three{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 7</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">PRAKTIJK</span></div>
+  <h1>Conflict, burenruzies en overlast</h1>
+  <p class="sub">Wat kan en moet een bestuur doen bij een conflict tussen bewoners, en wat vooral niet? En wat als één bewoner structureel voor overlast zorgt?</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1000 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1000</span>
+      <div class="acct-title"><h2>De rol van het bestuur bij een conflict</h2><div class="kicker">Geen rechter, geen mediator van nature</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een bestuur is geen rechter en geen professionele bemiddelaar. Het reglement legt wel een aantal gedragsnormen vast &mdash; eigenaars en gebruikers moeten zich redelijk en billijk jegens elkaar gedragen, en mogen elkaar geen onredelijke hinder toebrengen &mdash; en daar heeft het bestuur wel degelijk een rol: toezien op naleving van deze normen, namens de VvE als geheel.</p>
+        <div class="callout"><strong>Kern van de rol:</strong> het bestuur bewaakt of het reglement wordt nageleefd en of het gezamenlijke belang niet wordt geschaad. Het is niet de taak van het bestuur om vast te stellen wie er "gelijk" heeft in een persoonlijk conflict tussen twee bewoners.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is de kern van de rol van het bestuur bij een conflict tussen bewoners?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="Het bestuur is geen rechter en heeft niet de taak om vast te stellen wie er 'gelijk' heeft in een persoonlijk geschil." >Vaststellen wie er gelijk heeft, en dat uitspreken namens de VvE</button>
+          <button class="opt" data-correct="true">Toezien op naleving van het reglement en de gedragsnormen daarin, namens het gezamenlijke belang</button>
+          <button class="opt" data-correct="false" data-explain="Het bestuur is geen professionele mediator; bij een puur persoonlijk conflict is externe hulp vaak passender dan dat het bestuur zelf gaat bemiddelen.">Als mediator elk conflict tussen bewoners persoonlijk oplossen</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2000 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">2000</span>
+      <div class="acct-title"><h2>VvE-zaak of privékwestie?</h2><div class="kicker">Het onderscheid dat alles bepaalt</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Wel een VvE-zaak</h4>
+            <ul>
+              <li>Geluidsoverlast die de norm van "redelijke hinder" overschrijdt</li>
+              <li>Overtreding van het huishoudelijk reglement</li>
+              <li>Gebruik van gemeenschappelijke ruimtes in strijd met de regels</li>
+              <li>Gedrag dat het gebouw of andere bewoners schaadt</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Puur een privékwestie</h4>
+            <ul>
+              <li>Een persoonlijk conflict zonder raakvlak met het reglement</li>
+              <li>Onenigheid over iets buiten het gebouw of de VvE om</li>
+              <li>Een dispuut dat geen ander lid daadwerkelijk hindert</li>
+            </ul>
+          </div>
+        </div>
+        <p>De vuistregel: raakt het conflict de <strong>naleving van het reglement</strong> of het <strong>gezamenlijke belang</strong>, dan heeft het bestuur een rol. Gaat het om een persoonlijke onenigheid zonder dat raakvlak, dan is het niet aan het bestuur om zich ermee te bemoeien &mdash; hoe vervelend het voor de betrokkenen ook is.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wanneer heeft het bestuur een rol bij een conflict tussen twee bewoners?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="Het bestuur heeft niet bij elk conflict een rol; alleen als het reglement of het gezamenlijke belang wordt geraakt." >Altijd, zodra een van beide partijen daarom vraagt</button>
+          <button class="opt" data-correct="true">Als het conflict de naleving van het reglement of het gezamenlijke belang raakt</button>
+          <button class="opt" data-correct="false" data-explain="Alleen wanneer het over geld gaat is te beperkt; ook overlast en reglementsovertredingen zonder financieel aspect raken het bestuur." >Alleen als er een financieel geschil tussen de bewoners speelt</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3000 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">3000</span>
+      <div class="acct-title"><h2>Wat het bestuur vooral niet moet doen</h2><div class="kicker">Veelgemaakte valkuilen</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <ul class="flags">
+          <li>Partij kiezen voordat beide kanten van het verhaal zijn gehoord</li>
+          <li>Een eigen "straf" verzinnen die niet in het reglement staat</li>
+          <li>Zich mengen in een puur persoonlijk conflict zonder VvE-raakvlak</li>
+          <li>Juridisch advies geven aan een van de betrokken bewoners</li>
+          <li>Mondelinge toezeggingen doen zonder dit vast te leggen</li>
+        </ul>
+        <div class="callout warn">Een bestuur dat te snel partij kiest, ondermijnt zijn eigen geloofwaardigheid als het uiteindelijk formeel moet optreden. Neutraliteit en zorgvuldigheid zijn hier het belangrijkste kapitaal dat een bestuur heeft.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom is het riskant als een bestuur te snel partij kiest in een conflict?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="true">Het ondermijnt de geloofwaardigheid en neutraliteit die het bestuur nodig heeft om later eventueel formeel op te treden</button>
+          <button class="opt" data-correct="false" data-explain="Snel partij kiezen levert juist risico's op, niet tijdwinst die de zorgvuldigheid rechtvaardigt." >Het bespaart tijd en is daarom altijd verstandig</button>
+          <button class="opt" data-correct="false" data-explain="Het reglement verplicht het bestuur niet om snel een standpunt in te nemen; zorgvuldigheid weegt zwaarder dan snelheid." >Het reglement verplicht het bestuur om snel een standpunt in te nemen</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4000 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">4000</span>
+      <div class="acct-title"><h2>Overlast door één bewoner: het stappenplan</h2><div class="kicker">Van signaleren tot ontzegging van gebruik</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Zorgt één bewoner structureel voor overlast, dan volgt het bestuur een formele, oplopende reeks stappen &mdash; vergelijkbaar met de aanpak bij een betalingsachterstand, maar dan gericht op gedrag:</p>
+        <ol class="escalation">
+          <li><strong>Signaleren en documenteren</strong> <span class="note">klachten van andere bewoners vastleggen: wat, wanneer, hoe vaak</span></li>
+          <li><strong>Informeel gesprek</strong> <span class="note">de betrokken bewoner rechtstreeks aanspreken, zonder formele stempel</span></li>
+          <li><strong>Schriftelijke waarschuwing</strong> <span class="note">expliciet verwijzend naar het reglement of de gedragsnorm die wordt overtreden</span></li>
+          <li><strong>Boete</strong> <span class="note">indien het reglement hierin voorziet, na een formeel besluit van de vergadering</span></li>
+          <li><strong>Ontzegging van het gebruik</strong> <span class="note">uiterste middel: tijdelijke ontzegging van (mede)gebruik van gemeenschappelijke ruimtes, alleen na een zwaarwegend, formeel proces</span></li>
+        </ol>
+        <div class="callout warn"><strong>Ontzegging is een zwaar middel:</strong> dit vereist een formeel vergaderbesluit met een gekwalificeerde meerderheid, en mag pas nadat de betrokken bewoner is gehoord. Het is niet iets wat een bestuur op eigen houtje beslist.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is meestal de eerste formele stap ná een informeel gesprek, als de overlast aanhoudt?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Ontzegging van gebruik is het zwaarste en laatste middel, niet de eerste formele stap na een informeel gesprek." >Direct het gebruik van gemeenschappelijke ruimtes ontzeggen</button>
+          <button class="opt" data-correct="true">Een schriftelijke waarschuwing, met verwijzing naar het reglement</button>
+          <button class="opt" data-correct="false" data-explain="Een gerechtelijke procedure past pas bij het uiterste einde van het traject, niet direct na een eerste informeel gesprek."> Meteen een gerechtelijke procedure starten</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5000 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">5000</span>
+      <div class="acct-title"><h2>Hoor en wederhoor</h2><div class="kicker">Waarom zorgvuldigheid hier niet optioneel is</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Voordat de vergadering een waarschuwing of ontzegging van gebruik kan besluiten, moet de betrokken bewoner de kans hebben gekregen om zijn of haar kant van het verhaal te vertellen &mdash; hoor en wederhoor. Dit is niet alleen een formaliteit: het voorkomt dat het bestuur op basis van eenzijdige klachten een onterecht besluit neemt.</p>
+        <div class="callout">Leg elke stap schriftelijk vast: welke klachten zijn ontvangen, wanneer het gesprek heeft plaatsgevonden, en wat er is besproken. Zonder dossier is het bij een formeel besluit (of een eventuele juridische procedure) veel lastiger aan te tonen dat zorgvuldig is gehandeld.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom is hoor en wederhoor belangrijk voordat het bestuur formeel optreedt?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="Hoor en wederhoor is geen formaliteit die je kunt overslaan als het bestuur al overtuigd is; het is een zorgvuldigheidseis." >Het is alleen een formaliteit als het bestuur nog twijfelt</button>
+          <button class="opt" data-correct="true">Het voorkomt dat op basis van eenzijdige klachten een onterecht besluit wordt genomen</button>
+          <button class="opt" data-correct="false" data-explain="Hoor en wederhoor gaat over zorgvuldigheid van het besluitvormingsproces, niet over het besparen van tijd." >Het bespaart het bestuur tijd bij de besluitvorming</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6000 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">6000</span>
+      <div class="acct-title"><h2>Wanneer schakel je externe hulp in</h2><div class="kicker">Mediator, wijkagent, of de rechter</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Soort situatie</h4>
+            <ul>
+              <li>Vastgelopen persoonlijk conflict, met VvE-raakvlak</li>
+              <li>Acute dreiging of intimidatie</li>
+              <li>Formeel besluit wordt genegeerd</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Aangewezen partij</h4>
+            <ul>
+              <li>Buurtbemiddeling of een mediator</li>
+              <li>Politie / wijkagent</li>
+              <li>Kantonrechter, als laatste stap</li>
+            </ul>
+          </div>
+        </div>
+        <p>Het bestuur hoeft dit niet allemaal zelf op te lossen. Bij een vastgelopen, persoonlijk conflict is een onafhankelijke mediator vaak effectiever dan het bestuur zelf. Bij een acute of bedreigende situatie is de politie de juiste partij, niet het bestuur. En als een bewoner een formeel besluit van de vergadering simpelweg negeert, is de kantonrechter de volgende stap &mdash; met, zoals eerder besproken, de kosten daarvan in beginsel voor rekening van de nalatige bewoner.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Bij welke situatie is de politie de aangewezen partij, in plaats van het bestuur zelf?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="false" data-explain="Een vastgelopen persoonlijk conflict is typisch een taak voor een mediator, niet primair voor de politie." >Een langlopend, maar niet dreigend persoonlijk conflict</button>
+          <button class="opt" data-correct="true">Een acute of bedreigende situatie</button>
+          <button class="opt" data-correct="false" data-explain="Een schriftelijke waarschuwing is een normale, formele bestuursstap; daar is geen politie-inzet voor nodig."> Het versturen van een schriftelijke waarschuwing</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9000 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">9000</span>
+      <div class="acct-title"><h2>Checklist: conflict en overlast</h2><div class="kicker">Voordat je formeel in actie komt</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Is vastgesteld of dit een VvE-zaak is (reglement/gezamenlijk belang) of een puur persoonlijke kwestie?</li>
+            <li><span class="dot"></span>Zijn klachten en incidenten gedocumenteerd voordat er formeel wordt opgetreden?</li>
+            <li><span class="dot"></span>Heeft de betrokken bewoner de kans gekregen om zijn of haar kant toe te lichten?</li>
+            <li><span class="dot"></span>Is een eventuele boete of ontzegging genomen via een formeel, correct vergaderbesluit?</li>
+            <li><span class="dot"></span>Is overwogen of externe hulp (mediator, politie) passender is dan dat het bestuur het zelf oplost?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/6</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over conflict en burenruzies doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>CONFLICT, BURENRUZIES EN OVERLAST — INTERNE E-LEARNING, VERVOLG OP DE VOORGAANDE MODULES</footer>
+
+<script>
+  const total = 7;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/6';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

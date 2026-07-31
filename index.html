@@ -1,4 +1,4 @@
-<!-- fix 14 -->
+<!-- fix 15 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -130,6 +130,14 @@
   .card .soon{
     font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.03em;
     color:#7d7460; background:#00000009; border:1px solid var(--rule-soft); padding:4px 9px; border-radius:2px;
+    white-space:nowrap;
+  }
+
+  .card.locked{opacity:.7; cursor:default;}
+  .card.locked:hover{transform:none; box-shadow:none;}
+  .locked-badge{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.03em;
+    color:var(--ink-fade); background:#00000009; border:1px solid var(--rule-soft); padding:4px 9px; border-radius:2px;
     white-space:nowrap;
   }
 
@@ -316,7 +324,13 @@
       </div>
     </a>
 
-    <a class="card" href="modules/statuten-reglementen.html">
+  </div>
+
+  <div class="route-label">Route 3 · op aanvraag beschikbaar</div>
+  <p class="verdieping-intro">Deze modules zijn al helemaal klaar. Hebben jullie interesse, dan zetten we de link voor jullie VvE open &mdash; hieronder kun je alvast zien wat erin zit.</p>
+
+  <div class="cards">
+    <div class="card locked">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 7</span>
@@ -334,11 +348,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 25 minuten · 8 onderdelen · €15</span>
-        <span class="soon">Start deze module →</span>
+        <span class="locked-badge">&#128274; Op aanvraag beschikbaar</span>
       </div>
-    </a>
+    </div>
 
-    <a class="card" href="modules/kascommissie.html">
+    <div class="card locked">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 8</span>
@@ -356,11 +370,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 25 minuten · 8 onderdelen · €15</span>
-        <span class="soon">Start deze module →</span>
+        <span class="locked-badge">&#128274; Op aanvraag beschikbaar</span>
       </div>
-    </a>
+    </div>
 
-    <a class="card" href="modules/ledenadministratie-privacy.html">
+    <div class="card locked">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 9</span>
@@ -378,11 +392,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 25 minuten · 8 onderdelen · €15</span>
-        <span class="soon">Start deze module →</span>
+        <span class="locked-badge">&#128274; Op aanvraag beschikbaar</span>
       </div>
-    </a>
+    </div>
 
-    <a class="card" href="modules/bijdragen-incasso.html">
+    <div class="card locked">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 10</span>
@@ -400,11 +414,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 20 minuten · 7 onderdelen · €15</span>
-        <span class="soon">Start deze module →</span>
+        <span class="locked-badge">&#128274; Op aanvraag beschikbaar</span>
       </div>
-    </a>
+    </div>
 
-    <a class="card" href="modules/vve-en-omgeving.html">
+    <div class="card locked">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 11</span>
@@ -422,9 +436,32 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 20 minuten · 7 onderdelen · €15</span>
-        <span class="soon">Start deze module →</span>
+        <span class="locked-badge">&#128274; Op aanvraag beschikbaar</span>
       </div>
-    </a>
+    </div>
+
+    <div class="card locked">
+      <div class="toprow">
+        <div class="left">
+          <span class="num">MODULE 12</span>
+          <div>
+            <h3>Conflict, burenruzies en overlast</h3>
+            <div class="kicker">Wat een bestuur wel en niet moet doen</div>
+          </div>
+        </div>
+        <span class="tag">Praktijk</span>
+      </div>
+      <ul>
+        <li>Wat een bestuur kan betekenen bij een conflict, en wat vooral niet</li>
+        <li>Het stappenplan bij overlast door één bewoner, van waarschuwing tot ontzegging</li>
+        <li>Wanneer je beter een mediator, wijkagent of de rechter inschakelt</li>
+      </ul>
+      <div class="bottomrow">
+        <span class="time">⏳ ca. 20 minuten · 7 onderdelen · €15</span>
+        <span class="locked-badge">&#128274; Op aanvraag beschikbaar</span>
+      </div>
+    </div>
+
 
   </div>
 
