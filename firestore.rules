@@ -24,8 +24,8 @@ service cloud.firestore {
       // (modules aan/uit zetten).
       allow read, update: if request.auth != null && request.auth.token.email == 'davedebruin123@gmail.com';
 
-      // Niemand mag via de client documenten verwijderen.
-      allow delete: if false;
+      // Alleen de beheerder mag een document verwijderen.
+      allow delete: if request.auth != null && request.auth.token.email == 'davedebruin123@gmail.com';
     }
   }
 }

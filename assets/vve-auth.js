@@ -21,6 +21,7 @@ import {
   getDoc,
   setDoc,
   updateDoc,
+  deleteDoc,
   collection,
   getDocs,
   serverTimestamp,
@@ -49,6 +50,7 @@ export async function registerAndSendLink(email, vveName) {
   }
   const docId = emailToDocId(cleanEmail);
   const ref = doc(db, "vves", docId);
+  let isNew = true;
   try {
     // setDoc wordt door Firestore automatisch als 'create' beoordeeld als het document nog niet
     // bestaat, en als 'update' als het al bestaat. Onze regels staan alleen het eerste toe voor
@@ -61,10 +63,13 @@ export async function registerAndSendLink(email, vveName) {
     });
   } catch (err) {
     // Bestaat het document al (dus dit werd als 'update' gezien), dan is dat geen fout:
-    // de VvE is al geregistreerd, we hoeven alleen een nieuwe inloglink te sturen.
+    // de VvE is al geregistreerd, we hoeven alleen een nieuwe inloglink te sturen. Er wordt
+    // hierdoor nooit een tweede document voor hetzelfde e-mailadres aangemaakt: het
+    // e-mailadres ís de document-ID, dus duplicaten zijn structureel niet mogelijk.
     if (err.code !== "permission-denied") {
       throw err;
     }
+    isNew = false;
   }
   const actionCodeSettings = {
     url: window.location.origin + window.location.pathname,
@@ -72,6 +77,7 @@ export async function registerAndSendLink(email, vveName) {
   };
   await sendSignInLinkToEmail(auth, cleanEmail, actionCodeSettings);
   localStorage.setItem(EMAIL_STORAGE_KEY, cleanEmail);
+  return { isNew };
 }
 
 /**
@@ -130,6 +136,10 @@ export async function getAllVves() {
 export async function setModuleAccess(vveDocId, slug, enabled) {
   const ref = doc(db, "vves", vveDocId);
   await updateDoc(ref, { [`moduleAccess.${slug}`]: enabled });
+}
+
+export async function deleteVve(vveDocId) {
+  await deleteDoc(doc(db, "vves", vveDocId));
 }
 
 export function logout() {

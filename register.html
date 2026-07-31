@@ -73,7 +73,7 @@
 </div>
 
 <script type="module">
-  import { registerAndSendLink, completeSignInIfLink, watchAuth, logout } from './assets/vve-auth.js?v3';
+  import { registerAndSendLink, completeSignInIfLink, watchAuth, logout } from './assets/vve-auth.js?v4';
 
   const box = document.getElementById('box');
   const form = document.getElementById('registerForm');
@@ -128,8 +128,12 @@
     submitBtn.disabled = true;
     submitBtn.textContent = 'Bezig...';
     try {
-      await registerAndSendLink(email, naam);
-      showMsg('Inloglink verstuurd naar ' + email + '. Check je inbox (en spam-map) en klik op de link om in te loggen.', 'ok');
+      var result = await registerAndSendLink(email, naam);
+      if (result.isNew) {
+        showMsg('Registratie gelukt! Inloglink verstuurd naar ' + email + '. Check je inbox (en spam-map) en klik op de link om in te loggen.', 'ok');
+      } else {
+        showMsg('Dit e-mailadres was al geregistreerd. We hebben een nieuwe inloglink gestuurd naar ' + email + ' — check je inbox (en spam-map).', 'ok');
+      }
       form.reset();
     } catch (err) {
       showMsg('Er ging iets mis: ' + (err && err.message ? err.message : err), 'error');
