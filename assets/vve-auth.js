@@ -59,7 +59,7 @@ export async function registerAndSendLink(email, vveName) {
     });
   }
   const actionCodeSettings = {
-    url: window.location.origin + "/vve-e-learning/register.html",
+    url: window.location.origin + window.location.pathname,
     handleCodeInApp: true,
   };
   await sendSignInLinkToEmail(auth, cleanEmail, actionCodeSettings);
