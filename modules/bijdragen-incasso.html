@@ -1,0 +1,498 @@
+<!-- fix 12 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<script>document.documentElement.style.visibility='hidden';try{if(localStorage.getItem('vveGateOk_v1')==='1'){document.documentElement.style.visibility='';}}catch(e){}</script>
+<script src="../assets/access-gate.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bijdragen, incasso en achterstanden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228;
+    --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1;
+    --paper-dark:#E2D8BF;
+    --rule:#2F4F44;
+    --rule-soft:#2F4F4433;
+    --ink-text:#2A2118;
+    --ink-fade:#5A5040;
+    --amber:#C98A2C;
+    --amber-deep:#a86f1c;
+    --debit:#a13d2c;
+    --credit:#3d6b52;
+    --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep);
+    border-bottom:1px solid #ffffff14;
+    padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{
+    font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em; font-family:'IBM Plex Sans', sans-serif;
+  }
+  .brandbar .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
+  }
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-split.three{grid-template-columns:1fr 1fr 1fr;}
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f; display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .steps{margin:14px 0 4px; padding:0; list-style:none; counter-reset:step;}
+  .steps li{
+    font-size:14.5px; padding:10px 12px 10px 40px; margin-bottom:6px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .steps li::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:10px; top:9px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+    color:var(--amber-deep); background:#00000008; border:1px solid var(--rule-soft);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+
+  .escalation{margin:14px 0 4px; padding:0; list-style:none; counter-reset:esc;}
+  .escalation li{
+    font-size:14.5px; padding:12px 14px 12px 44px; margin-bottom:8px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .escalation li::before{
+    counter-increment:esc; content:counter(esc);
+    position:absolute; left:12px; top:11px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700;
+    color:#fff; background:var(--debit);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .escalation li strong{display:block; margin-bottom:2px;}
+  .escalation li span.note{font-size:12.5px; color:var(--ink-fade);}
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split, .ledger-split.three{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 7</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">FINANCIEEL</span></div>
+  <h1>Bijdragen, incasso en achterstanden</h1>
+  <p class="sub">Hoe de bijdrage-administratie werkt, welke betaalwijzen er zijn, en welke stappen je zet als een lid niet (op tijd) betaalt.</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1000 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1000</span>
+      <div class="acct-title"><h2>Hoe de bijdrage-administratie werkt</h2><div class="kicker">Voorschot, definitief, en het breukdeel</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Elk lid betaalt maandelijks een <strong>voorschotbijdrage</strong>: één twaalfde deel van het bedrag dat bij de jaarlijkse begroting is vastgesteld, naar rato van het eigen breukdeel. Na afloop van het boekjaar wordt op basis van de werkelijke cijfers de <strong>definitieve bijdrage</strong> vastgesteld &mdash; is er te veel voorschot betaald, dan volgt een teruggave; is er te weinig betaald, dan moet het verschil worden aangevuld.</p>
+        <div class="callout"><strong>Waarom dit systeem:</strong> zonder voorschotbijdrage zou de VvE elk jaar moeten wachten tot de jaarrekening rond is voordat er geld binnenkomt &mdash; terwijl de rekeningen van leveranciers gewoon doorlopen. Het voorschot houdt de lopende kosten dekkend, het jaar rond.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom betaalt een lid een maandelijkse voorschotbijdrage in plaats van pas na afloop van het boekjaar?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="Het voorschot is geen fiscale verplichting, maar een praktische afspraak om de lopende kosten van de VvE het jaar rond te kunnen dekken." >Omdat de wet dit exact zo voorschrijft als fiscale verplichting</button>
+          <button class="opt" data-correct="true">Zodat de VvE het hele jaar door lopende kosten kan betalen, zonder te wachten op de jaarrekening</button>
+          <button class="opt" data-correct="false" data-explain="Het voorschot staat los van het reservefonds; het dekt de lopende, dagelijkse kosten van de VvE.">Omdat het reservefonds daar wettelijk om vraagt</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2000 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">2000</span>
+      <div class="acct-title"><h2>Automatische incasso en andere betaalwijzen</h2><div class="kicker">Wat werkt het beste in de praktijk</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De meeste VvE's werken met een <strong>automatische SEPA-incasso</strong>: het lid tekent eenmalig een machtiging, waarna de VvE (of de beheerder namens de VvE) maandelijks zelf het bedrag afschrijft. Dit is verreweg de betrouwbaarste manier om achterstanden te voorkomen.</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Automatische incasso</h4>
+            <ul>
+              <li>Vereist een eenmalige SEPA-machtiging van het lid</li>
+              <li>Voorkomt vergeten betalingen</li>
+              <li>Lid kan een afschrijving binnen 8 weken laten terugboeken</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Handmatige overschrijving</h4>
+            <ul>
+              <li>Lid moet er zelf actief aan denken, elke maand</li>
+              <li>Grotere kans op vergeten of te late betaling</li>
+              <li>Meer administratieve controle nodig door het bestuur</li>
+            </ul>
+          </div>
+        </div>
+        <p>Praktisch advies: maak automatische incasso de standaard voor nieuwe leden, en moedig bestaande leden aan om over te stappen. Dat scheelt het bestuur op termijn veel tijd aan het achteraf achtervolgen van betalingen.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is het belangrijkste voordeel van automatische SEPA-incasso ten opzichte van handmatige overschrijving?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="Automatische incasso is niet goedkoper; het voordeel zit in betrouwbaarheid en minder achterstanden, niet in kosten.">Het is goedkoper voor de VvE dan een overschrijving</button>
+          <button class="opt" data-correct="true">Het voorkomt vergeten of te late betalingen, doordat het bestuur zelf incasseert</button>
+          <button class="opt" data-correct="false" data-explain="Een lid kan een incasso juist tot 8 weken na afschrijving laten terugboeken; dat maakt het niet definitiever dan een overschrijving.">Het lid kan de betaling niet meer terugdraaien</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3000 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">3000</span>
+      <div class="acct-title"><h2>Als er één keer niet op tijd wordt betaald</h2><div class="kicker">Wat er automatisch gebeurt, en wat je zelf doet</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Zodra een bijdrage niet binnen de gestelde termijn is betaald, is een lid volgens de meeste modelreglementen <strong>automatisch in verzuim</strong> &mdash; er is geen aparte aanmaning vooraf nodig om rente te laten ontstaan. Vanaf dat moment loopt de wettelijke rente, met een minimumbedrag (vaak enkele euro's) zoals vastgelegd in het reglement.</p>
+        <div class="callout">Dit automatisme betekent niet dat het bestuur meteen hard moet optreden. Bij een eerste, incidentele te late betaling is een vriendelijke herinnering vaak voldoende &mdash; het geeft het lid de kans om het simpel recht te zetten voordat het escaleert.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Is een aparte aanmaning vooraf nodig voordat de wettelijke rente bij te late betaling gaat lopen?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="false" data-explain="De meeste modelreglementen bepalen juist dat het lid automatisch in verzuim is zodra de betaaltermijn verstrijkt, zonder dat een aparte aanmaning nodig is.">Ja, zonder aanmaning kan er geen rente gaan lopen</button>
+          <button class="opt" data-correct="true">Nee, verzuim (en dus rente) ontstaat automatisch zodra de betaaltermijn is verstreken</button>
+          <button class="opt" data-correct="false" data-explain="Rente kan al vanaf de eerste te late betaling gaan lopen; het hoeft geen drie maanden te duren voordat dit automatisme in werking treedt.">Pas na drie maanden achterstand</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4000 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">4000</span>
+      <div class="acct-title"><h2>Het stappenplan bij aanhoudende achterstand</h2><div class="kicker">Van herinnering tot deurwaarder</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Blijft de achterstand bestaan, dan doorloopt het bestuur doorgaans een oplopende reeks stappen:</p>
+        <ol class="escalation">
+          <li><strong>Vriendelijke herinnering</strong> <span class="note">meestal kort na de eerste gemiste betaling</span></li>
+          <li><strong>Formele aanmaning</strong> <span class="note">schriftelijk, met een concrete betaaltermijn en vermelding van de opgelopen rente</span></li>
+          <li><strong>Betalingsregeling aanbieden</strong> <span class="note">bij een lid dat aangeeft tijdelijk niet in één keer te kunnen betalen</span></li>
+          <li><strong>Incassobureau inschakelen</strong> <span class="note">bij aanhoudende, onverklaarde achterstand</span></li>
+          <li><strong>Gerechtelijke procedure / deurwaarder</strong> <span class="note">laatste stap, met bijkomende proceskosten</span></li>
+        </ol>
+        <div class="callout">Documenteer elke stap zorgvuldig (data, bedragen, correspondentie) &mdash; dat is niet alleen nodig als het onverhoopt tot een procedure komt, maar helpt ook de kascommissie en de ALV om te begrijpen waarom een openstaand bedrag zo lang loopt.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is een logische stap ná een formele aanmaning die niets oplevert, en vóórdat een deurwaarder wordt ingeschakeld?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Een gerechtelijke procedure is meestal de laatste stap; eerst wordt geprobeerd het via een incassobureau of een betalingsregeling op te lossen.">Direct een gerechtelijke procedure starten</button>
+          <button class="opt" data-correct="true">Een betalingsregeling aanbieden of een incassobureau inschakelen</button>
+          <button class="opt" data-correct="false" data-explain="Het schrappen van de schuld is geen stap in het proces; de VvE blijft de vordering actief innen, eventueel via een betalingsregeling of incasso.">De schuld gewoon laten staan tot het vanzelf wordt opgelost</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5000 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">5000</span>
+      <div class="acct-title"><h2>Wie draait er uiteindelijk voor op</h2><div class="kicker">Kosten, en wat er gebeurt bij langdurige wanbetaling</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De kosten van het innen &mdash; inclusief eventuele juridische bijstand &mdash; komen in beginsel voor rekening van het <strong>nalatige lid zelf</strong>, niet van de VvE als geheel. Dat is een belangrijk verschil met veel andere VvE-kosten, die immers over alle leden worden verdeeld.</p>
+        <div class="callout warn"><strong>Als het echt lang duurt:</strong> blijft een lid het definitieve bedrag zes maanden na de gestelde termijn onbetaald, dan schrijven veel modelreglementen voor dat die schuld tijdelijk wordt omgeslagen over de overige leden, naar rato van hun breukdeel &mdash; onverminderd het recht van die leden om het bedrag alsnog op de nalatige eigenaar te verhalen. Dit voorkomt dat de VvE als geheel in liquiditeitsproblemen komt door één hardnekkige wanbetaler.</div>
+        <p>Dit is precies waarom een consequente, tijdige opvolging van achterstanden belangrijk is: hoe langer een schuld blijft liggen, hoe groter de kans dat (tijdelijk) de andere leden meebetalen aan het tekort.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wie betaalt normaal gesproken de kosten van het innen van een achterstallige bijdrage, zoals een incassobureau?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="Incassokosten worden niet standaard over alle leden verdeeld; ze komen in beginsel voor rekening van het nalatige lid." >Alle leden gezamenlijk, als onderdeel van de gewone VvE-kosten</button>
+          <button class="opt" data-correct="true">Het nalatige lid zelf</button>
+          <button class="opt" data-correct="false" data-explain="De beheerder is niet verantwoordelijk voor de schuld van een individueel lid; het bestuur onderneemt actie namens de VvE, maar de kosten komen bij het nalatige lid terecht.">De externe beheerder, als onderdeel van het beheercontract</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6000 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">6000</span>
+      <div class="acct-title"><h2>Voorkomen is beter dan innen</h2><div class="kicker">Wat een bestuur vooraf kan doen</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De beste achterstand is de achterstand die nooit ontstaat. Een paar dingen die in de praktijk merkbaar schelen:</p>
+        <ul class="steps">
+          <li><strong>Automatische incasso als standaard</strong> bij nieuwe leden, en actief aanmoedigen bij bestaande leden.</li>
+          <li><strong>Snel en persoonlijk reageren</strong> bij de eerste gemiste betaling, in plaats van te wachten tot het een patroon wordt.</li>
+          <li><strong>Ruimte voor een gesprek</strong> bieden als een lid tijdelijk in de financiële problemen zit &mdash; een betalingsregeling voorkomt vaak escalatie.</li>
+          <li><strong>Transparante communicatie</strong> over wat er gebeurt bij aanhoudende achterstand, zodat niemand achteraf wordt overvallen door een aanmaning of incassobureau.</li>
+        </ul>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is een effectieve, praktische manier om achterstanden te voorkomen, nog vóórdat ze ontstaan?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="true">Automatische incasso als standaard instellen bij nieuwe leden</button>
+          <button class="opt" data-correct="false" data-explain="Wachten tot een lid drie keer heeft gemist, vergroot juist het risico op een langdurige, moeilijk in te lopen achterstand.">Pas reageren nadat een lid drie keer heeft gemist</button>
+          <button class="opt" data-correct="false" data-explain="Geen enkele opvolging verhoogt het risico op langdurige achterstanden en de gevolgen daarvan voor de andere leden."> Geen actie ondernemen en erop vertrouwen dat het zich vanzelf oplost</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9000 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">9000</span>
+      <div class="acct-title"><h2>Checklist: bijdragen en achterstanden</h2><div class="kicker">Wat een bestuur op orde zou moeten hebben</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Werkt het merendeel van de leden met automatische incasso?</li>
+            <li><span class="dot"></span>Is er een vast, bekend stappenplan voor het opvolgen van een achterstand?</li>
+            <li><span class="dot"></span>Worden achterstanden gedocumenteerd (data, bedragen, correspondentie)?</li>
+            <li><span class="dot"></span>Is bekend wat er gebeurt als een schuld langer dan zes maanden openstaat?</li>
+            <li><span class="dot"></span>Is er ruimte voor een betalingsregeling bij een lid dat tijdelijk in de problemen zit?</li>
+          </ul>
+        </div>
+        <p style="margin-top:16px;">Deze module combineert goed met de module over de kascommissie, die achterstallige bijdragen als vast controlepunt meeneemt bij de jaarlijkse controle.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/6</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over bijdragen en incasso doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>BIJDRAGEN, INCASSO EN ACHTERSTANDEN — INTERNE E-LEARNING, VERVOLG OP DE VOORGAANDE MODULES</footer>
+
+<script>
+  const total = 7;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/6';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
