@@ -1,0 +1,519 @@
+<!-- fix 1 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geld & risico: lenen, verzekeren, aansprakelijkheid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228; --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1; --paper-dark:#E2D8BF;
+    --rule:#2F4F44; --rule-soft:#2F4F4433;
+    --ink-text:#2A2118; --ink-fade:#5A5040;
+    --amber:#C98A2C; --amber-deep:#a86f1c;
+    --debit:#a13d2c; --credit:#3d6b52; --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14; padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em;}
+  .brandbar .tagline{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;}
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col.credit h4{color:var(--credit);}
+  .ledger-col.debet h4{color:var(--debit);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f; display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .steps{margin:14px 0 4px; padding:0; list-style:none; counter-reset:step;}
+  .steps li{
+    font-size:14.5px; padding:10px 12px 10px 40px; margin-bottom:6px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .steps li::before{
+    counter-increment:step; content:counter(step); position:absolute; left:10px; top:9px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); width:20px; height:20px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 8</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">GELD & RISICO</span></div>
+  <h1>Lenen, verzekeren, aansprakelijkheid</h1>
+  <p class="sub">Wat als het reservefonds tekortschiet, wat de opstalverzekering wel en niet dekt — voor de VvE én voor leden zelf — en waar bestuur en VvE persoonlijk risico lopen, en hoe je dat beperkt.</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 3300 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">3300</span>
+      <div class="acct-title"><h2>Lenen of wachten op het reservefonds</h2><div class="kicker">Als een uitgave niet kan wachten</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Soms is een grote uitgave onvermijdelijk terwijl het reservefonds ontoereikend is — een cv-installatie die het begeeft, of een geconstateerd veiligheidsgebrek. Er zijn dan grofweg twee routes: een <strong>eenmalige extra bijdrage</strong> van alle leden, of een <strong>VvE-lening</strong> die over meerdere jaren wordt afgelost via de reguliere bijdrage.</p>
+        <p>Een lening spreidt de last over de tijd én over toekomstige eigenaren, in plaats van alleen de huidige leden in één keer te belasten. Dat is vaak eerlijker als de investering ook toekomstige bewoners ten goede komt.</p>
+        <div class="callout warn"><strong>Belangrijk onderscheid:</strong> een lening is een oplossing voor een eenmalige, onvoorziene tekortkoming — niet voor een reservefonds dat structureel te laag is. Als leningen vaker nodig blijken, is dat een signaal om de dotatie te verhogen op basis van het MJOP, niet om structureel te blijven lenen.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wanneer is een VvE-lening een passende oplossing?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="Een lening is geen manier om een lastig gesprek te vermijden; de leden betalen die uiteindelijk alsnog terug.">Als het bestuur liever geen gesprek over de bijdrage voert</button>
+          <button class="opt" data-correct="true">Bij een onvermijdelijke, eenmalige uitgave die het reservefonds op dit moment niet dekt</button>
+          <button class="opt" data-correct="false" data-explain="Structureel lenen lost het onderliggende probleem — een te lage dotatie — niet op.">Als structureel alternatief voor een toereikende dotatie</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3400 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">3400</span>
+      <div class="acct-title"><h2>Waar je op let bij een lening</h2><div class="kicker">Voorwaarden die het verschil maken</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Voorwaarden om te vergelijken</h4>
+            <ul>
+              <li>Rentepercentage: vast of variabel</li>
+              <li>Looptijd en aflossingsschema</li>
+              <li>Effect op de maandelijkse/jaarlijkse bijdrage</li>
+              <li>Boeterente bij vervroegd aflossen</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Besluitvorming</h4>
+            <ul>
+              <li>ALV-besluit vereist, vaak met verzwaarde meerderheid</li>
+              <li>Meerdere aanbieders vergelijken (gespecialiseerde VvE-financiers én banken)</li>
+              <li>Transparantie bij verkoop: nieuwe eigenaar erft de resterende lastenverplichting</li>
+            </ul>
+          </div>
+        </div>
+        <p>Een VvE-lening wordt doorgaans niet gedekt door een hypotheek op het pand, maar door het recht van de financier om de VvE-bijdragen als onderpand te beschouwen. Vraag daarom altijd expliciet naar de zekerheden die worden gevraagd, en wat er gebeurt als een lid zijn bijdrage niet meer betaalt.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat gebeurt er meestal met de resterende leningsverplichting als een lid zijn appartement verkoopt?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="De verplichting vervalt niet; die is gekoppeld aan het appartementsrecht en gaat mee over.">Die vervalt automatisch bij verkoop</button>
+          <button class="opt" data-correct="true">Die gaat mee over naar de nieuwe eigenaar via de VvE-bijdrage</button>
+          <button class="opt" data-correct="false" data-explain="De lening loopt door via de VvE-bijdrage; de vertrekkende eigenaar hoeft niet in één keer af te rekenen.">Die wordt in één keer opgeëist bij de verkopende partij</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8100 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">8100</span>
+      <div class="acct-title"><h2>De opstalverzekering</h2><div class="kicker">Wat wel en niet gedekt is</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een VvE is verplicht het gebouw te verzekeren tegen schade zoals brand, storm en waterschade. Deze opstalverzekering dekt het gebouw zelf — inclusief gemeenschappelijke én bouwkundige privé-onderdelen — maar niet alles.</p>
+        <div class="ledger-split">
+          <div class="ledger-col credit">
+            <h4>Doorgaans wél gedekt</h4>
+            <ul><li>Brand- en stormschade aan het gebouw</li><li>Waterschade door leidingbreuk</li><li>Bouwkundige onderdelen, ook in privégedeelten</li></ul>
+          </div>
+          <div class="ledger-col debet">
+            <h4>Vaak níet gedekt</h4>
+            <ul><li>Schade door achterstallig onderhoud (eigen gebrek)</li><li>Inboedel van bewoners zelf</li><li>Glasschade, tenzij apart meeverzekerd</li></ul>
+          </div>
+        </div>
+        <div class="callout">Laat de <strong>herbouwwaarde</strong> periodiek taxeren. Een verouderde inschatting leidt tot onder- of oververzekering — bij onderverzekering kan de verzekeraar bij schade een deel van de uitkering korten, ook als de rest van de polis in orde is.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat dekt de opstalverzekering doorgaans niet?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="false" data-explain="Dit soort schade valt juist doorgaans wél onder de opstalverzekering.">Waterschade door een leidingbreuk</button>
+          <button class="opt" data-correct="true">Schade die is ontstaan door achterstallig onderhoud</button>
+          <button class="opt" data-correct="false" data-explain="Brandschade is een kernonderdeel van wat de opstalverzekering wél dekt.">Brandschade aan het gebouw</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8150 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">8150</span>
+      <div class="acct-title"><h2>Eigen verbeteringen van leden</h2><div class="kicker">Dakkapel, luxe keuken: wie verzekert wat?</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De opstalverzekering van de VvE dekt in de regel de <strong>standaard uitvoering</strong> van het gebouw: de basisafwerking zoals die volgens de splitsingsakte en de oorspronkelijke bouwtekening hoort te zijn. Veel leden hebben in de loop der tijd echter zelf iets aangepast of verbeterd.</p>
+        <div class="ledger-split">
+          <div class="ledger-col credit">
+            <h4>Standaard door de VvE verzekerd</h4>
+            <ul><li>Casco van het gebouw volgens de splitsingsakte</li><li>Standaard kozijnen en dakbedekking</li><li>Standaard sanitair in de basisuitvoering</li></ul>
+          </div>
+          <div class="ledger-col debet">
+            <h4>Vaak voor eigen rekening / bijverzekeren</h4>
+            <ul><li>Een dakkapel of uitbouw</li><li>Een luxe keuken of badkamer</li><li>Parket, vloerverwarming of andere upgrades</li></ul>
+          </div>
+        </div>
+        <p>Deze meerwaarde valt vaak buiten de standaarddekking van de VvE-polis, of moet expliciet worden gemeld en meeverzekerd. De verantwoordelijkheid hiervoor ligt bij het <strong>lid zelf</strong>: wie iets laat aanbrengen dat boven de standaard uitvoering uitstijgt, moet dit laten taxeren en bijverzekeren — via een aanvullende clausule op de VvE-polis (als de verzekeraar dat toestaat) of via een eigen aanvullende verzekering.</p>
+        <div class="callout warn"><strong>Praktijkrisico:</strong> bij schade aan een niet-gemelde dakkapel kan de uitkering voor dat deel worden geweigerd of fors lager uitvallen dan het lid verwacht. Wijs leden hier actief op, en adviseer om de polis samen met de verzekeraar of tussenpersoon te checken op wat precies wel en niet standaard is meeverzekerd.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom kan een lid met een zelf aangebrachte dakkapel bij schade een vervelende verrassing krijgen?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="true">Omdat zo'n verbetering vaak buiten de standaarddekking van de VvE-polis valt als die niet apart is gemeld</button>
+          <button class="opt" data-correct="false" data-explain="De VvE-polis dekt doorgaans alleen de standaard uitvoering; extra's moeten apart gemeld en verzekerd worden.">Omdat de VvE alle verbeteringen van leden automatisch meeverzekert</button>
+          <button class="opt" data-correct="false" data-explain="Dakkapellen kunnen prima verzekerd worden, mits ze zijn gemeld en meeverzekerd — het is geen verbod.">Omdat dakkapellen wettelijk nooit verzekerd mogen worden</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8180 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">8180</span>
+      <div class="acct-title"><h2>Aansprakelijkheid van de VvE zelf</h2><div class="kicker">Wanneer is de VvE (niet het bestuur) aansprakelijk?</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Naast de opstalverzekering (schade aan het gebouw zelf) en de bestuurdersaansprakelijkheidsverzekering (persoonlijke bescherming van bestuursleden) is er een derde, vaak onderbelichte polis: de <strong>aansprakelijkheidsverzekering van de VvE (AVVE)</strong>.</p>
+        <p>De VvE is als rechtspersoon eigenaar van de gemeenschappelijke delen, en kan aansprakelijk worden gesteld wanneer een derde schade of letsel oploopt door een gebrek aan het gebouw of door onvoldoende onderhoud — ongeacht of een individueel bestuurslid persoonlijk iets fout deed.</p>
+        <div class="callout"><strong>Voorbeelden:</strong> een losgewaaide dakpan beschadigt een geparkeerde auto; een monteur die in opdracht van de VvE onderhoud uitvoert, raakt gewond door een onveilige situatie in het trappenhuis; een bezoeker struikelt over een losliggende tegel in de gemeenschappelijke hal.</div>
+        <p>Dit is aansprakelijkheid van de <strong>VvE als geheel</strong> — indirect gedragen door alle leden via de bijdrage — en dus iets anders dan de persoonlijke aansprakelijkheid van een bestuurder. Controleer of deze AVVE-polis naast de opstalverzekering bestaat; die dekking is niet automatisch inbegrepen.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Een monteur raakt gewond tijdens onderhoudswerk aan de lift, doordat het trappenhuis onveilig was. Wie kan hiervoor aansprakelijk worden gesteld?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="true">De VvE zelf, omdat het gebrek zat in het onderhoud van een gemeenschappelijk deel</button>
+          <button class="opt" data-correct="false" data-explain="Persoonlijke aansprakelijkheid van een bestuurslid ontstaat alleen bij ernstige eigen nalatigheid; hier gaat het om aansprakelijkheid van de VvE als eigenaar van het gebouw.">Uitsluitend het bestuurslid dat toezicht hield</button>
+          <button class="opt" data-correct="false" data-explain="Ook als de monteur voorzichtig was, kan de VvE aansprakelijk zijn voor een onveilige situatie in een gemeenschappelijk deel.">Niemand, want de monteur had zelf beter moeten opletten</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8200 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">8200</span>
+      <div class="acct-title"><h2>Bestuurdersaansprakelijkheid</h2><div class="kicker">Wanneer loop je persoonlijk risico</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Als bestuurder handel je namens de VvE, niet namens jezelf. Zorgvuldig genomen besluiten — ook als ze achteraf niet optimaal blijken — vallen in de regel onder de bescherming van de rechtspersoon. Persoonlijke aansprakelijkheid ontstaat vooral bij <strong>ernstige, verwijtbare nalatigheid</strong>: bewust een wettelijke verplichting negeren, buiten je bevoegdheid handelen, of evident onzorgvuldig omgaan met VvE-geld.</p>
+        <p>Veel bestuurders denken dat elk besluit dat te goeder trouw is genomen automatisch beschermd is. Dat klopt meestal — totdat een concreet risico bekend was en toch bewust werd genegeerd. Herkenbare situaties waarin dat misgaat:</p>
+        <ul class="flags">
+          <li>Een gemeld gebrek — bijvoorbeeld een loszittend balkonhek — wordt herhaaldelijk genegeerd, en er gebeurt vervolgens een ongeluk.</li>
+          <li>Een grote uitgave wordt gedaan buiten het eigen mandaat, zonder de vereiste ALV-goedkeuring.</li>
+          <li>Het bestuur weet dat de herbouwwaarde van de opstalverzekering al jaren niet is bijgewerkt, en onderneemt bewust geen actie.</li>
+          <li>Een opdracht wordt gegund aan een bedrijf van een bestuurslid of familielid, zonder dit transparant te melden of te laten toetsen.</li>
+          <li>De wettelijk verplichte dotatie aan het reservefonds wordt jarenlang bewust laag gehouden, zonder onderbouwing vanuit het MJOP.</li>
+        </ul>
+        <div class="callout"><strong>Je beste bescherming is papier:</strong> leg besluiten en de afweging erachter vast in de notulen. Bij twijfel over een grote uitgave: laat de ALV expliciet instemmen in plaats van zelf te beslissen. Herken je een van bovenstaande situaties bij jullie VvE, dan is dat het moment om alsnog actie te ondernemen of het expliciet met de ALV te bespreken.</div>
+        <p>Veel VvE's sluiten daarnaast een <strong>bestuurdersaansprakelijkheidsverzekering</strong> af, die de kosten van een eventuele claim tegen bestuursleden persoonlijk dekt. Controleer of deze polis bestaat en nog actueel is — dit wordt vaak vergeten na een bestuurswisseling.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is je beste bescherming tegen persoonlijke aansprakelijkheid als bestuurder?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="false" data-explain="Het ontbreken van vastlegging maakt het juist lastiger om zorgvuldig handelen aan te tonen.">Zo min mogelijk besluiten vastleggen</button>
+          <button class="opt" data-correct="true">Besluiten en de onderbouwing zorgvuldig vastleggen in de notulen</button>
+          <button class="opt" data-correct="false" data-explain="Mondelinge afspraken zijn niet controleerbaar achteraf en bieden dus geen bewijs van zorgvuldigheid.">Alle besluiten alleen mondeling afstemmen</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8300 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">8300</span>
+      <div class="acct-title"><h2>Na een calamiteit</h2><div class="kicker">De eerste stappen</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <ul class="steps">
+          <li><strong>Veiligheid eerst</strong> — zorg dat de directe situatie veilig is voordat er iets anders gebeurt.</li>
+          <li><strong>Schade vastleggen</strong> — maak foto's en video vóórdat er wordt opgeruimd of gerepareerd; dit is het bewijs richting de verzekeraar.</li>
+          <li><strong>Verzekeraar melden</strong> — meld de schade zo snel mogelijk; wachten kan de uitkering bemoeilijken.</li>
+          <li><strong>Noodmaatregelen</strong> — directe noodreparaties mogen doorgaans meteen, bewaar alle bonnen en facturen.</li>
+          <li><strong>Communiceren</strong> — informeer betrokken leden over de status en eventuele tijdelijke voorzieningen.</li>
+        </ul>
+        <div class="callout">Spreek dit protocol bij voorkeur al vast af vóórdat er iets gebeurt: wie belt de verzekeraar, wie regelt een noodaannemer, en wie communiceert met de leden. In de chaos van het moment is dat geen tijd om nog te verzinnen.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat doe je direct na een calamiteit, vóórdat je begint met opruimen?</div>
+        <div class="opts" data-quiz="7">
+          <button class="opt" data-correct="true">De schade vastleggen met foto's en video</button>
+          <button class="opt" data-correct="false" data-explain="Bij een calamiteit is snel handelen nodig; wachten kan schade en bewijs laten verdwijnen.">Wachten tot de eerstvolgende ALV om het te bespreken</button>
+          <button class="opt" data-correct="false" data-explain="Bonnen zijn juist nodig voor de verzekeraar en de administratie; die moet je bewaren.">Alle bonnen weggooien om het overzichtelijk te houden</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9700 -->
+  <section class="account" id="acct-7" data-acct>
+    <div class="account-head" onclick="toggle(7)">
+      <span class="acct-num">9700</span>
+      <div class="acct-title"><h2>Checklist: geld & risico</h2><div class="kicker">Wat hoort op orde te zijn</div></div>
+      <span class="check" id="check-7">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Is een eventuele lening gekoppeld aan een eenmalige, onvermijdelijke uitgave — en niet aan een structureel tekort?</li>
+            <li><span class="dot"></span>Zijn leningsvoorwaarden (rente, looptijd, zekerheden) vergeleken tussen meerdere aanbieders?</li>
+            <li><span class="dot"></span>Is de herbouwwaarde van de opstalverzekering recent getaxeerd?</li>
+            <li><span class="dot"></span>Is helder wat wel en niet gedekt is, met name rond eigen gebrek?</li>
+            <li><span class="dot"></span>Weten leden dat eigen verbeteringen zoals een dakkapel of luxe keuken apart bijverzekerd moeten worden?</li>
+            <li><span class="dot"></span>Bestaat er, naast de opstalverzekering, een aansprakelijkheidsverzekering voor de VvE zelf (AVVE)?</li>
+            <li><span class="dot"></span>Bestaat er een actuele bestuurdersaansprakelijkheidsverzekering?</li>
+            <li><span class="dot"></span>Is er een afgesproken protocol voor de eerste stappen na een calamiteit?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/7</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over geld & risico doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>GELD & RISICO — INTERNE E-LEARNING VOOR VVE-BESTUUR</footer>
+
+<script>
+  const total = 8;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/7';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

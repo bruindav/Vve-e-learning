@@ -1,0 +1,549 @@
+<!-- fix 1 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Het MJOP begrijpen en beoordelen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228;
+    --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1;
+    --paper-dark:#E2D8BF;
+    --rule:#2F4F44;
+    --rule-soft:#2F4F4433;
+    --ink-text:#2A2118;
+    --ink-fade:#5A5040;
+    --amber:#C98A2C;
+    --amber-deep:#a86f1c;
+    --debit:#a13d2c;
+    --credit:#3d6b52;
+    --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep);
+    border-bottom:1px solid #ffffff14;
+    padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{
+    font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em; font-family:'IBM Plex Sans', sans-serif;
+  }
+  .brandbar .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
+  }
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-split.three{grid-template-columns:1fr 1fr 1fr;}
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f; display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .steps{margin:14px 0 4px; padding:0; list-style:none; counter-reset:step;}
+  .steps li{
+    font-size:14.5px; padding:10px 12px 10px 40px; margin-bottom:6px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .steps li::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:10px; top:9px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+    color:var(--amber-deep); background:#00000008; border:1px solid var(--rule-soft);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+
+  .scale{
+    display:flex; gap:4px; margin:14px 0 18px; flex-wrap:wrap;
+  }
+  .scale .grade{
+    flex:1; min-width:78px; padding:10px 8px; border-radius:3px; text-align:center;
+    border:1px solid var(--rule-soft); background:#fff9;
+  }
+  .scale .grade .n{font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:15px;}
+  .scale .grade .l{font-size:11px; color:var(--ink-fade); margin-top:3px; line-height:1.3;}
+  .scale .grade.g1 .n{color:#2f6b3f;}
+  .scale .grade.g2 .n{color:#4f7a3f;}
+  .scale .grade.g3 .n{color:var(--amber-deep);}
+  .scale .grade.g4 .n{color:#b56a2c;}
+  .scale .grade.g5 .n{color:var(--debit);}
+  .scale .grade.g6 .n{color:#7a2c1f;}
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split, .ledger-split.three{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+    .scale{flex-direction:column;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 7</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">TECHNISCH</span></div>
+  <h1>Het MJOP begrijpen en beoordelen</h1>
+  <p class="sub">Vervolg op de vorige modules. Hoe lees je een meerjarenonderhoudsplan, wie stelt het op, hoe komt het tot stand, en waar let je op als je het beoordeelt?</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1500 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1500</span>
+      <div class="acct-title"><h2>Wat een MJOP eigenlijk is</h2><div class="kicker">Sturingsinstrument, geen formaliteit</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Het Meerjarenonderhoudsplan (MJOP) is een overzicht van al het te verwachten onderhoud aan het gebouw over een langere periode — doorgaans 10 tot 15 jaar, soms tot 25 jaar — met per onderdeel een inschatting van wanneer het nodig is en wat het gaat kosten.</p>
+        <p>Het MJOP is niet zomaar een lijstje: het is het instrument waarmee de hoogte van de jaarlijkse dotatie aan het reservefonds wordt onderbouwd. Zonder een actueel MJOP is elke dotatie eigenlijk een slag in de lucht.</p>
+        <div class="callout"><strong>De kern:</strong> een MJOP verandert grote, onvoorspelbare uitgaven in de toekomst in een voorspelbare, gelijkmatige spaarbijdrage nu. Dat is de reden dat het bestaat.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is het belangrijkste doel van een MJOP?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="Het MJOP is geen gemeentelijke verplichting; het is een intern financieel sturingsinstrument voor de VvE.">Voldoen aan een formaliteit richting de gemeente</button>
+          <button class="opt" data-correct="true">De hoogte van de reservefondsdotatie onderbouwen met verwacht toekomstig onderhoud</button>
+          <button class="opt" data-correct="false" data-explain="Het MJOP kijkt vooruit naar onderhoud, de jaarrekening kijkt terug op het afgelopen jaar — ze vervangen elkaar niet.">Een vervanging zijn van de jaarrekening</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2500 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">2500</span>
+      <div class="acct-title"><h2>Wie stelt het op</h2><div class="kicker">De partijen rond de tafel</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een MJOP wordt in de regel opgesteld door een <strong>technisch adviesbureau of een bouwkundig inspecteur</strong> die is gespecialiseerd in vastgoedonderhoud. Bij VvE's met een technisch beheerder wordt dit vaak namens het bestuur uitbesteed of gecoördineerd door die beheerder — maar de inspectie en rapportage zelf gebeurt door een technisch geschoolde partij.</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Voert de inspectie uit</h4>
+            <ul>
+              <li>Bouwkundig inspecteur / adviesbureau</li>
+              <li>Soms: technisch onderlegde beheerder</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Blijft verantwoordelijk</h4>
+            <ul>
+              <li>Bestuur: opdracht geven en resultaat beoordelen</li>
+              <li>ALV: het MJOP en de dotatie vaststellen</li>
+            </ul>
+          </div>
+        </div>
+        <p>Belangrijk om te weten: de opsteller van het MJOP hoeft niet dezelfde partij te zijn als degene die het onderhoud later uitvoert. Dat voorkomt dat een uitvoerende partij zichzelf werk toedicht — vraag hier bij twijfel gerust naar.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wie beoordeelt en stelt het MJOP uiteindelijk vast?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="De inspecteur levert het technische rapport, maar de besluitvorming ligt bij bestuur en ALV.">Uitsluitend de opstellende inspecteur</button>
+          <button class="opt" data-correct="true">Het bestuur beoordeelt het, de ALV stelt het (en de dotatie) vast</button>
+          <button class="opt" data-correct="false" data-explain="De gemeente speelt hierin geen goedkeurende rol; dit is een interne VvE-aangelegenheid.">De gemeente keurt het MJOP goed</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3500 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">3500</span>
+      <div class="acct-title"><h2>Hoe het opstellen in zijn werk gaat</h2><div class="kicker">Van inspectie tot kasstroom</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <ul class="steps">
+          <li><strong>Bouwkundige inspectie</strong> — de inspecteur loopt het gebouw fysiek langs: fundering, gevel, dak, kozijnen, trappenhuizen, én installaties zoals cv, lift, elektra en brandveiligheidsvoorzieningen.</li>
+          <li><strong>Conditiemeting per bouwdeel</strong> — elk onderdeel krijgt een conditiescore, in Nederland doorgaans volgens de NEN 2767-systematiek, een schaal van 1 (uitstekend) tot 6 (zeer slecht).</li>
+          <li><strong>Vertaling naar resterende levensduur</strong> — op basis van de conditie en de leeftijd wordt ingeschat wanneer onderhoud of vervanging nodig is.</li>
+          <li><strong>Kostenraming</strong> — per ingreep wordt een kostenraming gemaakt, vaak op basis van kengetallen per eenheid (per m² gevel, per lift, per dakvlak).</li>
+          <li><strong>Meerjarenplanning</strong> — alle ingrepen worden uitgezet in de tijd, wat een jaar-op-jaar kasstroomoverzicht oplevert: wat moet wanneer worden uitgegeven.</li>
+        </ul>
+        <p>De conditieschaal ziet er ongeveer zo uit:</p>
+        <div class="scale">
+          <div class="grade g1"><div class="n">1</div><div class="l">Uitstekend</div></div>
+          <div class="grade g2"><div class="n">2</div><div class="l">Goed</div></div>
+          <div class="grade g3"><div class="n">3</div><div class="l">Redelijk</div></div>
+          <div class="grade g4"><div class="n">4</div><div class="l">Matig</div></div>
+          <div class="grade g5"><div class="n">5</div><div class="l">Slecht</div></div>
+          <div class="grade g6"><div class="n">6</div><div class="l">Zeer slecht</div></div>
+        </div>
+        <div class="callout">Een score van 4 of hoger op een belangrijk bouwdeel is meestal het signaal dat er binnen afzienbare tijd actie nodig is — precies waar het MJOP je voor waarschuwt, ruim voordat het een acute reparatie wordt.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat gebeurt er direct ná de bouwkundige inspectie in het opstelproces?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="false" data-explain="Eerst volgen conditiescore en kostenraming; pas daarna komt er een onderbouwd voorstel voor de ALV.">De ALV stemt meteen over het budget</button>
+          <button class="opt" data-correct="true">Elk bouwdeel krijgt een conditiescore, die wordt vertaald naar resterende levensduur</button>
+          <button class="opt" data-correct="false" data-explain="Niets gebeurt automatisch; de dotatie wordt pas aangepast na een bewust voorstel en besluit.">Het reservefonds wordt automatisch aangepast</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4500 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">4500</span>
+      <div class="acct-title"><h2>Wat een goed MJOP bevat</h2><div class="kicker">Waar je op mag rekenen</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Als bestuurder mag je van een volwaardig MJOP een aantal vaste onderdelen verwachten:</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Per bouwdeel</h4>
+            <ul>
+              <li>Omschrijving en huidige conditie</li>
+              <li>Verwachte resterende levensduur</li>
+              <li>Geplande onderhoudsjaar</li>
+              <li>Geraamde kosten</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Op totaalniveau</h4>
+            <ul>
+              <li>Meerjarenkasstroom, jaar voor jaar</li>
+              <li>Indexering van kosten (prijsstijging)</li>
+              <li>Koppeling aan huidig fondssaldo</li>
+              <li>Voorstel voor de dotatie</li>
+            </ul>
+          </div>
+        </div>
+        <p>Een goed MJOP eindigt vaak met een grafiek die laat zien hoe het reservefonds zich naar verwachting ontwikkelt bij de voorgestelde dotatie — inclusief de pieken waar grote uitgaven vallen. Dat plaatje is voor een bestuurder vaak sneller te doorgronden dan de tabellen erachter.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Welk onderdeel hoort in een volwaardig MJOP, naast de lijst van bouwdelen?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Breukdelen horen in de splitsingsakte, niet in het MJOP zelf.">Een overzicht van de leden en hun breukdelen</button>
+          <button class="opt" data-correct="true">Een meerjarenkasstroom met indexering, gekoppeld aan het huidige fondssaldo</button>
+          <button class="opt" data-correct="false" data-explain="Notulen zijn vergaderverslagen, geen onderdeel van de onderhoudsplanning.">De notulen van de vorige ALV</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5500 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">5500</span>
+      <div class="acct-title"><h2>Het MJOP beoordelen</h2><div class="kicker">Vier vragen als bestuurder</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <ul class="steps">
+          <li><strong>Is de scope compleet?</strong> Staan niet alleen gevel en dak erin, maar ook installaties zoals lift, cv en brandveiligheid?</li>
+          <li><strong>Zijn de kosten realistisch?</strong> Vergelijk grote posten waar mogelijk met eerder ontvangen offertes of regionale kengetallen — een raming die opvallend laag oogt, is vaak een tekort in wording.</li>
+          <li><strong>Is de horizon lang genoeg?</strong> Een plan van slechts 5 jaar kan een grote piek net buiten beeld laten die bij 15 jaar wél zichtbaar wordt.</li>
+          <li><strong>Sluit de dotatie aan?</strong> Loopt het reservefonds in de grafiek van het MJOP niet tijdelijk onder nul, of gevaarlijk dicht daarbij?</li>
+        </ul>
+        <p>Je hoeft dit niet als bouwkundige te beoordelen — je toetst vooral of het plaatje logisch is en of de aannames navolgbaar zijn uitgelegd.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom is een MJOP met een horizon van slechts 5 jaar risicovol?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="Er is geen wettelijke minimumhorizon; het risico zit in wat je niet meer ziet aankomen.">Omdat 5 jaar wettelijk niet is toegestaan</button>
+          <button class="opt" data-correct="true">Omdat een grote uitgave net daarna buiten beeld kan blijven, terwijl de dotatie er niet op is afgestemd</button>
+          <button class="opt" data-correct="false" data-explain="De conditiescore zelf is niet het probleem; het probleem is dat een korte horizon grote uitgaven buiten beeld kan laten.">Omdat de conditiescore dan niet klopt</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6500 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">6500</span>
+      <div class="acct-title"><h2>Actueel houden</h2><div class="kicker">Hertoetsing en jaarlijkse update</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een MJOP is geen momentopname die je één keer laat maken en daarna vergeet. Twee ritmes zijn hierbij gebruikelijk:</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Jaarlijks</h4>
+            <ul>
+              <li>Prijzen indexeren</li>
+              <li>Uitgevoerd onderhoud afstrepen</li>
+              <li>Dotatie voor komend jaar herbevestigen</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Elke ~5 jaar</h4>
+            <ul>
+              <li>Nieuwe bouwkundige inspectie</li>
+              <li>Conditiescores herijken</li>
+              <li>Planning en horizon vernieuwen</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout warn"><strong>Rode vlag:</strong> een MJOP dat ouder is dan zo'n vijf jaar en nooit is hertoetst, terwijl het gebouw intussen wél ouder is geworden. De conditiescores in het document kloppen dan vrijwel zeker niet meer met de werkelijkheid.</div>
+        <ul class="flags">
+          <li>MJOP ouder dan 5 jaar zonder hertoetsing</li>
+          <li>Installaties zoals lift of brandveiligheid ontbreken in de scope</li>
+          <li>Geen indexering van kosten toegepast</li>
+          <li>Dotatie in de begroting wijkt af van wat het MJOP voorschrijft, zonder toelichting</li>
+        </ul>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat hoort er in de regel jaarlijks te gebeuren met het MJOP, ook zonder volledige hertoetsing?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="true">Prijzen indexeren en uitgevoerd onderhoud afstrepen</button>
+          <button class="opt" data-correct="false" data-explain="Een volledige herinspectie gebeurt periodiek (ongeveer elke 5 jaar), niet elk jaar.">Een geheel nieuwe bouwkundige inspectie</button>
+          <button class="opt" data-correct="false" data-explain="Zonder jaarlijkse actualisatie sluit het MJOP steeds minder aan op de werkelijkheid.">Niets, het MJOP staat voor de hele looptijd vast</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9600 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">9600</span>
+      <div class="acct-title"><h2>Checklist: het MJOP op tafel</h2><div class="kicker">Eerste controle bij ontvangst</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Is het MJOP recent (of recent hertoetst) en dus nog betrouwbaar?</li>
+            <li><span class="dot"></span>Zijn alle bouwdelen én installaties (lift, cv, brandveiligheid) meegenomen?</li>
+            <li><span class="dot"></span>Staat er per bouwdeel een conditiescore, levensduur en kostenraming?</li>
+            <li><span class="dot"></span>Is er een meerjarenkasstroom met indexering?</li>
+            <li><span class="dot"></span>Blijft het reservefonds in de planning boven nul?</li>
+            <li><span class="dot"></span>Sluit de voorgestelde dotatie in de begroting aan op het MJOP?</li>
+          </ul>
+        </div>
+        <p style="margin-top:16px;">Met deze module kun je het MJOP naast de begroting leggen (zie de praktijkmodule) en controleren of beide elkaar echt ondersteunen.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/6</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over het MJOP doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>HET MJOP BEGRIJPEN EN BEOORDELEN — INTERNE E-LEARNING, VERVOLG OP MODULE 1, 2 EN 3</footer>
+
+<script>
+  const total = 7;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/6';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

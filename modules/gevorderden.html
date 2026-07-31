@@ -1,0 +1,521 @@
+<!-- fix 1 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdieping: VvE-boekhouding voor gevorderden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228;
+    --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1;
+    --paper-dark:#E2D8BF;
+    --rule:#2F4F44;
+    --rule-soft:#2F4F4433;
+    --ink-text:#2A2118;
+    --ink-fade:#5A5040;
+    --amber:#C98A2C;
+    --amber-deep:#a86f1c;
+    --debit:#a13d2c;
+    --credit:#3d6b52;
+    --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep);
+    border-bottom:1px solid #ffffff14;
+    padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{
+    font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em; font-family:'IBM Plex Sans', sans-serif;
+  }
+  .brandbar .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
+  }
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase;
+    font-size:12px; color:var(--amber); margin-bottom:18px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{
+    background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px;
+    letter-spacing:.04em; font-size:10.5px;
+  }
+  .cover h1{font-size:clamp(30px,5vw,48px); font-weight:600; max-width:780px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px;
+    margin-bottom:28px; box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080;
+    overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:20px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3000px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.debet h4{color:var(--debit);}
+  .ledger-col.credit h4{color:var(--credit);}
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+  .ledger-col li span.amt{font-family:'IBM Plex Mono',monospace; color:var(--ink-fade); white-space:nowrap; float:right;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px;
+    border-radius:0 3px 3px 0; font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f;
+    display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft);
+    background:#fff9; cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px;
+    background:linear-gradient(135deg,#3d6b52,#2c5240); color:#e8f0ea; font-size:14.5px;
+    display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 8</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">VERDIEPING</span></div>
+  <h1>VvE-boekhouding voor gevorderden</h1>
+  <p class="sub">Vervolg op de basismodule. Deze keer: de boekhoudkundige keuzes die er echt toe doen, en hoe je als bestuur grip houdt op een externe beheerder — financieel én technisch.</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1100 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1100</span>
+      <div class="acct-title"><h2>Kapitaliseren of direct afboeken</h2><div class="kicker">Onderhoud in de boeken</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Grote onderhoudsuitgaven — een dak, een lift — kun je op twee manieren verwerken. <strong>Direct afboeken:</strong> het volledige bedrag drukt in één keer op de exploitatierekening van dat jaar. <strong>Kapitaliseren (activeren):</strong> het bedrag komt op de balans als bezitting en wordt over meerdere jaren afgeschreven.</p>
+        <p>Bij de meeste VvE's is directe afboeking gebruikelijk, gedekt vanuit het reservefonds: de uitgave gaat niet via de exploitatierekening, maar direct ten laste van de reserve op de balans. Zo blijft het jaarresultaat stabiel en zie je in één oogopslag wat het reservefonds daadwerkelijk heeft gekost.</p>
+        <div class="callout"><strong>Als bestuurder hoef je de methode niet te kiezen</strong> — dat ligt vast in het boekhoudbeleid van de VvE — maar herken wél welke van de twee wordt gebruikt, zodat een grote onderhoudspost je niet onnodig laat schrikken in de exploitatierekening.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Een nieuw dak van € 40.000 wordt direct ten laste van het reservefonds geboekt. Wat betekent dit voor de exploitatierekening van dat jaar?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="De uitgave loopt via de balans (het reservefonds), niet via de exploitatierekening.">Die laat een tekort van € 40.000 zien</button>
+          <button class="opt" data-correct="true">Die wordt er nauwelijks door geraakt — de uitgave loopt via de balans</button>
+          <button class="opt" data-correct="false" data-explain="Bij directe afboeking wordt niets uitgesteld; de uitgave wordt meteen verwerkt, alleen niet in de exploitatierekening.">Die post verschijnt pas over vijf jaar</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1200 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">1200</span>
+      <div class="acct-title"><h2>Voorzieningen versus reserves</h2><div class="kicker">Twee soorten "geld opzij"</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Deze twee worden vaak door elkaar gehaald, maar betekenen iets anders. Een <strong>reserve</strong> is vrij besteedbaar eigen vermogen dat het bestuur, met instemming van de ALV, mag inzetten waarvoor het nodig is — het reservefonds voor onderhoud is hier het voorbeeld.</p>
+        <p>Een <strong>voorziening</strong> is geld dat is gereserveerd voor een <em>concrete, min of meer zekere verplichting</em> waarvan het bedrag of moment nog niet exact vaststaat — bijvoorbeeld een lopend geschil met een aannemer, of een specifiek gebrek dat zeker hersteld moet worden.</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Reserve</h4>
+            <ul><li>Vrij besteedbaar binnen het doel</li><li>Onderdeel van eigen vermogen</li><li>Voorbeeld: reservefonds MJOP</li></ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Voorziening</h4>
+            <ul><li>Gekoppeld aan concrete verplichting</li><li>Los van eigen vermogen</li><li>Voorbeeld: lopend geschil / bekend gebrek</li></ul>
+          </div>
+        </div>
+        <p>Zie je een voorziening in de jaarrekening staan? Vraag dan altijd naar de onderliggende verplichting — die hoort in de toelichting te zijn uitgelegd.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarvoor is een voorziening het meest geschikt?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="Dat is precies de functie van een reserve zoals het reservefonds, niet van een voorziening.">Voor het jaarlijks sparen voor toekomstig onderhoud in het algemeen</button>
+          <button class="opt" data-correct="true">Voor een specifiek, min of meer zeker geschil of gebrek</button>
+          <button class="opt" data-correct="false" data-explain="De betaalrekening is liquiditeit voor dagelijkse uitgaven, geen voorziening voor een specifieke verplichting.">Voor de lopende betaalrekening van de VvE</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3100 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">3100</span>
+      <div class="acct-title"><h2>Resultaat versus kasstroom</h2><div class="kicker">Winst is niet hetzelfde als geld op de rekening</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een exploitatierekening die rond nul sluit, zegt niets over hoeveel geld er daadwerkelijk op de bank staat. Een lid dat drie maanden niet betaalt, telt namelijk gewoon mee als bate — ook al is het geld nog niet binnen.</p>
+        <p>Daarom is het verstandig om naast de exploitatierekening ook naar de <strong>liquiditeit</strong> te kijken: staat er, los van het reservefonds, genoeg op de lopende rekening om de eerstvolgende facturen te betalen?</p>
+        <div class="callout warn"><strong>Klassieke valkuil:</strong> een VvE met een prima jaarresultaat op papier, maar een krappe betaalrekening doordat meerdere leden achterlopen met betalen. Op papier gezond, in de praktijk een probleem.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">De exploitatierekening sluit precies op nul. Wat kun je hier nog niet uit afleiden?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="true">Of er daadwerkelijk voldoende geld op de betaalrekening staat</button>
+          <button class="opt" data-correct="false" data-explain="Dat staat wél in de exploitatierekening — dat kun je er dus juist uit aflezen.">Wat de totale bijdragen van de leden waren</button>
+          <button class="opt" data-correct="false" data-explain="Ook de lasten staan wél in de exploitatierekening; wat ontbreekt is zicht op de daadwerkelijke liquiditeit.">Wat de totale lasten van het jaar waren</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3200 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">3200</span>
+      <div class="acct-title"><h2>Debiteurenbeheer</h2><div class="kicker">Achterstallige bijdragen van leden</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De post "nog te ontvangen bijdragen" op de balans is meer dan een boekhoudkundig detail — hij vertelt je hoeveel risico de VvE loopt. Een structureel hoog en groeiend bedrag betekent dat de VvE feitelijk het onderhoud van andere leden voorfinanciert.</p>
+        <p>Vraag bij de jaarrekening altijd naar een <strong>ouderdomsanalyse</strong>: welk deel van de openstaande bijdragen is enkele weken oud, en welk deel loopt al maanden? Voor het laatste hoort een incassotraject te zijn gestart.</p>
+        <div class="callout">Een VvE heeft wettelijk een sterk middel: bij hardnekkige wanbetaling kan de vordering, via de notaris, uiteindelijk verhaald worden bij verkoop van de woning — de bijdrage is immers gekoppeld aan het appartementsrecht.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom is een groeiende post "openstaande bijdragen" een aandachtspunt voor het bestuur?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Achterstallige betalingen liggen meestal bij individuele leden, niet automatisch bij de beheerder.">Omdat het altijd een fout van de beheerder is</button>
+          <button class="opt" data-correct="true">Omdat de VvE dan tijdelijk het onderhoud van andere leden voorfinanciert</button>
+          <button class="opt" data-correct="false" data-explain="De balans sluit sowieso altijd; een groeiende debiteurenpost verandert daar niets aan.">Omdat dit automatisch de balans laat sluiten</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7100 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">7100</span>
+      <div class="acct-title"><h2>Bestuur en de beheerder: wie doet wat</h2><div class="kicker">Financieel en technisch beheer</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Veel VvE's besteden het beheer uit, maar dat verschuift de <em>verantwoordelijkheid</em> niet — alleen de <em>uitvoering</em>. Het bestuur blijft eindverantwoordelijk richting de ALV, ook als een beheerder de dagelijkse boekhouding voert.</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Beheerder voert uit</h4>
+            <ul>
+              <li>Incasso van bijdragen</li>
+              <li>Betalen van facturen</li>
+              <li>Bijhouden grootboek & balans</li>
+              <li>Concept-jaarrekening & begroting opstellen</li>
+              <li>Offertes opvragen, onderhoud coördineren</li>
+              <li>MJOP actueel houden</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Bestuur blijft verantwoordelijk</h4>
+            <ul>
+              <li>Facturen en betalingen goedkeuren</li>
+              <li>Jaarrekening & begroting beoordelen</li>
+              <li>Grote uitgaven autoriseren</li>
+              <li>Verantwoording afleggen aan de ALV</li>
+              <li>Toezicht op de kwaliteit van het beheer zelf</li>
+            </ul>
+          </div>
+        </div>
+        <p>Bij technisch beheer geldt hetzelfde: een beheerder kan het MJOP opstellen en onderhoud coördineren, maar het bestuur (en uiteindelijk de ALV) beslist welke uitgaven daadwerkelijk worden gedaan en in welk tempo.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">De beheerder voert de dagelijkse boekhouding. Wie is eindverantwoordelijk richting de ALV?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="De beheerder voert uit, maar de verantwoordelijkheid richting de ALV blijft bij het bestuur.">Uitsluitend de beheerder</button>
+          <button class="opt" data-correct="true">Het bestuur, ook al is de uitvoering uitbesteed</button>
+          <button class="opt" data-correct="false" data-explain="De kascommissie controleert achteraf; zij zijn niet verantwoordelijk voor het beheer zelf.">De kascommissie</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7200 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">7200</span>
+      <div class="acct-title"><h2>Grip houden op de beheerder</h2><div class="kicker">Controle, tarieven en rode vlaggen</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een goede beheerdersovereenkomst legt vast: welke taken worden uitgevoerd, tegen welk tarief, wat de opzegtermijn is, en — cruciaal — hoe de gelden van de VvE worden aangehouden.</p>
+        <div class="callout"><strong>Belangrijkste controlepunt:</strong> staat het geld van de VvE op een bankrekening <em>op naam van de VvE zelf</em>, gescheiden van het vermogen van de beheerder? Dit voorkomt dat VvE-geld vermengd raakt met de bedrijfsmiddelen van de beheerder, wat bij een faillissement van de beheerder desastreus kan zijn.</div>
+        <p>Vraag periodiek (bijvoorbeeld per kwartaal) een overzicht op van inkomsten, uitgaven en het banksaldo, en doe af en toe een steekproef op een factuur: klopt het bedrag, de leverancier, en de datum met wat er is afgesproken?</p>
+        <p><strong>Signalen om alert op te zijn:</strong></p>
+        <ul class="flags">
+          <li>Geen aparte bankrekening op naam van de VvE</li>
+          <li>Trage of onvolledige rapportage, herhaaldelijk uitstel van de jaarrekening</li>
+          <li>Geen heldere onderbouwing van tarieven of meerwerk</li>
+          <li>Weinig transparantie over hoe achterstallige bijdragen worden opgevolgd</li>
+          <li>Geen reactie op concrete vragen van het bestuur</li>
+        </ul>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is het belangrijkste controlepunt bij het financieel beheer door een externe partij?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="false" data-explain="Uiterlijke presentatie zegt niets over hoe zorgvuldig er met VvE-geld wordt omgegaan.">Of de beheerder een mooie website heeft</button>
+          <button class="opt" data-correct="true">Of het VvE-geld gescheiden staat van het vermogen van de beheerder</button>
+          <button class="opt" data-correct="false" data-explain="Een laag tarief zegt niets over de scheiding en veiligheid van de VvE-gelden.">Of de beheerder het goedkoopste tarief in de regio hanteert</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8000 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">8000</span>
+      <div class="acct-title"><h2>Kascommissie & controle</h2><div class="kicker">Wie checkt de checker</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De kascommissie bestaat uit leden (geen bestuurders) die de jaarrekening controleren voordat de ALV deze vaststelt. Zij toetsen niet zozeer boekhoudkundige techniek, maar of de cijfers logisch en volledig ogen, en of bonnen en facturen aansluiten op wat er geboekt is.</p>
+        <p>Een externe accountantscontrole is bij de meeste VvE's niet wettelijk verplicht, maar sommige splitsingsakten of huishoudelijke reglementen schrijven dit voor, of de ALV kan er zelf voor kiezen — bijvoorbeeld bij een groot gebouw of een complexe financiële situatie.</p>
+        <div class="callout">Als bestuurder is het zaak dat de kascommissie <em>daadwerkelijk</em> onafhankelijk controleert, en niet slechts een formaliteit is. Een kritische kascommissie is voor het bestuur zelf ook een vorm van bescherming.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is de rol van de kascommissie?</div>
+        <div class="opts" data-quiz="7">
+          <button class="opt" data-correct="false" data-explain="Het opstellen gebeurt door bestuur of beheerder; de kascommissie controleert die stukken juist onafhankelijk.">Zij stellen de jaarrekening zelf op namens het bestuur</button>
+          <button class="opt" data-correct="true">Zij controleren als onafhankelijke leden de jaarrekening voordat de ALV die vaststelt</button>
+          <button class="opt" data-correct="false" data-explain="Het beheer van het reservefonds ligt bij bestuur en beheerder, niet bij de kascommissie.">Zij beheren het reservefonds</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9500 -->
+  <section class="account" id="acct-7" data-acct>
+    <div class="account-head" onclick="toggle(7)">
+      <span class="acct-num">9500</span>
+      <div class="acct-title"><h2>Verdiepende checklist</h2><div class="kicker">Voor bestuur en beheerder samen</div></div>
+      <span class="check" id="check-7">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Weet je welke methode wordt gebruikt voor onderhoud: direct afboeken of kapitaliseren?</li>
+            <li><span class="dot"></span>Staan eventuele voorzieningen toegelicht met de onderliggende verplichting?</li>
+            <li><span class="dot"></span>Is naast het resultaat ook naar de liquiditeit op de betaalrekening gekeken?</li>
+            <li><span class="dot"></span>Is er een actuele ouderdomsanalyse van openstaande bijdragen?</li>
+            <li><span class="dot"></span>Staat het VvE-geld gescheiden op een rekening op naam van de VvE?</li>
+            <li><span class="dot"></span>Rapporteert de beheerder periodiek en op tijd?</li>
+            <li><span class="dot"></span>Heeft de kascommissie onafhankelijk en kritisch gecontroleerd?</li>
+          </ul>
+        </div>
+        <p style="margin-top:16px;">Deze lijst is bewust een aanvulling op de basischecklist uit de vorige module — samen vormen ze het volledige beeld voor de ALV.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/7</span>
+    <span>controlevragen goed beantwoord. Je hebt de verdiepingsmodule doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>VVE-BOEKHOUDING VOOR GEVORDERDEN — INTERNE E-LEARNING, VERVOLG OP MODULE 1</footer>
+
+<script>
+  const total = 8;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/7';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

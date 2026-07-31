@@ -1,0 +1,426 @@
+<!-- fix 1 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toekomstgericht: verduurzaming van het gebouw</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228; --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1; --paper-dark:#E2D8BF;
+    --rule:#2F4F44; --rule-soft:#2F4F4433;
+    --ink-text:#2A2118; --ink-fade:#5A5040;
+    --amber:#C98A2C; --amber-deep:#a86f1c;
+    --debit:#a13d2c; --credit:#3d6b52; --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14; padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em;}
+  .brandbar .tagline{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;}
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .steps{margin:14px 0 4px; padding:0; list-style:none; counter-reset:step;}
+  .steps li{
+    font-size:14.5px; padding:10px 12px 10px 40px; margin-bottom:6px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .steps li::before{
+    counter-increment:step; content:counter(step); position:absolute; left:10px; top:9px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); width:20px; height:20px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 6</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">TOEKOMSTGERICHT</span></div>
+  <h1>Verduurzaming van het gebouw</h1>
+  <p class="sub">Zonnepanelen, isolatie en laadpalen zijn niet alleen een technische keuze, maar ook een financiële: hoe landt dit in het MJOP, hoe besluit je erover, en hoe beoordeel je of de investering zich terugbetaalt?</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1800 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1800</span>
+      <div class="acct-title"><h2>Waarom dit een financieel vraagstuk is</h2><div class="kicker">Niet alleen een milieukeuze</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Verduurzaming wordt vaak besproken als een principiële of milieukeuze, maar voor het bestuur is het vooral een <strong>investeringsvraagstuk</strong>: een uitgave nu, tegenover lagere energielasten en behoud van waarde later.</p>
+        <p>Isolatie en efficiëntere installaties verlagen de energiekosten van het gebouw en de bewoners; een matig geïsoleerd of verouderd gebouw wordt bovendien op termijn minder aantrekkelijk bij verkoop naarmate energielasten en regelgeving zwaarder gaan wegen.</p>
+        <div class="callout"><strong>Kortom:</strong> verduurzaming beoordeel je met dezelfde bril als elke andere grote uitgave — wat kost het, wat levert het op, en hoe wordt het gedekt.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Vanuit welk perspectief beoordeelt het bestuur een verduurzamingsvoorstel het beste?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="Zonder de financiële kant mee te wegen mist het bestuur zicht op kosten, baten en dekking.">Uitsluitend als een principiële, ideologische keuze</button>
+          <button class="opt" data-correct="true">Als een investering, met kosten, baten en dekking zoals bij elke grote uitgave</button>
+          <button class="opt" data-correct="false" data-explain="Het bestuur bereidt het voorstel juist voor en legt het ter besluitvorming voor aan de ALV.">Als iets dat volledig buiten het bestuur om wordt besloten</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2800 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">2800</span>
+      <div class="acct-title"><h2>Veelvoorkomende maatregelen</h2><div class="kicker">En waar ze landen in de boekhouding</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Veelgekozen maatregelen</h4>
+            <ul>
+              <li>Dak-, gevel- of vloerisolatie</li>
+              <li>Zonnepanelen op het gemeenschappelijk dak</li>
+              <li>Laadpalen op de parkeerplaats</li>
+              <li>Vervanging cv door (hybride) warmtepomp</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Waar het landt</h4>
+            <ul>
+              <li>Als aparte investeringscategorie in het MJOP</li>
+              <li>Soms in een apart verduurzamingsfonds naast het reguliere reservefonds</li>
+              <li>Terugkerende opbrengsten (bijv. laadpas-inkomsten) in de exploitatierekening</li>
+            </ul>
+          </div>
+        </div>
+        <p>Het is verstandig verduurzamingsmaatregelen zichtbaar te onderscheiden van regulier onderhoud in het MJOP: het zijn investeringen met een eigen afwegingskader (terugverdientijd, subsidie), niet zomaar een vervanging van iets versletens.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waarom is het verstandig om verduurzaming apart te labelen in het MJOP, los van regulier onderhoud?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="Er bestaat geen wettelijke verplichting hiertoe; het is een praktische keuze voor overzicht.">Omdat het wettelijk verplicht is om ze te scheiden</button>
+          <button class="opt" data-correct="true">Omdat het een eigen afwegingskader heeft, zoals terugverdientijd en subsidie</button>
+          <button class="opt" data-correct="false" data-explain="Verduurzaming kan wel degelijk (deels) uit het reservefonds komen; het gaat om het apart zichtbaar houden ervan.">Omdat verduurzaming nooit uit het reservefonds mag komen</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4800 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">4800</span>
+      <div class="acct-title"><h2>Besluitvorming</h2><div class="kicker">Vaak makkelijker dan gedacht</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Grote investeringen vereisen normaal gesproken een verzwaarde meerderheid volgens de splitsingsakte. Voor bepaalde energiebesparende maatregelen geldt in de wet echter een verlichting: sommige duurzaamheidsmaatregelen kunnen met een <strong>gewone meerderheid</strong> in de ALV worden besloten, ook als de splitsingsakte een zwaardere meerderheid voorschrijft.</p>
+        <div class="callout">Ga dit per maatregel na, bijvoorbeeld met een jurist of de beheerder: welke drempel geldt precies, hangt af van het type maatregel en de formulering in de akte. Aannames hierover kunnen een besluit achteraf kwetsbaar maken.</div>
+        <p>Communiceer bij een voorstel altijd expliciet welke meerderheid van toepassing is — dat voorkomt discussie ná de stemming over de geldigheid van het besluit.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is een belangrijk aandachtspunt rond de stemdrempel bij verduurzamingsvoorstellen?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="false" data-explain="Unanimiteit is niet vereist; voor bepaalde maatregelen kan juist een gewone meerderheid volstaan.">Voor verduurzaming geldt altijd unanimiteit</button>
+          <button class="opt" data-correct="true">Voor bepaalde maatregelen kan een gewone meerderheid volstaan, ook als de akte iets zwaarders voorschrijft — controleer dit per geval</button>
+          <button class="opt" data-correct="false" data-explain="De stemdrempel volgt uit de wet en de splitsingsakte, niet uit een gemeentelijke vaststelling.">De gemeente stelt de meerderheid vast, niet de VvE</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5800 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">5800</span>
+      <div class="acct-title"><h2>Subsidies en financiering</h2><div class="kicker">Waar je actueel op moet checken</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Er bestaan regelingen die specifiek gericht zijn op verduurzaming door VvE's, zowel vanuit het Rijk als soms vanuit gemeenten of provincies. Voorwaarden, bedragen en looptijden van deze regelingen veranderen regelmatig, dus laat je vlak vóór een besluit informeren over wat op dát moment beschikbaar is — bijvoorbeeld via de Rijksdienst voor Ondernemend Nederland (RVO) of de eigen gemeente.</p>
+        <div class="callout warn">Neem een subsidie nooit als vast gegeven op in de begroting voordat de toekenning definitief is. Reken een voorstel bij voorkeur ook door zonder subsidie, zodat de businesscase niet instort als de aanvraag wordt afgewezen.</div>
+        <p>Naast subsidie is financiering via een VvE-lening een gangbare route voor verduurzaming — dezelfde afwegingen gelden hier als bij een lening voor regulier groot onderhoud.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Hoe ga je het beste om met een subsidie in een verduurzamingsvoorstel?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Een subsidie is pas zeker na toekenning; te vroeg meerekenen maakt de begroting kwetsbaar.">Altijd als vaststaand bedrag meenemen in de begroting</button>
+          <button class="opt" data-correct="true">Ook doorrekenen zonder subsidie, en pas meenemen als de toekenning definitief is</button>
+          <button class="opt" data-correct="false" data-explain="Subsidies worden regelmatig wél toegekend; ze verdienen het om onderzocht te worden, alleen niet blind ingeboekt.">Subsidies negeren omdat ze toch nooit worden toegekend</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6800 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">6800</span>
+      <div class="acct-title"><h2>De businesscase beoordelen</h2><div class="kicker">Investering tegenover besparing</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <ul class="steps">
+          <li><strong>Investering vaststellen</strong> — de volledige kosten, inclusief installatie, vergunningen en eventuele meerwerk.</li>
+          <li><strong>Besparing inschatten</strong> — de verwachte lagere energiekosten per jaar, liefst onderbouwd door de leverancier of een onafhankelijk adviseur.</li>
+          <li><strong>Terugverdientijd berekenen</strong> — investering gedeeld door jaarlijkse besparing; vergelijk dit met de verwachte levensduur van de maatregel.</li>
+          <li><strong>Kijken wie profiteert</strong> — bij zonnepanelen op een gemeenschappelijk dak komt de opbrengst vaak de VvE als geheel ten goede; bij individuele maatregelen kan dit schever liggen tussen leden.</li>
+        </ul>
+        <div class="callout">Een terugverdientijd die ver voorbij de verwachte levensduur van de installatie reikt, is een teken dat de maatregel op dit moment financieel nog niet uitpakt — ook al is hij inhoudelijk zinvol. Dat mag gerust hardop besproken worden in de ALV.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is een teken dat een verduurzamingsmaatregel financieel nog niet uitpakt?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="Een positief milieueffect zegt niets over of de investering zich financieel terugbetaalt.">De maatregel heeft een positieve invloed op het milieu</button>
+          <button class="opt" data-correct="true">De terugverdientijd overschrijdt de verwachte levensduur van de maatregel</button>
+          <button class="opt" data-correct="false" data-explain="Opname in het MJOP betekent alleen dat de maatregel gepland is, niet dat de businesscase al rond is.">De maatregel staat in het MJOP genoemd</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9800 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">9800</span>
+      <div class="acct-title"><h2>Checklist: verduurzamingsvoorstel</h2><div class="kicker">Voordat het naar de ALV gaat</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Staat de maatregel als aparte post in het MJOP, los van regulier onderhoud?</li>
+            <li><span class="dot"></span>Is de investering doorgerekend mét én zonder eventuele subsidie?</li>
+            <li><span class="dot"></span>Is de terugverdientijd afgezet tegen de verwachte levensduur?</li>
+            <li><span class="dot"></span>Is nagegaan welke stemdrempel voor dit specifieke voorstel geldt?</li>
+            <li><span class="dot"></span>Is helder wie profiteert van de besparing — de VvE als geheel of individuele leden?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/5</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over verduurzaming doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>TOEKOMSTGERICHT: VERDUURZAMING — INTERNE E-LEARNING VOOR VVE-BESTUUR</footer>
+
+<script>
+  const total = 6;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/5';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,3 +1,4 @@
+<!-- fix 1 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -99,9 +100,14 @@
 
   .cards{display:flex; flex-direction:column; gap:14px; margin-top:20px;}
   .card{
-    position:relative;
+    position:relative; display:block; text-decoration:none; color:inherit;
     background:#fffb; border:1px solid var(--rule-soft); border-radius:3px;
-    padding:20px 22px; opacity:.62;
+    padding:20px 22px;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 14px 30px -18px #00000080;
   }
   .card .toprow{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex-wrap:wrap;}
   .card .left{display:flex; align-items:flex-start; gap:12px;}
@@ -182,11 +188,11 @@
   </a>
 
   <div class="route-label">Route 2 · optioneel, na de basis</div>
-  <p class="verdieping-intro">Vijf aanvullende modules gaan verder op specifieke thema's. Ze worden binnenkort aan deze pagina toegevoegd — de onderwerpen alvast als vooruitblik:</p>
+  <p class="verdieping-intro">Vijf aanvullende modules gaan verder op specifieke thema's. Los van elkaar te volgen, op basis van wat voor jullie VvE actueel is:</p>
 
   <div class="cards">
 
-    <div class="card">
+    <a class="card" href="modules/gevorderden.html">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 2</span>
@@ -204,11 +210,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 30 minuten · 8 onderdelen · €15</span>
-        <span class="soon">BINNENKORT BESCHIKBAAR</span>
+        <span class="soon">Start deze module →</span>
       </div>
-    </div>
+    </a>
 
-    <div class="card">
+    <a class="card" href="modules/overeenkomsten-alv.html">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 3</span>
@@ -226,11 +232,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 20 minuten · 5 onderdelen · €15</span>
-        <span class="soon">BINNENKORT BESCHIKBAAR</span>
+        <span class="soon">Start deze module →</span>
       </div>
-    </div>
+    </a>
 
-    <div class="card">
+    <a class="card" href="modules/mjop.html">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 4</span>
@@ -248,11 +254,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 25 minuten · 7 onderdelen · €15</span>
-        <span class="soon">BINNENKORT BESCHIKBAAR</span>
+        <span class="soon">Start deze module →</span>
       </div>
-    </div>
+    </a>
 
-    <div class="card">
+    <a class="card" href="modules/geld-risico.html">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 5</span>
@@ -270,11 +276,11 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 20 minuten · 6 onderdelen · €15</span>
-        <span class="soon">BINNENKORT BESCHIKBAAR</span>
+        <span class="soon">Start deze module →</span>
       </div>
-    </div>
+    </a>
 
-    <div class="card">
+    <a class="card" href="modules/verduurzaming.html">
       <div class="toprow">
         <div class="left">
           <span class="num">MODULE 6</span>
@@ -292,15 +298,15 @@
       </ul>
       <div class="bottomrow">
         <span class="time">⏳ ca. 20 minuten · 6 onderdelen · €15</span>
-        <span class="soon">BINNENKORT BESCHIKBAAR</span>
+        <span class="soon">Start deze module →</span>
       </div>
-    </div>
+    </a>
 
   </div>
 
   <div class="closing">
     <h3>Hoe te starten</h3>
-    <p>Begin altijd met de basismodule — die geeft elk bestuurslid hetzelfde fundament. De overige modules worden hier geleidelijk aan toegevoegd.</p>
+    <p>Begin altijd met de basismodule — die geeft elk bestuurslid hetzelfde fundament. Alle vijf verdiepingsmodules zijn direct te volgen, in de volgorde die voor jullie VvE het meest relevant is.</p>
   </div>
 </main>
 
