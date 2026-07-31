@@ -1,4 +1,4 @@
-// fix 2
+// fix 3
 // Client-side toegangscode-gate. Geen server of database:
 // de code zelf staat niet in leesbare tekst, alleen als SHA-256 hash.
 // Na een juiste code wordt dit blijvend onthouden op dit apparaat via localStorage.
@@ -42,7 +42,8 @@
       '#access-gate-overlay button{width:100%;padding:11px 12px;border:none;border-radius:3px;background:#C98A2C;' +
       "color:#0d1a1f;font-weight:600;font-size:14px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}" +
       '#access-gate-overlay button:hover{background:#a86f1c;color:#fff;}' +
-      '#access-gate-overlay .gate-error{color:#a13d2c;font-size:12.5px;margin-top:10px;min-height:16px;}';
+      '#access-gate-overlay .gate-error{color:#a13d2c;font-size:12.5px;margin-top:10px;min-height:16px;}' +
+      '#access-gate-overlay .gate-note{color:#5A5040;font-size:11.5px;line-height:1.5;margin-top:16px;padding-top:14px;border-top:1px dashed #2F4F4433;}';
     document.head.appendChild(style);
 
     var overlay = document.createElement('div');
@@ -57,6 +58,7 @@
           '<button type="submit">Ontgrendelen</button>' +
         '</form>' +
         '<div class="gate-error" id="gate-error"></div>' +
+        '<div class="gate-note">Deze toegangscode is uitsluitend bedoeld voor uw eigen VvE en mag niet worden doorgegeven aan andere VvE&rsquo;s.</div>' +
       '</div>';
     document.body.appendChild(overlay);
 
