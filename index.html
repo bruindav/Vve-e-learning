@@ -1,4 +1,4 @@
-<!-- fix 2 -->
+<!-- fix 4 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -138,6 +138,18 @@
   }
   .closing h3{font-size:16px; color:#fff; margin-bottom:8px;}
   .closing p{font-size:13.5px; color:#c9c0ab; line-height:1.6; margin:0;}
+
+  .future-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px;}
+  .future-item{
+    background:#fffb; border:1px solid var(--rule-soft); border-radius:3px; padding:18px 20px; opacity:.7;
+  }
+  .future-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    color:#fff; background:var(--slate); padding:3px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .future-item h4{font-family:'Fraunces',serif; font-size:15px; font-weight:600; margin:10px 0 6px; color:var(--ink-text);}
+  .future-item p{font-size:12.5px; color:var(--ink-fade); line-height:1.5; margin:0;}
+  @media (max-width:600px){ .future-grid{grid-template-columns:1fr;} }
 
   footer{text-align:center; color:#7d7460; font-size:12px; padding:26px 20px 46px; font-family:'IBM Plex Mono', monospace;}
 
@@ -309,6 +321,30 @@
   <div class="closing">
     <h3>Hoe te starten</h3>
     <p>Begin altijd met de basismodule — die geeft elk bestuurslid hetzelfde fundament. Alle vijf verdiepingsmodules zijn direct te volgen, in de volgorde die voor jullie VvE het meest relevant is.</p>
+  </div>
+
+  <div class="route-label">In ontwikkeling · binnenkort beschikbaar</div>
+  <div class="future-grid">
+    <div class="future-item">
+      <span class="future-tag">Nieuwe module</span>
+      <h4>Wat doe je als kascommissie</h4>
+      <p>Een praktische module voor leden die zich aanmelden voor de kascommissie: waar je op let bij het controleren van de jaarrekening, en hoe je dit terugkoppelt aan de ALV.</p>
+    </div>
+    <div class="future-item">
+      <span class="future-tag">Nieuwe module</span>
+      <h4>Statuten en reglementen</h4>
+      <p>Hoe de splitsingsakte, het modelreglement en het huishoudelijk reglement zich tot elkaar verhouden, en wat dit in de praktijk betekent voor besluiten van het bestuur.</p>
+    </div>
+    <div class="future-item">
+      <span class="future-tag">Losse dienst</span>
+      <h4>Verzekeringspolis vereenvoudigd</h4>
+      <p>Stuur de polis van de opstalverzekering in, en ontvang een leesbare samenvatting van wat wel en niet gedekt is.</p>
+    </div>
+    <div class="future-item">
+      <span class="future-tag">Losse dienst</span>
+      <h4>Statuten in jip-en-janneketaal</h4>
+      <p>De splitsingsakte of statuten van jullie VvE herschreven in begrijpelijke taal, zodat elk bestuurslid ze kan doorgronden zonder juridische achtergrond.</p>
+    </div>
   </div>
 </main>
 
