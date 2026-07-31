@@ -73,7 +73,7 @@
 </div>
 
 <script type="module">
-  import { registerAndSendLink, completeSignInIfLink, watchAuth, logout } from './assets/vve-auth.js?v2';
+  import { registerAndSendLink, completeSignInIfLink, watchAuth, logout } from './assets/vve-auth.js?v3';
 
   const box = document.getElementById('box');
   const form = document.getElementById('registerForm');
@@ -103,7 +103,19 @@
     });
   }
 
-  completeSignInIfLink().catch(function(){});
+  completeSignInIfLink().catch(function(err){
+    var code = err && err.code;
+    if (code === 'auth/invalid-action-code' || code === 'auth/expired-action-code') {
+      showMsg(
+        'Deze inloglink is al gebruikt of verlopen — dit gebeurt soms doordat een e-mail- of ' +
+        'spamfilter de link automatisch "bezoekt" om te scannen, nog vóórdat je er zelf op klikt. ' +
+        'Vraag hieronder een nieuwe link aan en klik die zo snel mogelijk aan.',
+        'error'
+      );
+    } else if (code) {
+      showMsg('Inloggen via de link is mislukt: ' + err.message, 'error');
+    }
+  });
 
   watchAuth(function(user){
     if (user) renderSignedIn(user);

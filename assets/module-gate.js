@@ -1,5 +1,5 @@
 // fix 20
-import { watchAuth, hasModuleAccess, completeSignInIfLink } from "./vve-auth.js?v2";
+import { watchAuth, hasModuleAccess, completeSignInIfLink } from "./vve-auth.js?v3";
 
 function showDenied(reason) {
   document.documentElement.style.visibility = "";
