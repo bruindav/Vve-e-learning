@@ -1,4 +1,4 @@
-// fix 20
+// fix 21
 // VUL HIERONDER JE EIGEN FIREBASE-CONFIGURATIE IN
 // (Firebase Console > Projectinstellingen > Jouw apps > Web app > SDK setup and configuration)
 export const firebaseConfig = {
@@ -13,6 +13,16 @@ export const firebaseConfig = {
 // E-mailadres van de beheerder. Dit bepaalt alleen of de beheerpagina in de UI wordt getoond —
 // de echte beveiliging zit in de Firestore-regels (zie firestore.rules).
 export const ADMIN_EMAIL = "davedebruin123@gmail.com";
+
+// EmailJS-configuratie voor bevestigingsmails (registratie + goedkeuring).
+// Aanmaken op https://www.emailjs.com (gratis tot 200 mails/maand):
+// 1. Account aanmaken, Email Service koppelen (bv. Gmail)
+// 2. Twee templates aanmaken: één voor 'registratie ontvangen', één voor 'goedgekeurd'
+// 3. Service ID, beide Template ID's en de Public Key hieronder invullen
+export const EMAILJS_SERVICE_ID = "VUL_IN";
+export const EMAILJS_PUBLIC_KEY = "VUL_IN";
+export const EMAILJS_TEMPLATE_REGISTERED = "VUL_IN";
+export const EMAILJS_TEMPLATE_APPROVED = "VUL_IN";
 
 // Alle modules die in het systeem bestaan. slug moet overeenkomen met de bestandsnaam
 // (zonder .html) in de map modules/.

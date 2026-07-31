@@ -1,31 +1,31 @@
-// fix 20
+// fix 21
 // Plak deze regels in: Firebase Console > Firestore Database > Rules > tekst vervangen > Publiceren
-//
-// Beheer-e-mailadres is al ingevuld: davedebruin123@gmail.com
 
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /vves/{docId} {
 
-      // Registratie (nog niet ingelogd): mag alleen een NIEUW document aanmaken,
-      // met precies deze velden, een leeg moduleAccess-object, en de doc-ID moet
-      // gelijk zijn aan het e-mailadres. Voorkomt dat iemand zichzelf alvast
-      // toegang tot modules geeft tijdens registratie.
-      allow create: if request.resource.data.keys().hasOnly(['email', 'naam', 'moduleAccess', 'createdAt'])
-                    && request.resource.data.moduleAccess == {}
-                    && request.resource.data.email == docId;
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'davedebruin123@gmail.com';
+    }
 
-      // Een ingelogde VvE mag alleen het eigen document lezen (e-mail in het
-      // Firebase-token moet overeenkomen met de document-ID).
-      allow read: if request.auth != null && request.auth.token.email == docId;
+    match /vves/{uid} {
+      // Een VvE mag alleen het eigen document lezen; de beheerder mag alles lezen.
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
 
-      // De beheerder mag alle documenten lezen (voor het beheerscherm) en wijzigen
-      // (modules aan/uit zetten).
-      allow read, update: if request.auth != null && request.auth.token.email == 'davedebruin123@gmail.com';
+      // Bij registratie maakt de gebruiker zelf het eigen document aan, met vaste
+      // beginwaarden (status altijd 'pending', nog geen moduletoegang).
+      allow create: if isSignedIn() && request.auth.uid == uid
+                    && request.resource.data.keys().hasOnly(['email', 'naam', 'status', 'moduleAccess', 'createdAt'])
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.moduleAccess == {};
 
-      // Alleen de beheerder mag een document verwijderen.
-      allow delete: if request.auth != null && request.auth.token.email == 'davedebruin123@gmail.com';
+      // Alleen de beheerder mag goedkeuren, modules toewijzen, of iets anders wijzigen.
+      allow update: if isAdmin();
+
+      // Alleen de beheerder mag een registratie verwijderen.
+      allow delete: if isAdmin();
     }
   }
 }

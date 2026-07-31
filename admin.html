@@ -1,4 +1,4 @@
-<!-- fix 20 -->
+<!-- fix 21 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -27,14 +27,9 @@
     box-shadow:0 20px 50px -20px #000000a0;
   }
   .login-box h1{font-family:'Fraunces',serif; font-size:22px; margin:0 0 18px; text-align:center;}
-  label{display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;}
-  input{
-    width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid var(--rule-soft); border-radius:3px;
-    font-size:14px; margin-bottom:14px;
-  }
   button{
     padding:11px 18px; border:none; border-radius:3px; background:var(--amber); color:var(--ink-navy-deep);
-    font-weight:600; font-size:14px; cursor:pointer;
+    font-weight:600; font-size:14px; cursor:pointer; font-family:'IBM Plex Sans',sans-serif;
   }
   button:hover{background:#e0a94b;}
   button:disabled{opacity:.6; cursor:default;}
@@ -43,29 +38,39 @@
 
   main{max-width:920px; margin:0 auto; padding:32px 20px 80px; display:none;}
   main.show{display:block;}
-  h2{font-family:'Fraunces',serif; font-size:22px; color:#fff; margin:0 0 6px;}
-  .page-sub{color:#a8b5ba; font-size:13.5px; margin:0 0 28px;}
+  h2{font-family:'Fraunces',serif; font-size:22px; color:#fff; margin:28px 0 6px;}
+  h2:first-child{margin-top:0;}
+  .section-sub{color:#a8b5ba; font-size:13.5px; margin:0 0 20px;}
 
   .vve-card{
     background:var(--paper); border-radius:4px; padding:20px 22px; margin-bottom:16px;
     box-shadow:0 1px 0 var(--rule-soft), 0 10px 24px -16px #00000080;
   }
+  .vve-card.pending{border:2px solid var(--amber);}
   .vve-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px 14px; margin-bottom:14px;}
   .vve-name{font-family:'Fraunces',serif; font-size:17px; font-weight:600;}
   .vve-email{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-fade); margin-right:auto;}
+  .status-badge{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.04em;
+    text-transform:uppercase; padding:4px 9px; border-radius:2px;
+  }
+  .status-badge.pending{background:#C98A2C22; color:var(--amber-deep); border:1px solid #C98A2C55;}
+  .status-badge.approved{background:#3d6b5222; color:var(--credit); border:1px solid #3d6b5255;}
   .delete-btn{
     background:none; border:1px solid var(--debit); color:var(--debit); font-size:11.5px; font-weight:600;
     padding:5px 10px; border-radius:3px; cursor:pointer; font-family:'IBM Plex Sans',sans-serif;
   }
   .delete-btn:hover{background:var(--debit); color:#fff;}
-  .module-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:8px;}
+  .approve-btn{font-size:13px; padding:9px 16px;}
+
+  .module-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:8px; margin-bottom:14px;}
   .module-toggle{
     display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 10px; border:1px solid var(--rule-soft);
     border-radius:3px; background:#fff8; cursor:pointer;
   }
   .module-toggle input{width:auto; margin:0;}
   .module-toggle.saving{opacity:.5;}
-  .empty{color:#a8b5ba; text-align:center; padding:40px 0;}
+  .empty{color:#a8b5ba; text-align:center; padding:24px 0; font-size:13.5px;}
 </style>
 </head>
 <body>
@@ -87,20 +92,25 @@
 </div>
 
 <main id="main">
-  <h2>VvE's en modules</h2>
-  <p class="page-sub">Zet per VvE de modules aan die ze hebben afgenomen.</p>
-  <div id="vveList"><div class="empty">Bezig met laden...</div></div>
+  <h2>Wachtend op goedkeuring</h2>
+  <p class="section-sub">Nieuwe registraties. Ken modules toe om ze goed te keuren — de VvE krijgt dan een bevestigingsmail.</p>
+  <div id="pendingList"><div class="empty">Bezig met laden...</div></div>
+
+  <h2>Goedgekeurde VvE's</h2>
+  <p class="section-sub">Zet per VvE modules aan of uit.</p>
+  <div id="approvedList"></div>
 </main>
 
 <script type="module">
-  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, setModuleAccess, deleteVve, logout } from './assets/vve-auth.js?v4';
-  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js';
+  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, deleteVve, logout } from './assets/vve-auth.js?v21';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v21';
 
   const loginWrap = document.getElementById('loginWrap');
   const main = document.getElementById('main');
   const googleLoginBtn = document.getElementById('googleLoginBtn');
   const loginError = document.getElementById('loginError');
-  const vveList = document.getElementById('vveList');
+  const pendingList = document.getElementById('pendingList');
+  const approvedList = document.getElementById('approvedList');
 
   googleLoginBtn.addEventListener('click', async function(){
     loginError.classList.remove('show');
@@ -115,73 +125,141 @@
     }
   });
 
-  async function renderVves(){
-    var vves = await getAllVves();
-    if (vves.length === 0) {
-      vveList.innerHTML = '<div class="empty">Nog geen VvE\u2019s geregistreerd.</div>';
-      return;
-    }
-    vveList.innerHTML = '';
-    vves.forEach(function(vve){
-      var card = document.createElement('div');
-      card.className = 'vve-card';
+  function attachDelete(card, vve){
+    card.querySelector('.delete-btn').addEventListener('click', async function(){
+      var confirmed = window.confirm(
+        'Weet je zeker dat je de registratie van ' + (vve.naam || vve.email) + ' (' + vve.email + ') wilt verwijderen?'
+      );
+      if (!confirmed) return;
+      try {
+        await deleteVve(vve.id);
+        card.remove();
+      } catch (err) {
+        alert('Verwijderen mislukt: ' + (err && err.message ? err.message : err));
+      }
+    });
+  }
 
-      var head = document.createElement('div');
-      head.className = 'vve-head';
-      head.innerHTML =
-        '<span class="vve-name">' + (vve.naam || '(naam onbekend)') + '</span>' +
-        '<span class="vve-email">' + vve.email + '</span>' +
-        '<button type="button" class="delete-btn" data-id="' + vve.id + '">Verwijderen</button>';
-      card.appendChild(head);
+  function renderPendingCard(vve){
+    var card = document.createElement('div');
+    card.className = 'vve-card pending';
 
-      head.querySelector('.delete-btn').addEventListener('click', async function(){
-        var confirmed = window.confirm(
-          'Weet je zeker dat je de registratie van ' + (vve.naam || vve.email) + ' (' + vve.email + ') wilt verwijderen?\n\n' +
-          'Dit verwijdert ook hun moduletoegang. Ze kunnen zich opnieuw registreren, maar starten dan weer zonder toegang.'
-        );
-        if (!confirmed) return;
+    var head = document.createElement('div');
+    head.className = 'vve-head';
+    head.innerHTML =
+      '<span class="vve-name">' + (vve.naam || '(naam onbekend)') + '</span>' +
+      '<span class="vve-email">' + vve.email + '</span>' +
+      '<span class="status-badge pending">Wachtend</span>' +
+      '<button type="button" class="delete-btn">Verwijderen</button>';
+    card.appendChild(head);
+
+    var grid = document.createElement('div');
+    grid.className = 'module-grid';
+    ALL_MODULES.forEach(function(mod){
+      var label = document.createElement('label');
+      label.className = 'module-toggle';
+      var checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = mod.slug;
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(mod.title));
+      grid.appendChild(label);
+    });
+    card.appendChild(grid);
+
+    var approveBtn = document.createElement('button');
+    approveBtn.type = 'button';
+    approveBtn.className = 'approve-btn';
+    approveBtn.textContent = '\u2713 Goedkeuren met gekozen modules';
+    approveBtn.addEventListener('click', async function(){
+      var chosen = [...grid.querySelectorAll('input:checked')].map(function(cb){ return cb.value; });
+      var moduleAccess = {};
+      chosen.forEach(function(slug){ moduleAccess[slug] = true; });
+      approveBtn.disabled = true;
+      approveBtn.textContent = 'Bezig...';
+      try {
+        await approveVve(vve.id, vve.email, vve.naam, moduleAccess);
+        renderAll();
+      } catch (err) {
+        alert('Goedkeuren mislukt: ' + (err && err.message ? err.message : err));
+        approveBtn.disabled = false;
+        approveBtn.textContent = '\u2713 Goedkeuren met gekozen modules';
+      }
+    });
+    card.appendChild(approveBtn);
+
+    attachDelete(card, vve);
+    return card;
+  }
+
+  function renderApprovedCard(vve){
+    var card = document.createElement('div');
+    card.className = 'vve-card';
+
+    var head = document.createElement('div');
+    head.className = 'vve-head';
+    head.innerHTML =
+      '<span class="vve-name">' + (vve.naam || '(naam onbekend)') + '</span>' +
+      '<span class="vve-email">' + vve.email + '</span>' +
+      '<span class="status-badge approved">Goedgekeurd</span>' +
+      '<button type="button" class="delete-btn">Verwijderen</button>';
+    card.appendChild(head);
+
+    var grid = document.createElement('div');
+    grid.className = 'module-grid';
+    ALL_MODULES.forEach(function(mod){
+      var enabled = !!(vve.moduleAccess && vve.moduleAccess[mod.slug] === true);
+      var label = document.createElement('label');
+      label.className = 'module-toggle';
+      var checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = enabled;
+      checkbox.addEventListener('change', async function(){
+        label.classList.add('saving');
         try {
-          await deleteVve(vve.id);
-          card.remove();
+          await setModuleAccess(vve.id, mod.slug, checkbox.checked);
         } catch (err) {
-          alert('Verwijderen mislukt: ' + (err && err.message ? err.message : err));
+          alert('Opslaan mislukt: ' + (err && err.message ? err.message : err));
+          checkbox.checked = !checkbox.checked;
+        } finally {
+          label.classList.remove('saving');
         }
       });
-
-      var grid = document.createElement('div');
-      grid.className = 'module-grid';
-      ALL_MODULES.forEach(function(mod){
-        var enabled = !!(vve.moduleAccess && vve.moduleAccess[mod.slug] === true);
-        var label = document.createElement('label');
-        label.className = 'module-toggle';
-        var checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = enabled;
-        checkbox.addEventListener('change', async function(){
-          label.classList.add('saving');
-          try {
-            await setModuleAccess(vve.id, mod.slug, checkbox.checked);
-          } catch (err) {
-            alert('Opslaan mislukt: ' + (err && err.message ? err.message : err));
-            checkbox.checked = !checkbox.checked;
-          } finally {
-            label.classList.remove('saving');
-          }
-        });
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(mod.title));
-        grid.appendChild(label);
-      });
-      card.appendChild(grid);
-      vveList.appendChild(card);
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(mod.title));
+      grid.appendChild(label);
     });
+    card.appendChild(grid);
+
+    attachDelete(card, vve);
+    return card;
+  }
+
+  async function renderAll(){
+    var vves = await getAllVves();
+    var pending = vves.filter(function(v){ return v.status === 'pending'; });
+    var approved = vves.filter(function(v){ return v.status === 'approved'; });
+
+    pendingList.innerHTML = '';
+    if (pending.length === 0) {
+      pendingList.innerHTML = '<div class="empty">Geen wachtende aanvragen.</div>';
+    } else {
+      pending.forEach(function(vve){ pendingList.appendChild(renderPendingCard(vve)); });
+    }
+
+    approvedList.innerHTML = '';
+    if (approved.length === 0) {
+      approvedList.innerHTML = '<div class="empty">Nog geen goedgekeurde VvE\u2019s.</div>';
+    } else {
+      approved.forEach(function(vve){ approvedList.appendChild(renderApprovedCard(vve)); });
+    }
   }
 
   watchAuth(function(user){
     if (user && user.email === ADMIN_EMAIL) {
       loginWrap.style.display = 'none';
       main.classList.add('show');
-      renderVves();
+      renderAll();
     } else if (user) {
       loginWrap.style.display = 'flex';
       main.classList.remove('show');

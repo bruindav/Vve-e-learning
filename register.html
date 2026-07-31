@@ -1,10 +1,10 @@
-<!-- fix 20 -->
+<!-- fix 21 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inloggen — E-learning VvE-bestuur</title>
+<title>Registreren / inloggen — E-learning VvE-bestuur</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -27,7 +27,12 @@
     color:var(--amber-deep); margin-bottom:14px; text-align:center;
   }
   h1{font-family:'Fraunces',serif; font-size:24px; color:var(--ink-text); margin:0 0 10px; text-align:center;}
-  p.sub{font-size:13.5px; color:var(--ink-fade); line-height:1.5; margin:0 0 24px; text-align:center;}
+  p.sub{font-size:13.5px; color:var(--ink-fade); line-height:1.5; margin:0 0 22px; text-align:center;}
+
+  .tabs{display:flex; gap:6px; margin-bottom:22px; background:#00000009; padding:4px; border-radius:4px;}
+  .tab{flex:1; text-align:center; padding:9px; font-size:13px; font-weight:600; border-radius:3px; cursor:pointer; color:var(--ink-fade);}
+  .tab.active{background:var(--paper); color:var(--ink-text); box-shadow:0 1px 3px #00000020;}
+
   label{display:block; font-size:12.5px; font-weight:600; color:var(--ink-text); margin-bottom:6px;}
   input{
     width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid var(--rule-soft); border-radius:3px;
@@ -50,21 +55,43 @@
     display:inline-block; margin-top:16px; padding:11px 20px; background:var(--amber); color:var(--ink-navy-deep);
     font-weight:600; border-radius:3px; text-decoration:none; font-size:14px;
   }
+  .pending-badge{
+    display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;
+    font-weight:600; color:var(--ink-fade); background:#00000009; border:1px solid var(--rule-soft);
+    padding:5px 12px; border-radius:2px; margin-bottom:14px;
+  }
+  form{display:none;}
+  form.active{display:block;}
 </style>
 </head>
 <body>
 
 <div class="box" id="box">
   <div class="eyebrow">Digidave &middot; E-learning VvE-bestuur</div>
-  <h1>Inloggen voor jullie VvE</h1>
-  <p class="sub">Vul het e-mailadres van jullie VvE in. Je ontvangt een inloglink per e-mail &mdash; geen wachtwoord nodig.</p>
+  <h1>Welkom</h1>
+  <p class="sub">Registreer jullie VvE, of log in als jullie al een account hebben.</p>
 
-  <form id="registerForm">
-    <label for="naam">Naam van de VvE (optioneel)</label>
-    <input type="text" id="naam" placeholder="bijv. VVE Fazantenkamp" autocomplete="organization">
-    <label for="email">E-mailadres</label>
-    <input type="email" id="email" placeholder="bestuur@voorbeeld.nl" autocomplete="email" required>
-    <button type="submit" id="submitBtn">Verstuur inloglink</button>
+  <div class="tabs">
+    <div class="tab active" id="tabRegister">Registreren</div>
+    <div class="tab" id="tabLogin">Inloggen</div>
+  </div>
+
+  <form id="registerForm" class="active">
+    <label for="regNaam">Naam van de VvE (optioneel)</label>
+    <input type="text" id="regNaam" placeholder="bijv. VVE Fazantenkamp" autocomplete="organization">
+    <label for="regEmail">E-mailadres</label>
+    <input type="email" id="regEmail" placeholder="bestuur@voorbeeld.nl" autocomplete="email" required>
+    <label for="regPassword">Wachtwoord (minimaal 6 tekens)</label>
+    <input type="password" id="regPassword" autocomplete="new-password" minlength="6" required>
+    <button type="submit" id="registerBtn">Registreren</button>
+  </form>
+
+  <form id="loginForm">
+    <label for="loginEmail">E-mailadres</label>
+    <input type="email" id="loginEmail" autocomplete="email" required>
+    <label for="loginPassword">Wachtwoord</label>
+    <input type="password" id="loginPassword" autocomplete="current-password" required>
+    <button type="submit" id="loginBtn">Inloggen</button>
   </form>
 
   <div class="msg" id="msg"></div>
@@ -73,73 +100,106 @@
 </div>
 
 <script type="module">
-  import { registerAndSendLink, completeSignInIfLink, watchAuth, logout } from './assets/vve-auth.js?v4';
+  import { registerVve, loginVve, watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v21';
 
   const box = document.getElementById('box');
-  const form = document.getElementById('registerForm');
+  const tabRegister = document.getElementById('tabRegister');
+  const tabLogin = document.getElementById('tabLogin');
+  const registerForm = document.getElementById('registerForm');
+  const loginForm = document.getElementById('loginForm');
   const msg = document.getElementById('msg');
-  const submitBtn = document.getElementById('submitBtn');
+  const registerBtn = document.getElementById('registerBtn');
+  const loginBtn = document.getElementById('loginBtn');
+
+  tabRegister.addEventListener('click', function(){
+    tabRegister.classList.add('active'); tabLogin.classList.remove('active');
+    registerForm.classList.add('active'); loginForm.classList.remove('active');
+    msg.classList.remove('show');
+  });
+  tabLogin.addEventListener('click', function(){
+    tabLogin.classList.add('active'); tabRegister.classList.remove('active');
+    loginForm.classList.add('active'); registerForm.classList.remove('active');
+    msg.classList.remove('show');
+  });
 
   function showMsg(text, kind){
     msg.textContent = text;
     msg.className = 'msg show ' + kind;
   }
 
-  function renderSignedIn(user){
+  async function renderSignedIn(user){
+    var vve = await getVveDocForCurrentUser();
     var params = new URLSearchParams(window.location.search);
     var moduleSlug = params.get('module');
-    var moduleLink = moduleSlug ? 'modules/' + moduleSlug + '.html' : 'index.html';
-    box.innerHTML =
-      '<div class="eyebrow">Digidave &middot; E-learning VvE-bestuur</div>' +
-      '<h1>Je bent ingelogd</h1>' +
-      '<div class="signed-in">' +
-      '<p class="sub">Ingelogd als ' + user.email + '</p>' +
-      '<a class="btn" href="' + moduleLink + '">Ga verder</a>' +
-      '<br><a class="back" href="#" id="logoutLink">Uitloggen</a>' +
-      '</div>';
+
+    if (!vve || vve.status !== 'approved') {
+      box.innerHTML =
+        '<div class="eyebrow">Digidave &middot; E-learning VvE-bestuur</div>' +
+        '<div class="signed-in">' +
+        '<div class="pending-badge">&#9203; In afwachting</div>' +
+        '<h1>Nog niet goedgekeurd</h1>' +
+        '<p class="sub">Ingelogd als ' + user.email + '. Jullie aanvraag wordt nog bekeken \u2014 je ontvangt een bevestigingsmail zodra dit is goedgekeurd.</p>' +
+        '<a class="back" href="#" id="logoutLink">Uitloggen</a>' +
+        '</div>';
+    } else {
+      var moduleLink = moduleSlug ? 'modules/' + moduleSlug + '.html' : 'index.html';
+      box.innerHTML =
+        '<div class="eyebrow">Digidave &middot; E-learning VvE-bestuur</div>' +
+        '<div class="signed-in">' +
+        '<h1>Je bent ingelogd</h1>' +
+        '<p class="sub">Ingelogd als ' + user.email + '</p>' +
+        '<a class="btn" href="' + moduleLink + '">Ga verder</a>' +
+        '<br><a class="back" href="#" id="logoutLink">Uitloggen</a>' +
+        '</div>';
+    }
     document.getElementById('logoutLink').addEventListener('click', function(e){
       e.preventDefault();
       logout().then(function(){ window.location.reload(); });
     });
   }
 
-  completeSignInIfLink().catch(function(err){
-    var code = err && err.code;
-    if (code === 'auth/invalid-action-code' || code === 'auth/expired-action-code') {
-      showMsg(
-        'Deze inloglink is al gebruikt of verlopen — dit gebeurt soms doordat een e-mail- of ' +
-        'spamfilter de link automatisch "bezoekt" om te scannen, nog vóórdat je er zelf op klikt. ' +
-        'Vraag hieronder een nieuwe link aan en klik die zo snel mogelijk aan.',
-        'error'
-      );
-    } else if (code) {
-      showMsg('Inloggen via de link is mislukt: ' + err.message, 'error');
-    }
-  });
-
   watchAuth(function(user){
     if (user) renderSignedIn(user);
   });
 
-  form.addEventListener('submit', async function(e){
+  registerForm.addEventListener('submit', async function(e){
     e.preventDefault();
-    var email = document.getElementById('email').value;
-    var naam = document.getElementById('naam').value;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Bezig...';
+    var email = document.getElementById('regEmail').value;
+    var password = document.getElementById('regPassword').value;
+    var naam = document.getElementById('regNaam').value;
+    registerBtn.disabled = true;
+    registerBtn.textContent = 'Bezig...';
     try {
-      var result = await registerAndSendLink(email, naam);
-      if (result.isNew) {
-        showMsg('Registratie gelukt! Inloglink verstuurd naar ' + email + '. Check je inbox (en spam-map) en klik op de link om in te loggen.', 'ok');
-      } else {
-        showMsg('Dit e-mailadres was al geregistreerd. We hebben een nieuwe inloglink gestuurd naar ' + email + ' — check je inbox (en spam-map).', 'ok');
-      }
-      form.reset();
+      await registerVve(email, password, naam);
+      showMsg('Registratie gelukt! We hebben een bevestigingsmail gestuurd. Jullie aanvraag wordt nu bekeken \u2014 je krijgt bericht zodra deze is goedgekeurd.', 'ok');
     } catch (err) {
-      showMsg('Er ging iets mis: ' + (err && err.message ? err.message : err), 'error');
+      var code = err && err.code;
+      if (code === 'auth/email-already-in-use') {
+        showMsg('Dit e-mailadres is al geregistreerd. Gebruik het tabblad "Inloggen" hierboven.', 'error');
+      } else if (code === 'auth/weak-password') {
+        showMsg('Kies een sterker wachtwoord (minimaal 6 tekens).', 'error');
+      } else {
+        showMsg('Registreren mislukt: ' + (err && err.message ? err.message : err), 'error');
+      }
     } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Verstuur inloglink';
+      registerBtn.disabled = false;
+      registerBtn.textContent = 'Registreren';
+    }
+  });
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var email = document.getElementById('loginEmail').value;
+    var password = document.getElementById('loginPassword').value;
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Bezig...';
+    try {
+      await loginVve(email, password);
+    } catch (err) {
+      showMsg('Inloggen mislukt: ' + (err && err.message ? err.message : err), 'error');
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Inloggen';
     }
   });
 </script>
