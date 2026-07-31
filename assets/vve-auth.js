@@ -1,4 +1,4 @@
-// fix 21
+// fix 22
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -8,6 +8,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendPasswordResetEmail,
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -58,6 +59,10 @@ export async function registerVve(email, password, naam) {
 
 export async function loginVve(email, password) {
   return signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+}
+
+export async function resetPasswordVve(email) {
+  return sendPasswordResetEmail(auth, email.trim().toLowerCase());
 }
 
 export function watchAuth(callback) {
