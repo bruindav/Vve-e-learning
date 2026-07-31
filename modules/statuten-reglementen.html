@@ -1,0 +1,552 @@
+<!-- fix 5 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<script>document.documentElement.style.visibility='hidden';try{if(localStorage.getItem('vveGateOk_v1')==='1'){document.documentElement.style.visibility='';}}catch(e){}</script>
+<script src="../assets/access-gate.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statuten en reglementen: akte, model en huishoudelijk reglement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228;
+    --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1;
+    --paper-dark:#E2D8BF;
+    --rule:#2F4F44;
+    --rule-soft:#2F4F4433;
+    --ink-text:#2A2118;
+    --ink-fade:#5A5040;
+    --amber:#C98A2C;
+    --amber-deep:#a86f1c;
+    --debit:#a13d2c;
+    --credit:#3d6b52;
+    --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep);
+    border-bottom:1px solid #ffffff14;
+    padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{
+    font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em; font-family:'IBM Plex Sans', sans-serif;
+  }
+  .brandbar .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
+  }
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-split.three{grid-template-columns:1fr 1fr 1fr;}
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f; display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .steps{margin:14px 0 4px; padding:0; list-style:none; counter-reset:step;}
+  .steps li{
+    font-size:14.5px; padding:10px 12px 10px 40px; margin-bottom:6px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .steps li::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:10px; top:9px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+    color:var(--amber-deep); background:#00000008; border:1px solid var(--rule-soft);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+
+  .rank{margin:16px 0 4px; padding:0; list-style:none; counter-reset:rank;}
+  .rank li{
+    font-size:14.5px; padding:12px 14px 12px 44px; margin-bottom:8px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .rank li::before{
+    counter-increment:rank; content:counter(rank);
+    position:absolute; left:12px; top:11px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:700;
+    color:#fff; background:var(--slate);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+  .rank li strong{display:block; margin-bottom:2px;}
+  .rank li span.note{font-size:12.5px; color:var(--ink-fade);}
+
+  .modeltable{width:100%; border-collapse:collapse; margin:16px 0 4px; font-size:13.5px;}
+  .modeltable th, .modeltable td{border:1px solid var(--rule-soft); padding:8px 10px; text-align:left; vertical-align:top;}
+  .modeltable th{background:#00000008; font-family:'IBM Plex Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--slate);}
+  .modeltable td.yr{font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--amber-deep); white-space:nowrap;}
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split, .ledger-split.three{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+    .modeltable{font-size:12px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 7</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">JURIDISCH</span></div>
+  <h1>Statuten en reglementen</h1>
+  <p class="sub">Het verschil tussen de splitsingsakte en het modelreglement, hoe ze zich tot elkaar en tot het huishoudelijk reglement verhouden, en hoe je nagaat welk model voor jullie VvE geldt.</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1000 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1000</span>
+      <div class="acct-title"><h2>De splitsingsakte: het fundament</h2><div class="kicker">Uniek per gebouw, opgesteld door de notaris</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Elke VvE ontstaat op het moment dat een gebouw notarieel wordt gesplitst in appartementsrechten. Dat gebeurt in de <strong>akte van splitsing</strong> (kortweg: de splitsingsakte), een notariële akte die wordt ingeschreven bij het Kadaster. Zonder deze akte bestaat de VvE juridisch gezien niet.</p>
+        <p>De splitsingsakte is uniek voor jullie gebouw en regelt onder meer:</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Eigendom &amp; indeling</h4>
+            <ul>
+              <li>Kadastrale omschrijving van het gebouw</li>
+              <li>Welke ruimtes privégedeelte zijn, welke gemeenschappelijk</li>
+              <li>De breukdelen (aandeel van elk lid in de VvE)</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Bestemming &amp; verwijzing</h4>
+            <ul>
+              <li>De toegestane bestemming (bijv. wonen, bedrijfsruimte)</li>
+              <li>Verwijzing naar het toepasselijke modelreglement</li>
+              <li>Eventuele afwijkingen op dat modelreglement</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout"><strong>Let op:</strong> de splitsingsakte schrijft zelden alle regels helemaal zelf uit. In plaats daarvan verwijst de akte naar een standaardtekst — het modelreglement — en vermeldt de akte alleen de afwijkingen daarop. Wat in de akte zelf staat, gaat altijd vóór wat in het modelreglement staat.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is een breukdeel?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="De hoogte van de servicekosten kan van breukdelen zijn afgeleid, maar het breukdeel zelf is geen bedrag.">Het maandelijkse bedrag dat een lid aan de VvE betaalt</button>
+          <button class="opt" data-correct="true">Het aandeel van een lid in de gemeenschap, vastgelegd in de splitsingsakte</button>
+          <button class="opt" data-correct="false" data-explain="De vierkante meters van een appartement kunnen meespelen bij het bepalen van het breukdeel, maar zijn niet hetzelfde als het breukdeel.">Het aantal vierkante meters van een appartement</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2000 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">2000</span>
+      <div class="acct-title"><h2>Het modelreglement</h2><div class="kicker">De standaardtekst waar de akte naar verwijst</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Het <strong>modelreglement</strong> is een standaardreglement, vastgesteld door de Koninklijke Notariële Beroepsorganisatie (KNB). Het regelt de dagelijkse werking van een VvE: de rol van het bestuur en de ALV, de vergaderfrequentie, de onderhoudsverplichtingen, het reservefonds, servicekosten en stemverhoudingen.</p>
+        <p>Er bestaan meerdere versies, elk vastgesteld in een ander jaar. Bij het passeren van jullie splitsingsakte heeft de notaris een van deze versies "van toepassing verklaard" — dat is dus geen keuze die het bestuur nu nog maakt, die ligt al vast sinds de oprichting van de VvE.</p>
+        <table class="modeltable">
+          <tr><th>Versie</th><th>Kenmerk</th></tr>
+          <tr><td class="yr">1972 / 1973</td><td>Oudste versies, summier; komt nog voor bij gebouwen uit de jaren '70.</td></tr>
+          <tr><td class="yr">1983</td><td>Uitgebreider, met een duidelijkere regeling van onderhoud en reservefonds.</td></tr>
+          <tr><td class="yr">1992</td><td>Zeer veel gebruikt; scherpere regels rond de ALV en het bestuur.</td></tr>
+          <tr><td class="yr">2006</td><td>Introduceert een verplicht reservefonds als standaardbepaling.</td></tr>
+          <tr><td class="yr">2017</td><td>Meest recent; vergemakkelijkt onder meer besluiten over verduurzaming en biedt ruimte voor digitaal vergaderen.</td></tr>
+        </table>
+        <div class="callout"><strong>Belangrijk:</strong> sinds 2018 geldt daarnaast een wettelijke verplichting tot een reservefonds voor élke VvE — ongeacht welk modelreglement van toepassing is. Een oud modelreglement betekent dus niet dat die verplichting niet geldt.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wie stelt het modelreglement op, en wat regelt het?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="true">De KNB stelt het op; het regelt de werking van bestuur, ALV, onderhoud en reservefonds</button>
+          <button class="opt" data-correct="false" data-explain="De gemeente heeft hierin geen rol; het modelreglement is een notarieel/privaatrechtelijk instrument, geen gemeentelijk voorschrift.">De gemeente stelt het op als bouwvoorschrift</button>
+          <button class="opt" data-correct="false" data-explain="Het modelreglement is een standaardtekst die al bij oprichting van toepassing is verklaard, niet iets wat het bestuur jaarlijks opnieuw kiest.">Het bestuur stelt het jaarlijks opnieuw vast</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3000 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">3000</span>
+      <div class="acct-title"><h2>Akte versus model: het verschil</h2><div class="kicker">En de rangorde tussen alle documenten</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Dit is waar het vaak verwarrend wordt, dus in één keer helder naast elkaar:</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Splitsingsakte</h4>
+            <ul>
+              <li>Uniek voor jullie gebouw</li>
+              <li>Notarieel, ingeschreven bij het Kadaster</li>
+              <li>Regelt eigendom, breukdelen, bestemming</li>
+              <li>Wijst het toepasselijke modelreglement aan</li>
+              <li>Eventuele afwijkingen staan hier, en gaan vóór</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Modelreglement</h4>
+            <ul>
+              <li>Standaardtekst, gedeeld door duizenden VvE's</li>
+              <li>Door de KNB vastgesteld, niet per gebouw geschreven</li>
+              <li>Regelt bestuur, ALV, onderhoud, reservefonds</li>
+              <li>Alleen van toepassing omdat de akte ernaar verwijst</li>
+            </ul>
+          </div>
+        </div>
+        <p>Samen vormen de splitsingsakte en het daarin aangewezen modelreglement wat vaak losjes "de statuten" van de VvE wordt genoemd. Bij tegenstrijdigheid geldt altijd een vaste rangorde:</p>
+        <ol class="rank">
+          <li><strong>De splitsingsakte</strong> <span class="note">inclusief de daarin vermelde afwijkingen — heeft altijd het laatste woord</span></li>
+          <li><strong>Het (aangewezen) modelreglement</strong> <span class="note">geldt voor alles wat de akte niet zelf regelt</span></li>
+          <li><strong>Het huishoudelijk reglement</strong> <span class="note">mag verder aanvullen, maar nooit tegenspreken wat hierboven staat</span></li>
+        </ol>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">De splitsingsakte van een VvE bevat een bepaling die afwijkt van het aangewezen modelreglement. Welke bepaling geldt?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="true">De bepaling in de splitsingsakte, want die staat bovenaan de rangorde</button>
+          <button class="opt" data-correct="false" data-explain="Het modelreglement is de standaardtekst; een expliciete afwijking in de akte gaat daar juist bewust bovenuit." >De bepaling in het modelreglement, omdat dat de standaard is</button>
+          <button class="opt" data-correct="false" data-explain="Een ALV-besluit kan het huishoudelijk reglement wijzigen, maar niet de splitsingsakte of het daarin aangewezen modelreglement.">Geen van beide; de ALV moet eerst een derde regel vaststellen</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4000 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">4000</span>
+      <div class="acct-title"><h2>Welk model geldt voor jullie VvE</h2><div class="kicker">Hoe je dit met zekerheid nagaat</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Welk modelreglement precies van toepassing is, staat altijd letterlijk vermeld in jullie eigen splitsingsakte — meestal in een van de eerste artikelen, met een zin als "van toepassing is het modelreglement bij splitsing in appartementsrechten, vastgesteld op [datum] door de Koninklijke Notariële Beroepsorganisatie". Dit is dus geen keuze of inschatting: het staat zwart op wit in het document.</p>
+        <ul class="steps">
+          <li><strong>Zoek de splitsingsakte op</strong> — vaak aanwezig in het aankoopdossier van (een van) de leden, bij de notaris die de akte heeft gepasseerd, of bij de VvE-beheerder.</li>
+          <li><strong>Raadpleeg het Kadaster</strong> — de akte is daar tegen een kleine vergoeding altijd opvraagbaar, ook als niemand meer een kopie heeft.</li>
+          <li><strong>Zoek het artikel over het toepasselijke reglement</strong> — meestal vroeg in de akte, met een expliciete jaartalverwijzing naar het modelreglement.</li>
+          <li><strong>Noteer eventuele afwijkingen</strong> — de akte kan op specifieke punten bewust van het modelreglement afwijken; die afwijkingen staan er apart bij vermeld.</li>
+        </ul>
+        <div class="callout warn"><strong>Voor jullie VvE specifiek:</strong> ik heb geen toegang tot de splitsingsakte van VVE Fazantenkamp en kan dus niet met zekerheid zeggen welk modelreglement voor jullie geldt. Stuur de akte (of het betreffende artikel eruit) door, dan help ik je met plezier om het exacte model en eventuele afwijkingen te achterhalen.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waar staat met zekerheid vermeld welk modelreglement voor een specifieke VvE geldt?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Het huishoudelijk reglement regelt aanvullende, VvE-specifieke afspraken — niet welk modelreglement van toepassing is." >In het huishoudelijk reglement van de VvE</button>
+          <button class="opt" data-correct="true">In de eigen splitsingsakte van de VvE</button>
+          <button class="opt" data-correct="false" data-explain="De notulen van de ALV gaan over vergaderingen en besluiten, niet over welk modelreglement bij oprichting is aangewezen.">In de notulen van de meest recente ALV</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5000 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">5000</span>
+      <div class="acct-title"><h2>Het huishoudelijk reglement</h2><div class="kicker">Eigen aanvullende regels, door de ALV vastgesteld</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Naast de splitsingsakte en het modelreglement mag een VvE een <strong>huishoudelijk reglement</strong> opstellen: praktische, VvE-specifieke afspraken over het dagelijks gebruik van het gebouw. Denk aan regels over huisdieren, geluid, het gebruik van gemeenschappelijke ruimtes, fietsenstalling of het plaatsen van schotelantennes.</p>
+        <div class="callout"><strong>De grens:</strong> een huishoudelijk reglement mag alleen <em>aanvullen</em>, nooit <em>tegenspreken</em> wat al in de splitsingsakte of het modelreglement staat. Een bepaling die in strijd is met een hogere regel, is juridisch niet geldig — ook al heeft de ALV ermee ingestemd.</div>
+        <p>Anders dan de splitsingsakte hoeft het huishoudelijk reglement niet notarieel te worden vastgelegd: een gewoon ALV-besluit volstaat, en het is dus ook makkelijker aan te passen wanneer de praktijk daarom vraagt.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat gebeurt er als een bepaling in het huishoudelijk reglement in strijd is met het modelreglement?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="Alleen een instemmend ALV-besluit is niet genoeg om een hogere regel opzij te zetten; het huishoudelijk reglement mag het modelreglement niet tegenspreken." >De bepaling geldt alsnog, omdat de ALV ermee heeft ingestemd</button>
+          <button class="opt" data-correct="true">De bepaling is niet geldig; het huishoudelijk reglement mag alleen aanvullen, niet tegenspreken</button>
+          <button class="opt" data-correct="false" data-explain="Het modelreglement wordt niet automatisch overschreven door een lager document; de rangorde werkt precies andersom.">Het modelreglement wordt vanaf dat moment automatisch aangepast</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6000 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">6000</span>
+      <div class="acct-title"><h2>Reglementen wijzigen</h2><div class="kicker">Notaris nodig, of volstaat een ALV-besluit?</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Hoe zwaar het is om iets te wijzigen, hangt af van welk document het betreft:</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Akte / modelreglement</h4>
+            <ul>
+              <li>Wijziging vereist een notariële akte</li>
+              <li>Vaak een gekwalificeerde meerderheid nodig (bijv. 4/5) — check het eigen modelreglement voor het precieze quorum</li>
+              <li>Moet worden ingeschreven bij het Kadaster</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Huishoudelijk reglement</h4>
+            <ul>
+              <li>Gewoon ALV-besluit volstaat</li>
+              <li>Meestal gewone meerderheid van stemmen</li>
+              <li>Geen notaris of Kadaster nodig</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout warn"><strong>Praktisch gevolg:</strong> wil het bestuur bijvoorbeeld makkelijker kunnen besluiten over zonnepanelen, dan zit dat vaak vast in het modelreglement zelf — dat wijzig je niet zomaar met een simpele ALV-stemming. Een huishoudelijk reglement is voor dat soort structurele aanpassingen niet het juiste instrument.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat is nodig om het modelreglement van een VvE daadwerkelijk te wijzigen?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="false" data-explain="Voor het wijzigen van het modelreglement zelf is meer nodig dan een gewone ALV-stemming." >Een gewone meerderheid op de eerstvolgende ALV</button>
+          <button class="opt" data-correct="true">Een notariële akte, met doorgaans een gekwalificeerde meerderheid en inschrijving bij het Kadaster</button>
+          <button class="opt" data-correct="false" data-explain="Het bestuur kan dit niet eigenmachtig regelen; de leden via de ALV en uiteindelijk de notaris zijn hierbij nodig.">Een schriftelijke mededeling van het bestuur aan de leden</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9000 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">9000</span>
+      <div class="acct-title"><h2>Checklist: statuten op orde</h2><div class="kicker">Wat elk bestuur zou moeten kunnen vinden</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Heeft het bestuur een kopie van de eigen splitsingsakte, en weet iedereen waar die te vinden is?</li>
+            <li><span class="dot"></span>Is bekend welk modelreglement (jaartal) in de akte is aangewezen?</li>
+            <li><span class="dot"></span>Zijn eventuele afwijkingen op het modelreglement, zoals vermeld in de akte, in kaart gebracht?</li>
+            <li><span class="dot"></span>Is er een actueel huishoudelijk reglement, en spreekt dat het modelreglement nergens tegen?</li>
+            <li><span class="dot"></span>Is bekend welk quorum nodig is om het modelreglement te wijzigen, mocht dat ooit nodig zijn?</li>
+          </ul>
+        </div>
+        <p style="margin-top:16px;">Twijfel je over een van deze punten voor jullie eigen VvE? Stuur de splitsingsakte door, dan wordt dit verder voor jullie uitgezocht in plaats van in algemene termen.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/6</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over statuten en reglementen doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>STATUTEN EN REGLEMENTEN — INTERNE E-LEARNING, VERVOLG OP DE VOORGAANDE MODULES</footer>
+
+<script>
+  const total = 7;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/6';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
