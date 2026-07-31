@@ -2,17 +2,17 @@
 // VUL HIERONDER JE EIGEN FIREBASE-CONFIGURATIE IN
 // (Firebase Console > Projectinstellingen > Jouw apps > Web app > SDK setup and configuration)
 export const firebaseConfig = {
-  apiKey: "VUL_IN",
-  authDomain: "VUL_IN",
-  projectId: "VUL_IN",
-  storageBucket: "VUL_IN",
-  messagingSenderId: "VUL_IN",
-  appId: "VUL_IN",
+  apiKey: "AIzaSyBMKmzFlWhetUjb7NoxanWAS9gT-VEhDrs",
+  authDomain: "vve-elearning.firebaseapp.com",
+  projectId: "vve-elearning",
+  storageBucket: "vve-elearning.firebasestorage.app",
+  messagingSenderId: "345240440061",
+  appId: "1:345240440061:web:22523f00da850b9dbec294",
 };
 
 // E-mailadres van de beheerder. Dit bepaalt alleen of de beheerpagina in de UI wordt getoond —
 // de echte beveiliging zit in de Firestore-regels (zie firestore.rules).
-export const ADMIN_EMAIL = "VUL_IN@voorbeeld.nl";
+export const ADMIN_EMAIL = "davedebruin123@gmail.com";
 
 // Alle modules die in het systeem bestaan. slug moet overeenkomen met de bestandsnaam
 // (zonder .html) in de map modules/.

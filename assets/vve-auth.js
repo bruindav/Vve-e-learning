@@ -10,6 +10,8 @@ import {
   isSignInWithEmailLink,
   signInWithEmailLink,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signOut,
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
@@ -89,6 +91,11 @@ export function watchAuth(callback) {
 
 export async function adminSignIn(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function adminSignInWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  return signInWithPopup(auth, provider);
 }
 
 export async function getVveDocForCurrentUser() {

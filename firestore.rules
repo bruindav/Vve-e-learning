@@ -1,8 +1,7 @@
 // fix 20
 // Plak deze regels in: Firebase Console > Firestore Database > Rules > tekst vervangen > Publiceren
 //
-// Vervang ADMIN_EMAIL_HIER door jouw eigen beheer-e-mailadres (hetzelfde als in
-// assets/firebase-config.js en het account dat je hebt aangemaakt bij Authentication > Users).
+// Beheer-e-mailadres is al ingevuld: davedebruin123@gmail.com
 
 rules_version = '2';
 service cloud.firestore {
@@ -23,7 +22,7 @@ service cloud.firestore {
 
       // De beheerder mag alle documenten lezen (voor het beheerscherm) en wijzigen
       // (modules aan/uit zetten).
-      allow read, update: if request.auth != null && request.auth.token.email == 'ADMIN_EMAIL_HIER';
+      allow read, update: if request.auth != null && request.auth.token.email == 'davedebruin123@gmail.com';
 
       // Niemand mag via de client documenten verwijderen.
       allow delete: if false;
