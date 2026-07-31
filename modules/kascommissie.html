@@ -1,4 +1,4 @@
-<!-- fix 8 -->
+<!-- fix 9 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -166,6 +166,21 @@
   .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
   .final li:last-child{border-bottom:none;}
   .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .checklist-cat{
+    background:#fff9; border:1px solid var(--rule-soft); border-radius:3px;
+    padding:14px 16px; margin-bottom:12px;
+  }
+  .checklist-cat h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--slate); margin:0 0 8px;
+  }
+  .checklist-cat .kijk{font-size:13.5px; margin:0 0 8px; color:var(--ink-text);}
+  .checklist-cat .vraag{
+    font-size:13px; color:var(--amber-deep); font-style:italic; margin:0; padding-top:8px;
+    border-top:1px dashed var(--rule-soft);
+  }
+  .checklist-cat .vraag::before{content:"Vraag: "; font-style:normal; font-weight:600;}
 
   .done-banner{
     margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
@@ -418,12 +433,68 @@
     </div>
   </section>
 
-  <!-- 9000 -->
+  <!-- 7000 -->
   <section class="account" id="acct-6" data-acct>
     <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">7000</span>
+      <div class="acct-title"><h2>Checklist: waar je naar kijkt, en wat je vraagt</h2><div class="kicker">Per onderwerp een concrete controle en voorbeeldvraag</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Onderstaande onderwerpen dekken de meeste kascommissiecontroles. Niet elk punt is voor elke VvE relevant &mdash; gebruik het als checklist, niet als verplichte volgorde.</p>
+
+        <div class="checklist-cat">
+          <h4>Banksaldo &amp; liquide middelen</h4>
+          <p class="kijk">Sluit het eindsaldo in de jaarrekening aan bij de bankafschriften? Staat het reservefonds op een aparte rekening op naam van de VvE, gescheiden van de lopende rekening?</p>
+          <p class="vraag">"Mogen we de bankafschriften van december inzien, en kunnen jullie het eindsaldo toelichten?"</p>
+        </div>
+
+        <div class="checklist-cat">
+          <h4>Facturen &amp; uitgaven</h4>
+          <p class="kijk">Is er voor de grotere uitgaven een factuur aanwezig? Kloppen bedrag, leverancier en datum met wat er geboekt is? Is er een steekproef gedaan op een aantal kleinere, terugkerende posten?</p>
+          <p class="vraag">"Kunnen jullie de facturen laten zien bij deze drie grootste uitgaveposten van dit jaar?"</p>
+        </div>
+
+        <div class="checklist-cat">
+          <h4>Begroting versus realisatie</h4>
+          <p class="kijk">Welke posten wijken flink af (zowel hoger als lager) van wat vooraf begroot was? Is daar een logische verklaring voor?</p>
+          <p class="vraag">"Deze post wijkt fors af van de begroting &mdash; wat is daarvan de oorzaak?"</p>
+        </div>
+
+        <div class="checklist-cat">
+          <h4>Reservefonds &amp; MJOP</h4>
+          <p class="kijk">Is de dotatie dit jaar in lijn met het MJOP (of met de wettelijke 0,5%-vuistregel als er geen MJOP is)? Is er onttrokken aan het reservefonds, en zo ja: was daar een apart ALV-besluit voor, of past het binnen het MJOP?</p>
+          <p class="vraag">"Is deze onttrekking aan het reservefonds voorzien in het MJOP, of is hier apart over besloten?"</p>
+        </div>
+
+        <div class="checklist-cat">
+          <h4>Achterstallige bijdragen</h4>
+          <p class="kijk">Zijn er leden met openstaande bijdragen? Hoe lang staan die al open, en welke stappen zijn ondernomen om dit te innen?</p>
+          <p class="vraag">"Staan er nog openstaande bijdragen van leden, en wat is de aanpak als iemand structureel niet betaalt?"</p>
+        </div>
+
+        <div class="checklist-cat">
+          <h4>Verzekeringen</h4>
+          <p class="kijk">Is de premie van de opstalverzekering betaald en verwerkt? Is het verzekerde bedrag nog gebaseerd op de actuele herbouwwaarde van het gebouw?</p>
+          <p class="vraag">"Wanneer is de herbouwwaarde voor het laatst gecontroleerd of getaxeerd?"</p>
+        </div>
+
+        <div class="checklist-cat">
+          <h4>Kosten van de beheerder</h4>
+          <p class="kijk">Sluiten de in rekening gebrachte beheerderskosten aan bij de tarieven uit de beheerovereenkomst? Is er extra of meerwerk gefactureerd, en is dat vooraf akkoord bevonden?</p>
+          <p class="vraag">"Is dit meerwerk vooraf aan het bestuur voorgelegd, en op basis van welk tarief is het gefactureerd?"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9000 -->
+  <section class="account" id="acct-7" data-acct>
+    <div class="account-head" onclick="toggle(7)">
       <span class="acct-num">9000</span>
       <div class="acct-title"><h2>Checklist: de jaarlijkse controle</h2><div class="kicker">Wat je op tafel moet hebben</div></div>
-      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+      <span class="check" id="check-7">✓</span><span class="chevron">▸</span>
     </div>
     <div class="acct-body">
       <div class="acct-body-inner">
@@ -452,7 +523,7 @@
 <footer>WAT DOE JE ALS KASCOMMISSIE — INTERNE E-LEARNING, VERVOLG OP DE VOORGAANDE MODULES</footer>
 
 <script>
-  const total = 7;
+  const total = 8;
   const opened = new Set();
   const answered = {};
 
