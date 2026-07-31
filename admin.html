@@ -1,0 +1,186 @@
+<!-- fix 20 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beheer — E-learning VvE-bestuur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228; --ink-navy-deep:#0d1a1f; --paper:#ECE4D1; --paper-dark:#E2D8BF; --rule-soft:#2F4F4433;
+    --ink-text:#2A2118; --ink-fade:#5A5040; --amber:#C98A2C; --amber-deep:#a86f1c; --debit:#a13d2c; --credit:#3d6b52;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink-navy); font-family:'IBM Plex Sans', sans-serif; color:var(--ink-text); min-height:100vh;}
+  .brandbar{
+    background:var(--ink-navy-deep); padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid #ffffff14;
+  }
+  .brandbar span{font-family:'IBM Plex Sans',sans-serif; font-size:15px; font-weight:600; color:#f2efe6;}
+  .brandbar a{color:#8fa8b3; font-size:12.5px; text-decoration:none;}
+
+  .login-wrap{min-height:80vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .login-box{
+    max-width:380px; width:100%; background:var(--paper); border-radius:4px; padding:32px 28px;
+    box-shadow:0 20px 50px -20px #000000a0;
+  }
+  .login-box h1{font-family:'Fraunces',serif; font-size:22px; margin:0 0 18px; text-align:center;}
+  label{display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;}
+  input{
+    width:100%; box-sizing:border-box; padding:11px 12px; border:1px solid var(--rule-soft); border-radius:3px;
+    font-size:14px; margin-bottom:14px;
+  }
+  button{
+    padding:11px 18px; border:none; border-radius:3px; background:var(--amber); color:var(--ink-navy-deep);
+    font-weight:600; font-size:14px; cursor:pointer;
+  }
+  button:hover{background:#e0a94b;}
+  button:disabled{opacity:.6; cursor:default;}
+  .error{color:var(--debit); font-size:13px; margin-top:10px; display:none;}
+  .error.show{display:block;}
+
+  main{max-width:920px; margin:0 auto; padding:32px 20px 80px; display:none;}
+  main.show{display:block;}
+  h2{font-family:'Fraunces',serif; font-size:22px; color:#fff; margin:0 0 6px;}
+  .page-sub{color:#a8b5ba; font-size:13.5px; margin:0 0 28px;}
+
+  .vve-card{
+    background:var(--paper); border-radius:4px; padding:20px 22px; margin-bottom:16px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 10px 24px -16px #00000080;
+  }
+  .vve-head{display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
+  .vve-name{font-family:'Fraunces',serif; font-size:17px; font-weight:600;}
+  .vve-email{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-fade);}
+  .module-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:8px;}
+  .module-toggle{
+    display:flex; align-items:center; gap:8px; font-size:13px; padding:8px 10px; border:1px solid var(--rule-soft);
+    border-radius:3px; background:#fff8; cursor:pointer;
+  }
+  .module-toggle input{width:auto; margin:0;}
+  .module-toggle.saving{opacity:.5;}
+  .empty{color:#a8b5ba; text-align:center; padding:40px 0;}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span>digidave &middot; beheer</span>
+  <a href="index.html">Naar de site &rarr;</a>
+</div>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <h1>Beheer &mdash; inloggen</h1>
+    <form id="loginForm">
+      <label for="email">E-mailadres</label>
+      <input type="email" id="email" autocomplete="username" required>
+      <label for="password">Wachtwoord</label>
+      <input type="password" id="password" autocomplete="current-password" required>
+      <button type="submit" id="loginBtn">Inloggen</button>
+    </form>
+    <div class="error" id="loginError"></div>
+  </div>
+</div>
+
+<main id="main">
+  <h2>VvE's en modules</h2>
+  <p class="page-sub">Zet per VvE de modules aan die ze hebben afgenomen.</p>
+  <div id="vveList"><div class="empty">Bezig met laden...</div></div>
+</main>
+
+<script type="module">
+  import { auth, watchAuth, adminSignIn, getAllVves, setModuleAccess, logout } from './assets/vve-auth.js';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js';
+
+  const loginWrap = document.getElementById('loginWrap');
+  const main = document.getElementById('main');
+  const loginForm = document.getElementById('loginForm');
+  const loginError = document.getElementById('loginError');
+  const loginBtn = document.getElementById('loginBtn');
+  const vveList = document.getElementById('vveList');
+
+  loginForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    loginError.classList.remove('show');
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Bezig...';
+    try {
+      await adminSignIn(document.getElementById('email').value, document.getElementById('password').value);
+    } catch (err) {
+      loginError.textContent = 'Inloggen mislukt: ' + (err && err.message ? err.message : err);
+      loginError.classList.add('show');
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Inloggen';
+    }
+  });
+
+  async function renderVves(){
+    var vves = await getAllVves();
+    if (vves.length === 0) {
+      vveList.innerHTML = '<div class="empty">Nog geen VvE\u2019s geregistreerd.</div>';
+      return;
+    }
+    vveList.innerHTML = '';
+    vves.forEach(function(vve){
+      var card = document.createElement('div');
+      card.className = 'vve-card';
+
+      var head = document.createElement('div');
+      head.className = 'vve-head';
+      head.innerHTML =
+        '<span class="vve-name">' + (vve.naam || '(naam onbekend)') + '</span>' +
+        '<span class="vve-email">' + vve.email + '</span>';
+      card.appendChild(head);
+
+      var grid = document.createElement('div');
+      grid.className = 'module-grid';
+      ALL_MODULES.forEach(function(mod){
+        var enabled = !!(vve.moduleAccess && vve.moduleAccess[mod.slug] === true);
+        var label = document.createElement('label');
+        label.className = 'module-toggle';
+        var checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = enabled;
+        checkbox.addEventListener('change', async function(){
+          label.classList.add('saving');
+          try {
+            await setModuleAccess(vve.id, mod.slug, checkbox.checked);
+          } catch (err) {
+            alert('Opslaan mislukt: ' + (err && err.message ? err.message : err));
+            checkbox.checked = !checkbox.checked;
+          } finally {
+            label.classList.remove('saving');
+          }
+        });
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(mod.title));
+        grid.appendChild(label);
+      });
+      card.appendChild(grid);
+      vveList.appendChild(card);
+    });
+  }
+
+  watchAuth(function(user){
+    if (user && user.email === ADMIN_EMAIL) {
+      loginWrap.style.display = 'none';
+      main.classList.add('show');
+      renderVves();
+    } else if (user) {
+      loginWrap.style.display = 'flex';
+      main.classList.remove('show');
+      loginError.textContent = 'Dit account heeft geen beheerrechten.';
+      loginError.classList.add('show');
+      logout();
+    } else {
+      loginWrap.style.display = 'flex';
+      main.classList.remove('show');
+    }
+  });
+</script>
+
+</body>
+</html>
