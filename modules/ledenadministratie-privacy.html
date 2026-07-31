@@ -1,0 +1,499 @@
+<!-- fix 11 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<script>document.documentElement.style.visibility='hidden';try{if(localStorage.getItem('vveGateOk_v1')==='1'){document.documentElement.style.visibility='';}}catch(e){}</script>
+<script src="../assets/access-gate.js" defer></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledenadministratie en privacy (AVG)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228;
+    --ink-navy-deep:#0d1a1f;
+    --paper:#ECE4D1;
+    --paper-dark:#E2D8BF;
+    --rule:#2F4F44;
+    --rule-soft:#2F4F4433;
+    --ink-text:#2A2118;
+    --ink-fade:#5A5040;
+    --amber:#C98A2C;
+    --amber-deep:#a86f1c;
+    --debit:#a13d2c;
+    --credit:#3d6b52;
+    --slate:#3d5a6b;
+    --cream-on-navy:#EDE6D6;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:var(--ink-navy); color:var(--ink-text); font-family:'IBM Plex Sans', sans-serif; line-height:1.55;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  h1,h2,h3{font-family:'Fraunces', serif; margin:0;}
+
+  .brandbar{
+    background:var(--ink-navy-deep);
+    border-bottom:1px solid #ffffff14;
+    padding:10px 20px;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap;
+  }
+  .brandbar .brand{display:flex; align-items:center; gap:9px;}
+  .brandbar .brand svg{display:block;}
+  .brandbar .brand span{
+    font-size:15px; font-weight:600; color:#f2efe6; letter-spacing:-.01em; font-family:'IBM Plex Sans', sans-serif;
+  }
+  .brandbar .tagline{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
+  }
+  @media (max-width:480px){ .brandbar .tagline{display:none;} }
+
+  .progressbar{
+    position:sticky; top:0; z-index:50; background:var(--ink-navy-deep); border-bottom:1px solid #ffffff14;
+    padding:10px 20px; display:flex; align-items:center; gap:14px;
+  }
+  .progressbar .label{color:var(--cream-on-navy); font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.06em; opacity:.75; white-space:nowrap;}
+  .progress-track{flex:1; height:6px; background:#ffffff1a; border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; width:0%; background:linear-gradient(90deg,var(--amber),#e0a94b); transition:width .5s ease;}
+  .progress-count{color:var(--amber); font-family:'IBM Plex Mono',monospace; font-size:12px; white-space:nowrap;}
+
+  .cover{
+    padding:72px 24px 56px; text-align:center; color:var(--cream-on-navy);
+    background:radial-gradient(ellipse at 30% -10%, #1c343c 0%, transparent 55%), var(--ink-navy);
+    border-bottom:1px solid #ffffff14;
+  }
+  .cover .eyebrow{
+    font-family:'IBM Plex Mono', monospace; letter-spacing:.18em; text-transform:uppercase; font-size:12px;
+    color:var(--amber); margin-bottom:18px; display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .cover .eyebrow .badge{background:var(--slate); color:#dce8ee; padding:3px 8px; border-radius:2px; letter-spacing:.04em; font-size:10.5px;}
+  .cover h1{font-size:clamp(28px,4.6vw,46px); font-weight:600; max-width:800px; margin:0 auto; letter-spacing:-.01em;}
+  .cover p.sub{max-width:600px; margin:20px auto 0; color:#c9c0ab; font-size:16px;}
+  .cover .ledgerline{width:60px; height:2px; background:var(--amber); margin:28px auto 0;}
+
+  main{max-width:760px; margin:0 auto; padding:48px 20px 120px;}
+
+  .account{
+    background:var(--paper); border:1px solid var(--rule-soft); border-radius:2px; margin-bottom:28px;
+    box-shadow:0 1px 0 var(--rule-soft), 0 12px 30px -18px #00000080; overflow:hidden;
+  }
+  .account-head{
+    display:flex; align-items:center; gap:16px; padding:20px 22px; cursor:pointer; user-select:none;
+    background:linear-gradient(180deg, var(--paper), var(--paper-dark)); border-bottom:1px solid var(--rule-soft);
+  }
+  .acct-num{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600; color:var(--amber-deep);
+    background:#00000008; border:1px solid var(--rule-soft); padding:4px 8px; border-radius:2px; white-space:nowrap;
+  }
+  .acct-title{flex:1;}
+  .acct-title h2{font-size:19.5px; font-weight:600;}
+  .acct-title .kicker{font-size:12.5px; color:var(--ink-fade); font-family:'IBM Plex Mono',monospace; margin-top:2px;}
+  .chevron{width:22px;height:22px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-fade); transition:transform .25s ease;}
+  .account.open .chevron{transform:rotate(90deg); color:var(--amber-deep);}
+  .check{
+    width:22px;height:22px; border-radius:50%; border:1.5px solid var(--rule); display:flex; align-items:center;
+    justify-content:center; flex-shrink:0; font-size:13px; color:transparent; transition:all .2s ease;
+  }
+  .check.done{background:var(--credit); border-color:var(--credit); color:#fff;}
+
+  .acct-body{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+  .account.open .acct-body{max-height:3200px;}
+  .acct-body-inner{padding:22px; padding-top:6px;}
+  .acct-body-inner p{margin:0 0 14px; font-size:15.5px;}
+  .acct-body-inner p:last-child{margin-bottom:0;}
+
+  .ledger-split{
+    display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--rule-soft); border-radius:2px;
+    overflow:hidden; margin:16px 0 20px; background:#fff8;
+  }
+  .ledger-split.three{grid-template-columns:1fr 1fr 1fr;}
+  .ledger-col{padding:14px 16px;}
+  .ledger-col + .ledger-col{border-left:1px dashed var(--rule-soft);}
+  .ledger-col h4{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em;
+    margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--rule-soft);
+  }
+  .ledger-col.slate h4{color:var(--slate);}
+  .ledger-col ul{margin:0; padding:0; list-style:none;}
+  .ledger-col li{font-size:13.5px; padding:5px 0; border-bottom:1px dotted var(--rule-soft);}
+  .ledger-col li:last-child{border-bottom:none;}
+
+  .callout{
+    background:#00000007; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0;
+    font-size:14px; margin:14px 0; color:var(--ink-fade);
+  }
+  .callout strong{color:var(--ink-text);}
+  .callout.warn{border-left-color:var(--debit);}
+
+  .flags{margin:14px 0 4px; padding:0; list-style:none;}
+  .flags li{
+    font-size:14px; padding:9px 12px; margin-bottom:6px; border-radius:3px;
+    background:#a13d2c14; border:1px solid #a13d2c33; color:#7a2c1f; display:flex; gap:8px;
+  }
+  .flags li::before{content:"⚑"; flex-shrink:0;}
+
+  .steps{margin:14px 0 4px; padding:0; list-style:none; counter-reset:step;}
+  .steps li{
+    font-size:14.5px; padding:10px 12px 10px 40px; margin-bottom:6px; border-radius:3px;
+    background:#fff9; border:1px solid var(--rule-soft); position:relative;
+  }
+  .steps li::before{
+    counter-increment:step; content:counter(step);
+    position:absolute; left:10px; top:9px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:600;
+    color:var(--amber-deep); background:#00000008; border:1px solid var(--rule-soft);
+    width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  }
+
+  .quiz{margin-top:18px; padding-top:16px; border-top:1px solid var(--rule-soft);}
+  .quiz .q{font-family:'IBM Plex Mono',monospace; font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--amber-deep); margin-bottom:10px;}
+  .quiz .q-text{font-size:15px; font-weight:500; margin-bottom:12px;}
+  .opts{display:flex; flex-direction:column; gap:8px;}
+  .opt{
+    text-align:left; padding:11px 14px; border-radius:3px; border:1px solid var(--rule-soft); background:#fff9;
+    cursor:pointer; font-size:14.5px; font-family:inherit; color:var(--ink-text); transition:all .15s ease;
+  }
+  .opt:hover{border-color:var(--amber); background:#fff;}
+  .opt.correct{background:#3d6b521a; border-color:var(--credit); color:#264936; font-weight:600;}
+  .opt.wrong{background:#a13d2c1a; border-color:var(--debit); color:#7a2c1f;}
+  .opt[disabled]{cursor:default;}
+  .feedback{margin-top:10px; font-size:13.5px; padding:10px 12px; border-radius:3px; background:#00000006; display:none;}
+  .feedback.show{display:block;}
+
+  .final{padding:0; border:none; box-shadow:none; background:transparent;}
+  .final ul{margin:0; padding:0; list-style:none;}
+  .final li{display:flex; gap:10px; align-items:flex-start; padding:10px 0; border-bottom:1px dotted var(--rule-soft); font-size:14.5px;}
+  .final li:last-child{border-bottom:none;}
+  .final li .dot{width:6px; height:6px; border-radius:50%; background:var(--amber); margin-top:8px; flex-shrink:0;}
+
+  .done-banner{
+    margin-top:22px; padding:16px 18px; border-radius:3px; background:linear-gradient(135deg,#3d6b52,#2c5240);
+    color:#e8f0ea; font-size:14.5px; display:none; align-items:center; gap:12px;
+  }
+  .done-banner.show{display:flex;}
+  .done-banner .num{font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:16px;}
+
+  footer{text-align:center; color:#7d7460; font-size:12.5px; padding:30px 20px 50px; font-family:'IBM Plex Mono',monospace;}
+
+  @media (max-width:520px){
+    .ledger-split, .ledger-split.three{grid-template-columns:1fr;}
+    .ledger-col + .ledger-col{border-left:none; border-top:1px dashed var(--rule-soft);}
+    .cover{padding:56px 18px 44px;}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto !important;}}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <div class="brand">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="19" y2="6" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="5" y2="19" stroke="#4a9fc9" stroke-width="1.4"/>
+      <line x1="12" y1="12" x2="18" y2="18" stroke="#4a9fc9" stroke-width="1.4"/>
+      <circle cx="4" cy="5" r="2" fill="#e0a94b"/>
+      <circle cx="19" cy="6" r="1.6" fill="#4a9fc9"/>
+      <circle cx="5" cy="19" r="1.6" fill="#4a9fc9"/>
+      <circle cx="18" cy="18" r="2" fill="#e0a94b"/>
+      <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
+    </svg>
+    <span>digidave</span>
+  </div>
+  <div class="tagline">Een app van digidave</div>
+</div>
+
+<div class="progressbar">
+  <span class="label">VOORTGANG</span>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  <span class="progress-count" id="progressCount">0 / 7</span>
+</div>
+
+<header class="cover">
+  <div class="eyebrow">E-learning · VvE-bestuur <span class="badge">PRIVACY</span></div>
+  <h1>Ledenadministratie en privacy</h1>
+  <p class="sub">Als bestuur houd je persoonsgegevens van leden bij. Wat mag daarin, hoe lang bewaar je het, wie mag het zien, en wat doe je als er iets misgaat?</p>
+  <div class="ledgerline"></div>
+</header>
+
+<main>
+
+  <!-- 1000 -->
+  <section class="account" id="acct-0" data-acct>
+    <div class="account-head" onclick="toggle(0)">
+      <span class="acct-num">1000</span>
+      <div class="acct-title"><h2>Waarom de VvE persoonsgegevens verwerkt</h2><div class="kicker">Geen keuze, maar een noodzaak om te functioneren</div></div>
+      <span class="check" id="check-0">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Lidmaatschap van de VvE volgt automatisch uit eigendom van een appartementsrecht — een lid kan er niet voor kiezen om niet in de ledenadministratie te staan. Om te kunnen functioneren (oproepen voor de ALV, bijdragen innen, stemrecht vaststellen, onderhoud communiceren) moet de VvE een aantal basisgegevens van elk lid bijhouden.</p>
+        <p>Onder de AVG (Algemene Verordening Gegevensbescherming) is dit toegestaan op basis van twee grondslagen: de gegevens zijn <strong>noodzakelijk voor de uitvoering van de statutaire taken</strong> van de VvE, en er is een <strong>gerechtvaardigd belang</strong> om het bestuur te kunnen laten functioneren. Toestemming vragen aan leden is hier niet de juiste grondslag &mdash; en ook niet nodig.</p>
+        <div class="callout"><strong>Belangrijk onderscheid:</strong> dat gegevens verwerkt mógen worden, wil niet zeggen dat alles mag worden vastgelegd of eeuwig bewaard. Beide vragen komen in deze module apart aan bod.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Op welke grondslag mag de VvE basisgegevens van leden verwerken?</div>
+        <div class="opts" data-quiz="1">
+          <button class="opt" data-correct="false" data-explain="Toestemming is bij een verplicht lidmaatschap niet de juiste (en ook geen betrouwbare) grondslag; een lid kan zich er sowieso niet aan onttrekken." >Uitsluitend als het lid daar expliciet toestemming voor geeft</button>
+          <button class="opt" data-correct="true">Omdat het noodzakelijk is voor de statutaire taken van de VvE en er een gerechtvaardigd belang is</button>
+          <button class="opt" data-correct="false" data-explain="De AVG staat verwerking toe op basis van noodzaak en gerechtvaardigd belang; het is geen kwestie van 'strikt verboden, tenzij'.">Het is in beginsel verboden en alleen bij hoge uitzondering toegestaan</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2000 -->
+  <section class="account" id="acct-1" data-acct>
+    <div class="account-head" onclick="toggle(1)">
+      <span class="acct-num">2000</span>
+      <div class="acct-title"><h2>Wat mag je vastleggen</h2><div class="kicker">Van basisgegevens tot gevoelige gegevens</div></div>
+      <span class="check" id="check-1">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Normaal en nodig</h4>
+            <ul>
+              <li>Naam, adres, contactgegevens</li>
+              <li>Breukdeel/aandeel en stemrecht</li>
+              <li>Bankgegevens voor de bijdrage</li>
+              <li>Correspondentie over VvE-zaken</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Alleen als het functioneel nodig is</h4>
+            <ul>
+              <li>Gezondheidsgegevens (bijv. bij een aanvraag voor een scootmobielplek)</li>
+              <li>Gegevens over een geschil of incident</li>
+              <li>Gegevens van huurders/gebruikers, niet alleen eigenaars</li>
+            </ul>
+          </div>
+        </div>
+        <p>Gegevens over gezondheid, etniciteit, geloofsovertuiging en dergelijke gelden als <strong>bijzondere persoonsgegevens</strong> en verdienen extra terughoudendheid. Een voorbeeld waarin dit toch relevant kan zijn: een lid vraagt om een scootmobiel te mogen stallen in een gemeenschappelijke ruimte vanwege een beperking. Dan is het vastleggen van die aanvraag en de onderbouwing functioneel noodzakelijk &mdash; maar leg niet meer vast dan nodig is om het besluit te kunnen motiveren, en deel het niet breder dan noodzakelijk.</p>
+        <div class="callout warn"><strong>Vuistregel:</strong> leg vast wat nodig is om de VvE te laten functioneren, niet wat "handig zou kunnen zijn". Bij twijfel: vraag je af of je het ontbreken van dit gegeven aan een lid zou kunnen uitleggen.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wanneer mag een bestuur gezondheidsgegevens van een lid vastleggen?</div>
+        <div class="opts" data-quiz="2">
+          <button class="opt" data-correct="false" data-explain="Gezondheidsgegevens zijn bijzondere persoonsgegevens en vragen om extra terughoudendheid, ook binnen het bestuur zelf." >Altijd, zodra het bestuur dat nuttig vindt</button>
+          <button class="opt" data-correct="true">Alleen als dat functioneel noodzakelijk is voor een concreet besluit, en niet uitgebreider dan nodig</button>
+          <button class="opt" data-correct="false" data-explain="Een algeheel verbod klopt niet; in specifieke, functioneel noodzakelijke situaties (zoals de scootmobielaanvraag) mag het wél, mits terughoudend.">Nooit, dit is onder de AVG volledig verboden voor een VvE</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3000 -->
+  <section class="account" id="acct-2" data-acct>
+    <div class="account-head" onclick="toggle(2)">
+      <span class="acct-num">3000</span>
+      <div class="acct-title"><h2>Hoe lang bewaar je gegevens</h2><div class="kicker">Tijdens het lidmaatschap, en daarna</div></div>
+      <span class="check" id="check-2">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>De AVG kent geen vaste bewaartermijn die voor alles geldt &mdash; het uitgangspunt is: bewaar gegevens niet langer dan nodig voor het doel waarvoor ze zijn verzameld. Voor een VvE zijn er in de praktijk twee duidelijke momenten.</p>
+        <div class="ledger-split">
+          <div class="ledger-col slate">
+            <h4>Tijdens het lidmaatschap</h4>
+            <ul>
+              <li>Actief bijhouden zolang iemand eigenaar is</li>
+              <li>Bijwerken bij verhuizing, verhuur, adreswijziging</li>
+            </ul>
+          </div>
+          <div class="ledger-col slate">
+            <h4>Na verkoop / einde lidmaatschap</h4>
+            <ul>
+              <li>Financiële/fiscale gegevens: wettelijke bewaarplicht van 7 jaar</li>
+              <li>Overige contactgegevens: in beginsel niet langer bewaren dan nodig voor de afwikkeling</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout">De 7-jaarstermijn komt uit de fiscale bewaarplicht voor de boekhouding (facturen, jaarrekeningen, bijdrage-administratie) &mdash; niet uit de AVG zelf. Voor gegevens die niets met de financiële administratie te maken hebben, zoals oude correspondentie over een afgehandeld geschil, is er geen goede reden om die na vertrek van een lid nog jarenlang te bewaren.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Waar komt de bewaartermijn van 7 jaar voor financiële gegevens vandaan?</div>
+        <div class="opts" data-quiz="3">
+          <button class="opt" data-correct="false" data-explain="De AVG zelf schrijft geen vaste termijn van 7 jaar voor; die termijn komt uit fiscale wetgeving.">Rechtstreeks uit de AVG, die deze termijn dwingend voorschrijft</button>
+          <button class="opt" data-correct="true">Uit de fiscale bewaarplicht voor de boekhouding, niet uit de AVG zelf</button>
+          <button class="opt" data-correct="false" data-explain="Het modelreglement schrijft geen bewaartermijnen voor persoonsgegevens voor; dit is een fiscale, geen VvE-rechtelijke regel.">Uit het modelreglement van de VvE</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4000 -->
+  <section class="account" id="acct-3" data-acct>
+    <div class="account-head" onclick="toggle(3)">
+      <span class="acct-num">4000</span>
+      <div class="acct-title"><h2>Wie mag erbij, en hoe beveilig je het</h2><div class="kicker">Toegang, opslag en derden</div></div>
+      <span class="check" id="check-3">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Beperk toegang tot de ledenadministratie tot wie het echt nodig heeft: doorgaans het bestuur, en eventueel de kascommissie voor zover relevant voor de controle. Een gedeeld Excel-bestand dat bij iedereen op de lokale schijf staat, zonder wachtwoord, is in de praktijk een van de meest voorkomende zwakke plekken.</p>
+        <ul class="steps">
+          <li><strong>Beperk toegang</strong> tot bestuursleden die de gegevens nodig hebben voor hun taak.</li>
+          <li><strong>Gebruik een wachtwoord of afgeschermde omgeving</strong> in plaats van een los rondzwervend bestand.</li>
+          <li><strong>Werkt de VvE met een externe beheerder?</strong> Dan verwerkt die namens de VvE persoonsgegevens &mdash; leg dit vast in een verwerkersovereenkomst, meestal onderdeel van de beheerovereenkomst.</li>
+          <li><strong>Bij bestuurswisseling</strong>: zorg dat toegang tot gedeelde bestanden en systemen overgedragen wordt, en niet blijft hangen bij een oud-bestuurslid.</li>
+        </ul>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Wat moet er geregeld zijn als een externe beheerder de ledenadministratie namens de VvE bijhoudt?</div>
+        <div class="opts" data-quiz="4">
+          <button class="opt" data-correct="false" data-explain="Een externe beheerder mag namens de VvE persoonsgegevens verwerken, mits dit correct is vastgelegd — een algeheel verbod klopt niet.">Dat mag helemaal niet onder de AVG</button>
+          <button class="opt" data-correct="true">Een verwerkersovereenkomst, meestal onderdeel van de beheerovereenkomst</button>
+          <button class="opt" data-correct="false" data-explain="Individuele toestemming van elk lid is voor deze normale, functionele gegevensverwerking niet de vereiste grondslag." >Schriftelijke toestemming van elk individueel lid</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5000 -->
+  <section class="account" id="acct-4" data-acct>
+    <div class="account-head" onclick="toggle(4)">
+      <span class="acct-num">5000</span>
+      <div class="acct-title"><h2>Rechten van leden</h2><div class="kicker">Inzage, correctie en verwijdering</div></div>
+      <span class="check" id="check-4">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Elk lid heeft onder de AVG het recht om te vragen welke gegevens de VvE van hem of haar heeft vastgelegd (inzage), om onjuiste gegevens te laten corrigeren, en &mdash; voor zover redelijk en niet in strijd met andere verplichtingen &mdash; om gegevens te laten verwijderen.</p>
+        <div class="callout warn"><strong>Grens aan het verwijderrecht:</strong> gegevens die onder de fiscale bewaarplicht vallen (facturen, jaarrekeningen, bijdrage-historie) mogen niet zomaar verwijderd worden, ook niet op verzoek. Het verwijderrecht gaat dus niet boven een wettelijke bewaarplicht.</div>
+        <p>Praktisch advies: reageer op een verzoek van een lid binnen redelijke termijn (de AVG noemt een maand als richtlijn), en leg uit wat wel en niet kan worden aangepast of verwijderd, en waarom.</p>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Een lid vraagt om verwijdering van alle facturen die op zijn naam staan, ook al vallen die nog onder de fiscale bewaarplicht. Mag het bestuur dit zomaar doen?</div>
+        <div class="opts" data-quiz="5">
+          <button class="opt" data-correct="false" data-explain="Het verwijderrecht onder de AVG gaat niet boven een wettelijke bewaarplicht; die facturen moeten bewaard blijven tot de termijn is verstreken.">Ja, elk verzoek tot verwijdering moet altijd worden gehonoreerd</button>
+          <button class="opt" data-correct="true">Nee, de fiscale bewaarplicht gaat voor; het bestuur moet dit uitleggen aan het lid</button>
+          <button class="opt" data-correct="false" data-explain="Verwijdering van fiscaal bewaarplichtige stukken is niet toegestaan, ook niet met een schriftelijke bevestiging van het lid zelf.">Alleen als het lid schriftelijk bevestigt dat hij het risico accepteert</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6000 -->
+  <section class="account" id="acct-5" data-acct>
+    <div class="account-head" onclick="toggle(5)">
+      <span class="acct-num">6000</span>
+      <div class="acct-title"><h2>Als er iets misgaat: het datalek</h2><div class="kicker">Wat het is, en wat het bestuur moet doen</div></div>
+      <span class="check" id="check-5">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <p>Een datalek is elke situatie waarin persoonsgegevens in verkeerde handen terechtkomen of verloren gaan &mdash; bijvoorbeeld een e-mail met de ledenlijst die naar de verkeerde ontvanger gaat, een gestolen laptop met de administratie erop, of een gehackt VvE-account.</p>
+        <ul class="steps">
+          <li><strong>Beoordeel het risico</strong> &mdash; om welke gegevens gaat het, en hoeveel leden zijn betrokken?</li>
+          <li><strong>Meld het bij een risico voor de betrokkenen</strong> binnen 72 uur bij de Autoriteit Persoonsgegevens.</li>
+          <li><strong>Informeer de betrokken leden</strong> als het lek waarschijnlijk nadelige gevolgen voor hen heeft.</li>
+          <li><strong>Leg vast wat er is gebeurd</strong> en welke maatregelen zijn genomen om herhaling te voorkomen.</li>
+        </ul>
+        <div class="callout">Niet elk incident is meldingsplichtig &mdash; een kleine, snel herstelde vergissing zonder reëel risico hoeft niet altijd gemeld te worden. Twijfel je, overleg dan met de beheerder of een deskundige in plaats van zelf te gokken.</div>
+      </div>
+      <div class="acct-body-inner quiz" style="padding-top:0;">
+        <div class="q">Controlevraag</div>
+        <div class="q-text">Binnen welke termijn moet een meldingsplichtig datalek bij de Autoriteit Persoonsgegevens worden gemeld?</div>
+        <div class="opts" data-quiz="6">
+          <button class="opt" data-correct="false" data-explain="Een maand is te lang; de wettelijke termijn voor een meldingsplichtig datalek is aanzienlijk korter." >Binnen een maand</button>
+          <button class="opt" data-correct="true">Binnen 72 uur</button>
+          <button class="opt" data-correct="false" data-explain="Meldingsplichtige datalekken moeten wel degelijk binnen een vaste termijn worden gemeld, niet alleen op verzoek van een lid.">Alleen als een lid daar expliciet om vraagt</button>
+        </div>
+        <div class="feedback"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9000 -->
+  <section class="account" id="acct-6" data-acct>
+    <div class="account-head" onclick="toggle(6)">
+      <span class="acct-num">9000</span>
+      <div class="acct-title"><h2>Checklist: ledenadministratie op orde</h2><div class="kicker">Vijf punten om te checken</div></div>
+      <span class="check" id="check-6">✓</span><span class="chevron">▸</span>
+    </div>
+    <div class="acct-body">
+      <div class="acct-body-inner">
+        <div class="final">
+          <ul>
+            <li><span class="dot"></span>Bevat de ledenadministratie alleen wat functioneel noodzakelijk is, geen overbodige of gevoelige gegevens?</li>
+            <li><span class="dot"></span>Is duidelijk wie er toegang toe heeft, en is die toegang afgeschermd?</li>
+            <li><span class="dot"></span>Is er een verwerkersovereenkomst met de externe beheerder, indien van toepassing?</li>
+            <li><span class="dot"></span>Worden gegevens van vertrokken leden niet langer bewaard dan nodig, met uitzondering van de fiscaal bewaarplichtige stukken?</li>
+            <li><span class="dot"></span>Weet het bestuur wat te doen bij een datalek, en binnen welke termijn gemeld moet worden?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="done-banner" id="doneBanner">
+    <span class="num" id="doneScore">0/6</span>
+    <span>controlevragen goed beantwoord. Je hebt deze module over ledenadministratie en privacy doorlopen.</span>
+  </div>
+
+</main>
+
+<footer>LEDENADMINISTRATIE EN PRIVACY — INTERNE E-LEARNING, VERVOLG OP DE VOORGAANDE MODULES</footer>
+
+<script>
+  const total = 7;
+  const opened = new Set();
+  const answered = {};
+
+  function toggle(i){
+    const el = document.getElementById('acct-'+i);
+    el.classList.toggle('open');
+    if(el.classList.contains('open')){
+      opened.add(i);
+      document.getElementById('check-'+i).classList.add('done');
+      updateProgress();
+    }
+  }
+
+  function updateProgress(){
+    const n = opened.size;
+    document.getElementById('progressFill').style.width = (n/total*100)+'%';
+    document.getElementById('progressCount').textContent = n+' / '+total;
+    if(n === total){
+      const answeredCount = Object.values(answered).filter(v=>v.correct).length;
+      document.getElementById('doneScore').textContent = answeredCount + '/6';
+      document.getElementById('doneBanner').classList.add('show');
+    }
+  }
+
+  document.querySelectorAll('[data-quiz]').forEach(group=>{
+    const qid = group.getAttribute('data-quiz');
+    const feedback = group.parentElement.querySelector('.feedback');
+    group.querySelectorAll('.opt').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const correct = btn.getAttribute('data-correct') === 'true';
+        btn.classList.add(correct ? 'correct' : 'wrong');
+        if(correct){ answered[qid] = {correct:true}; }
+        if(correct){
+          feedback.textContent = 'Klopt \u2014 precies dit is het idee.';
+        } else {
+          const explain = btn.getAttribute('data-explain') || '';
+          feedback.textContent = 'Niet helemaal: ' + explain + ' Lees de paragraaf hierboven gerust nog eens door.';
+        }
+        feedback.classList.add('show');
+        updateProgress();
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
