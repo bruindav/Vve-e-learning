@@ -49,14 +49,22 @@ export async function registerAndSendLink(email, vveName) {
   }
   const docId = emailToDocId(cleanEmail);
   const ref = doc(db, "vves", docId);
-  const existing = await getDoc(ref);
-  if (!existing.exists()) {
+  try {
+    // setDoc wordt door Firestore automatisch als 'create' beoordeeld als het document nog niet
+    // bestaat, en als 'update' als het al bestaat. Onze regels staan alleen het eerste toe voor
+    // een nog niet ingelogde bezoeker — vandaar geen aparte (niet toegestane) leesactie vooraf.
     await setDoc(ref, {
       email: cleanEmail,
       naam: vveName || "",
       moduleAccess: {},
       createdAt: serverTimestamp(),
     });
+  } catch (err) {
+    // Bestaat het document al (dus dit werd als 'update' gezien), dan is dat geen fout:
+    // de VvE is al geregistreerd, we hoeven alleen een nieuwe inloglink te sturen.
+    if (err.code !== "permission-denied") {
+      throw err;
+    }
   }
   const actionCodeSettings = {
     url: window.location.origin + window.location.pathname,
