@@ -1,4 +1,4 @@
-<!-- fix 26 -->
+<!-- fix 27 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -193,7 +193,7 @@
   </div>
   <div style="display:flex; align-items:center; gap:16px;">
     <div class="tagline">Een app van digidave</div>
-    <a href="register.html" style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#e0a94b; text-decoration:none; border:1px solid #e0a94b55; padding:5px 10px; border-radius:2px;">Inloggen &rarr;</a>
+    <a href="register.html" id="loginStatusLink" style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#e0a94b; text-decoration:none; border:1px solid #e0a94b55; padding:5px 10px; border-radius:2px;">Inloggen &rarr;</a>
   </div>
 </div>
 
@@ -627,7 +627,25 @@
 </script>
 
 <script type="module">
-  import { watchAuth, getVveDocForCurrentUser } from './assets/vve-auth.js?v26';
+  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v27';
+
+  function updateLoginStatus(user, vve){
+    var link = document.getElementById('loginStatusLink');
+    if (!link) return;
+    if (user) {
+      var label = (vve && vve.naam) ? vve.naam : user.email;
+      link.textContent = '\u2713 ' + label + ' \u2014 uitloggen';
+      link.href = '#';
+      link.onclick = function(e){
+        e.preventDefault();
+        logout().then(function(){ window.location.reload(); });
+      };
+    } else {
+      link.textContent = 'Inloggen \u2192';
+      link.href = 'register.html';
+      link.onclick = null;
+    }
+  }
 
   function applyAccess(moduleAccess){
     document.querySelectorAll('[data-slug]').forEach(function(card){
@@ -669,9 +687,10 @@
   applyAccess({});
 
   watchAuth(async function(user){
-    if (!user) { applyAccess({}); return; }
+    if (!user) { applyAccess({}); updateLoginStatus(null, null); return; }
     try {
       var vve = await getVveDocForCurrentUser();
+      updateLoginStatus(user, vve);
       if (vve && vve.status === 'approved') {
         applyAccess(vve.moduleAccess || {});
       } else {
@@ -679,6 +698,7 @@
       }
     } catch (e) {
       applyAccess({});
+      updateLoginStatus(user, null);
     }
   });
 </script>
