@@ -1,4 +1,4 @@
-<!-- fix 22 -->
+<!-- fix 23 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -51,7 +51,8 @@
 
     <h2>1. Wie is verantwoordelijk?</h2>
     <p>
-      Dit platform wordt beheerd door Dave de Bruin, handelend onder de naam Digidave, Minckelerslaan 18, 3707 TJ Zeist.
+      Dit platform wordt beheerd door Dave de Bruin, handelend onder de naam Digidave.
+      <span id="addr-1" class="addr-hidden">Postadres beschikbaar na inloggen.</span>
       Voor vragen over dit privacybeleid of over je gegevens kun je contact opnemen via de contactgegevens die je van je VvE-beheerder hebt ontvangen.
     </p>
 
@@ -129,10 +130,22 @@
 
     <h2>11. Contact</h2>
     <p>
-      Voor vragen over dit privacybeleid: Dave de Bruin (Digidave), Minckelerslaan 18, 3707 TJ Zeist.
+      Voor vragen over dit privacybeleid: Dave de Bruin (Digidave).
+      <span id="addr-2" class="addr-hidden">Postadres beschikbaar na inloggen.</span>
     </p>
   </div>
 </div>
+
+<script type="module">
+  import { watchAuth } from './assets/vve-auth.js?v22';
+  watchAuth(function(user){
+    if (user) {
+      document.querySelectorAll('.addr-hidden').forEach(function(el){
+        el.textContent = 'Minckelerslaan 18, 3707 TJ Zeist.';
+      });
+    }
+  });
+</script>
 
 </body>
 </html>
