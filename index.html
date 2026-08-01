@@ -1,4 +1,4 @@
-<!-- fix 29 -->
+<!-- fix 30 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -606,28 +606,8 @@
   <a href="privacy.html" style="color:#7d7460;">Privacybeleid</a> &middot; <a href="disclaimer.html" style="color:#7d7460;">Disclaimer</a>
 </footer>
 
-<script>
-  (function(){
-    var availableModules = ['basis', 'gevorderden', 'overeenkomsten-alv', 'mjop', 'geld-risico', 'verduurzaming'];
-    try {
-      var allDone = availableModules.every(function(slug){
-        return localStorage.getItem('vveModuleDone:' + slug) === '1';
-      });
-      if (allDone) {
-        document.getElementById('allDoneBanner').classList.add('show');
-      }
-      document.querySelectorAll('.card-done-badge').forEach(function(badge){
-        var slug = badge.getAttribute('data-done-slug');
-        if (localStorage.getItem('vveModuleDone:' + slug) === '1') {
-          badge.classList.add('show');
-        }
-      });
-    } catch (e) {}
-  })();
-</script>
-
 <script type="module">
-  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v28';
+  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v30';
 
   function updateLoginStatus(user, vve){
     var link = document.getElementById('loginStatusLink');
@@ -681,16 +661,34 @@
     });
   }
 
+  function applyProgressBadges(uid){
+    var availableModules = ['basis', 'gevorderden', 'overeenkomsten-alv', 'mjop', 'geld-risico', 'verduurzaming'];
+    try {
+      var key = uid || 'anon';
+      var allDone = availableModules.every(function(slug){
+        return localStorage.getItem('vveModuleDone:' + key + ':' + slug) === '1';
+      });
+      document.getElementById('allDoneBanner').classList.toggle('show', allDone);
+      document.querySelectorAll('.card-done-badge').forEach(function(badge){
+        var slug = badge.getAttribute('data-done-slug');
+        var done = localStorage.getItem('vveModuleDone:' + key + ':' + slug) === '1';
+        badge.classList.toggle('show', done);
+      });
+    } catch (e) {}
+  }
+
   // Standaard: alles op slot totdat we weten wat deze bezoeker mag (voorkomt dat
   // niet-geautoriseerde bezoekers even een klikbare 'Start'-knop zien voordat de
   // controle is uitgevoerd).
   applyAccess({});
+  applyProgressBadges(null);
 
   watchAuth(async function(user){
-    if (!user) { applyAccess({}); updateLoginStatus(null, null); return; }
+    if (!user) { applyAccess({}); updateLoginStatus(null, null); applyProgressBadges(null); return; }
     try {
       var vve = await getVveDocForCurrentUser();
       updateLoginStatus(user, vve);
+      applyProgressBadges(user.uid);
       if (vve && vve.status === 'approved') {
         applyAccess(vve.moduleAccess || {});
       } else {
@@ -699,6 +697,7 @@
     } catch (e) {
       applyAccess({});
       updateLoginStatus(user, null);
+      applyProgressBadges(user.uid);
     }
   });
 </script>

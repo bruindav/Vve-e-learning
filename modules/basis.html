@@ -1,11 +1,11 @@
-<!-- fix 29 -->
+<!-- fix 30 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
 <script>document.documentElement.style.visibility='hidden';</script>
 <script type="module">
-  import { guardModule } from '../assets/module-gate.js?v28';
+  import { guardModule } from '../assets/module-gate.js?v30';
   guardModule('basis');
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -584,7 +584,7 @@
       const answeredCount = Object.values(answered).filter(v=>v.correct).length;
       document.getElementById('doneScore').textContent = answeredCount + '/4';
       document.getElementById('doneBanner').classList.add('show');
-      try{ localStorage.setItem('vveModuleDone:basis','1'); }catch(e){}
+      try{ var _uidKey = (window.__vveUid || 'anon'); localStorage.setItem('vveModuleDone:'+_uidKey+':basis','1'); }catch(e){}
     }
   }
 
