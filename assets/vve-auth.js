@@ -1,4 +1,4 @@
-// fix 33
+// fix 34
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -31,7 +31,7 @@ import {
   EMAILJS_PUBLIC_KEY,
   EMAILJS_TEMPLATE_ID,
   ALL_MODULES,
-} from "./firebase-config.js?v33";
+} from "./firebase-config.js?v34";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -174,6 +174,30 @@ export async function sendRegistrationEmail(email, naam) {
     });
   } catch (e) {
     console.error("[vve-auth] registratiemail mislukt:", e);
+  }
+}
+
+export async function sendModulesUpdatedEmail(email, naam, moduleAccess) {
+  if (EMAILJS_SERVICE_ID === "VUL_IN") return; // EmailJS nog niet geconfigureerd
+  if (!email) { console.warn("[vve-auth] update-mail overgeslagen: geen e-mailadres"); return; }
+  try {
+    await _loadEmailJs();
+    const modulesText = ALL_MODULES
+      .filter((mod) => moduleAccess && moduleAccess[mod.slug] === true)
+      .map((mod) => "- " + mod.title)
+      .join("\n") || "(op dit moment geen modules)";
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email: email,
+      to_name: naam || email,
+      email_subject: "Je moduletoegang is bijgewerkt \u2014 VvE e-learning",
+      email_body:
+        "Je toegang tot de VvE e-learning is zojuist aangepast. Je hebt nu toegang tot de volgende modules:\n\n" +
+        modulesText +
+        "\n\nInloggen kan hier:\n" +
+        _loginLink(),
+    });
+  } catch (e) {
+    console.error("[vve-auth] update-mail mislukt:", e);
   }
 }
 

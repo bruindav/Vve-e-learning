@@ -1,4 +1,4 @@
-<!-- fix 28 -->
+<!-- fix 34 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -103,8 +103,8 @@
 </main>
 
 <script type="module">
-  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, deleteVve, logout } from './assets/vve-auth.js?v33';
-  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v33';
+  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, logout } from './assets/vve-auth.js?v34';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v34';
 
   const loginWrap = document.getElementById('loginWrap');
   const main = document.getElementById('main');
@@ -224,6 +224,9 @@
         label.classList.add('saving');
         try {
           await setModuleAccess(vve.id, mod.slug, checkbox.checked);
+          if (!vve.moduleAccess) vve.moduleAccess = {};
+          vve.moduleAccess[mod.slug] = checkbox.checked;
+          await sendModulesUpdatedEmail(vve.email, vve.naam, vve.moduleAccess);
         } catch (err) {
           alert('Opslaan mislukt: ' + (err && err.message ? err.message : err));
           checkbox.checked = !checkbox.checked;
