@@ -1,4 +1,4 @@
-<!-- fix 26 -->
+<!-- fix 28 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -88,6 +88,7 @@
       Inloggen met Google
     </button>
     <div class="error" id="loginError"></div>
+    <a href="#" id="switchAccountLink" style="display:none; text-align:center; margin-top:10px; font-size:12.5px; color:var(--ink-fade);">Ander account proberen</a>
   </div>
 </div>
 
@@ -102,13 +103,18 @@
 </main>
 
 <script type="module">
-  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, deleteVve, logout } from './assets/vve-auth.js?v27';
-  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v27';
+  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, deleteVve, logout } from './assets/vve-auth.js?v28';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v28';
 
   const loginWrap = document.getElementById('loginWrap');
   const main = document.getElementById('main');
   const googleLoginBtn = document.getElementById('googleLoginBtn');
   const loginError = document.getElementById('loginError');
+  const switchAccountLink = document.getElementById('switchAccountLink');
+  switchAccountLink.addEventListener('click', function(e){
+    e.preventDefault();
+    logout();
+  });
   const pendingList = document.getElementById('pendingList');
   const approvedList = document.getElementById('approvedList');
 
@@ -259,16 +265,23 @@
     if (user && user.email === ADMIN_EMAIL) {
       loginWrap.style.display = 'none';
       main.classList.add('show');
+      loginError.classList.remove('show');
+      switchAccountLink.style.display = 'none';
       renderAll();
     } else if (user) {
+      // Let op: bewust GEEN logout() hier. Firebase-sessies zijn gedeeld over alle
+      // tabbladen van dezelfde browser; een uitlog hier zou ook een actieve VvE-sessie
+      // in een ander tabblad verbreken. We tonen alleen een melding + een bewuste,
+      // door de gebruiker zelf te kiezen 'ander account'-knop.
       loginWrap.style.display = 'flex';
       main.classList.remove('show');
-      loginError.textContent = 'Dit account heeft geen beheerrechten.';
+      loginError.textContent = 'Dit account (' + user.email + ') heeft geen beheerrechten. Log in met het beheer-account, of gebruik een ander tabblad om als VvE in te loggen.';
       loginError.classList.add('show');
-      logout();
+      switchAccountLink.style.display = 'block';
     } else {
       loginWrap.style.display = 'flex';
       main.classList.remove('show');
+      switchAccountLink.style.display = 'none';
     }
   });
 </script>

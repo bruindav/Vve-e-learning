@@ -30,7 +30,7 @@ import {
   EMAILJS_SERVICE_ID,
   EMAILJS_PUBLIC_KEY,
   EMAILJS_TEMPLATE_ID,
-} from "./firebase-config.js?v27";
+} from "./firebase-config.js?v28";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
