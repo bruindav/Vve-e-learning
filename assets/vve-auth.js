@@ -1,4 +1,4 @@
-// fix 27
+// fix 31
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -30,7 +30,7 @@ import {
   EMAILJS_SERVICE_ID,
   EMAILJS_PUBLIC_KEY,
   EMAILJS_TEMPLATE_ID,
-} from "./firebase-config.js?v30";
+} from "./firebase-config.js?v31";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -154,7 +154,7 @@ export async function sendRegistrationEmail(email, naam) {
   try {
     await _loadEmailJs();
     await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email: email,
+      email: email,
       to_name: naam || email,
       email_subject: "Aanvraag ontvangen — E-learning VvE-bestuur",
       email_body:
@@ -176,7 +176,7 @@ export async function sendApprovalEmail(email, naam, moduleAccess) {
       .filter((slug) => moduleAccess[slug] === true)
       .join(", ") || "(nog geen modules toegekend)";
     await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email: email,
+      email: email,
       to_name: naam || email,
       email_subject: "Jullie toegang is geactiveerd — E-learning VvE-bestuur",
       email_body:
