@@ -1,4 +1,4 @@
-// fix 21
+// fix 25
 // VUL HIERONDER JE EIGEN FIREBASE-CONFIGURATIE IN
 // (Firebase Console > Projectinstellingen > Jouw apps > Web app > SDK setup and configuration)
 export const firebaseConfig = {
@@ -15,14 +15,11 @@ export const firebaseConfig = {
 export const ADMIN_EMAIL = "davedebruin123@gmail.com";
 
 // EmailJS-configuratie voor bevestigingsmails (registratie + goedkeuring).
-// Aanmaken op https://www.emailjs.com (gratis tot 200 mails/maand):
-// 1. Account aanmaken, Email Service koppelen (bv. Gmail)
-// 2. Twee templates aanmaken: één voor 'registratie ontvangen', één voor 'goedgekeurd'
-// 3. Service ID, beide Template ID's en de Public Key hieronder invullen
+// We gebruiken hier bewust maar één gedeeld template (gratis EmailJS-limiet is 2 templates
+// per account) — onderwerp en inhoud worden per mail meegegeven als variabelen.
 export const EMAILJS_SERVICE_ID = "VUL_IN";
 export const EMAILJS_PUBLIC_KEY = "VUL_IN";
-export const EMAILJS_TEMPLATE_REGISTERED = "VUL_IN";
-export const EMAILJS_TEMPLATE_APPROVED = "VUL_IN";
+export const EMAILJS_TEMPLATE_ID = "template_mss670k";
 
 // Alle modules die in het systeem bestaan. slug moet overeenkomen met de bestandsnaam
 // (zonder .html) in de map modules/.

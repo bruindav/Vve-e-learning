@@ -1,4 +1,4 @@
-// fix 22
+// fix 25
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -29,9 +29,8 @@ import {
   firebaseConfig,
   EMAILJS_SERVICE_ID,
   EMAILJS_PUBLIC_KEY,
-  EMAILJS_TEMPLATE_REGISTERED,
-  EMAILJS_TEMPLATE_APPROVED,
-} from "./firebase-config.js?v21";
+  EMAILJS_TEMPLATE_ID,
+} from "./firebase-config.js?v25";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -153,9 +152,14 @@ export async function sendRegistrationEmail(email, naam) {
   if (EMAILJS_SERVICE_ID === "VUL_IN") return; // EmailJS nog niet geconfigureerd
   try {
     await _loadEmailJs();
-    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_REGISTERED, {
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       to_email: email,
       to_name: naam || email,
+      email_subject: "Aanvraag ontvangen — E-learning VvE-bestuur",
+      email_body:
+        "Bedankt voor jullie registratie bij de E-learning VvE-bestuur van Digidave.\n\n" +
+        "Jullie aanvraag wordt nu bekeken. Zodra deze is goedgekeurd, ontvangen jullie een " +
+        "bevestiging met de modules die voor jullie zijn vrijgegeven.",
     });
   } catch (e) {
     console.error("[vve-auth] registratiemail mislukt:", e);
@@ -169,10 +173,14 @@ export async function sendApprovalEmail(email, naam, moduleAccess) {
     const modulesText = Object.keys(moduleAccess || {})
       .filter((slug) => moduleAccess[slug] === true)
       .join(", ") || "(nog geen modules toegekend)";
-    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_APPROVED, {
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       to_email: email,
       to_name: naam || email,
-      modules: modulesText,
+      email_subject: "Jullie toegang is geactiveerd — E-learning VvE-bestuur",
+      email_body:
+        "Goed nieuws — jullie registratie is goedgekeurd. Jullie hebben nu toegang tot:\n\n" +
+        modulesText +
+        "\n\nLog in via de website om te starten.",
     });
   } catch (e) {
     console.error("[vve-auth] goedkeuringsmail mislukt:", e);
