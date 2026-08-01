@@ -1,0 +1,138 @@
+<!-- fix 22 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacybeleid — E-learning VvE-bestuur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228; --ink-navy-deep:#0d1a1f; --paper:#ECE4D1; --rule-soft:#2F4F4433;
+    --ink-text:#2A2118; --ink-fade:#5A5040; --amber:#C98A2C; --amber-deep:#a86f1c; --credit:#3d6b52;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink-navy); font-family:'IBM Plex Sans', sans-serif; color:var(--ink-text);}
+  .brandbar{
+    background:var(--ink-navy-deep); padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid #ffffff14;
+  }
+  .brandbar span{font-size:15px; font-weight:600; color:#f2efe6;}
+  .brandbar a{color:#8fa8b3; font-size:12.5px; text-decoration:none;}
+  main{max-width:720px; margin:0 auto; padding:40px 20px 80px; background:var(--paper);}
+  .wrap{background:var(--paper); padding:36px 32px; border-radius:4px; margin-top:24px;}
+  h1{font-family:'Fraunces',serif; font-size:26px; margin:0 0 6px;}
+  .meta{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-fade); margin-bottom:28px;}
+  h2{font-family:'Fraunces',serif; font-size:17px; margin:30px 0 10px; border-bottom:1px solid var(--rule-soft); padding-bottom:6px;}
+  p, li{font-size:14.5px; line-height:1.65; color:var(--ink-text);}
+  ul{padding-left:20px;}
+  a{color:var(--amber-deep);}
+  .highlight{background:#3d6b5214; border-left:3px solid var(--credit); padding:12px 16px; border-radius:0 3px 3px 0; margin:16px 0;}
+  .container{max-width:760px; margin:0 auto; padding:0 20px;}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span>digidave</span>
+  <a href="index.html">&larr; Terug naar overzicht</a>
+</div>
+
+<div class="container">
+  <div class="wrap">
+    <h1>Privacybeleid</h1>
+    <p class="meta">E-learning VvE-bestuur (Digidave) &middot; laatst bijgewerkt: 1 augustus 2026</p>
+
+    <div class="highlight">
+      Dit platform helpt VvE-bestuurders zich te scholen in boekhouding, governance en aanverwante onderwerpen.
+      Om dit te kunnen aanbieden, verwerken we een beperkte set persoonsgegevens van de VvE's die zich registreren.
+    </div>
+
+    <h2>1. Wie is verantwoordelijk?</h2>
+    <p>
+      Dit platform wordt beheerd door Dave de Bruin, handelend onder de naam Digidave, Minckelerslaan 18, 3707 TJ Zeist.
+      Voor vragen over dit privacybeleid of over je gegevens kun je contact opnemen via de contactgegevens die je van je VvE-beheerder hebt ontvangen.
+    </p>
+
+    <h2>2. Welke gegevens verzamelen we?</h2>
+    <ul>
+      <li><strong>E-mailadres</strong> &mdash; voor het aanmaken van een account, inloggen, en het versturen van bevestigingsmails</li>
+      <li><strong>Naam van de VvE</strong> &mdash; optioneel, om jullie registratie te herkennen</li>
+      <li><strong>Wachtwoord</strong> &mdash; versleuteld opgeslagen door Google Firebase Authentication; wij kunnen dit zelf niet inzien</li>
+      <li><strong>Status van je aanvraag</strong> &mdash; of jullie registratie is goedgekeurd, en tot welke modules jullie toegang hebben</li>
+      <li><strong>Voortgang binnen modules</strong> &mdash; welke onderdelen je hebt doorlopen; dit wordt lokaal in je eigen browser bijgehouden (localStorage) en <strong>niet</strong> naar ons verstuurd of centraal opgeslagen</li>
+    </ul>
+    <p>We verzamelen geen locatiegegevens, foto's, of gegevens van derden buiten wat hierboven staat.</p>
+
+    <h2>3. Waarvoor gebruiken we je gegevens?</h2>
+    <ul>
+      <li>Het aanmaken en beheren van jullie VvE-account</li>
+      <li>Het toekennen van toegang tot de modules die jullie hebben afgenomen</li>
+      <li>Het versturen van bevestigingsmails (registratie ontvangen, aanvraag goedgekeurd)</li>
+      <li>Facturatie en administratie van de afgenomen dienst</li>
+    </ul>
+    <p>We gebruiken je gegevens <strong>niet</strong> voor advertenties, tracking, of verkoop aan derden.</p>
+
+    <h2>4. Wie heeft toegang tot je gegevens?</h2>
+    <ul>
+      <li><strong>Jullie VvE</strong> &mdash; je eigen account en de status daarvan zijn alleen voor jullie zelf zichtbaar</li>
+      <li><strong>De beheerder (Digidave)</strong> &mdash; heeft toegang tot alle registraties, om aanvragen te kunnen beoordelen en modules toe te kennen</li>
+      <li>Andere VvE's kunnen jullie gegevens niet inzien</li>
+    </ul>
+
+    <h2>5. Waar worden gegevens opgeslagen?</h2>
+    <p>
+      Gegevens worden opgeslagen in <strong>Google Firebase</strong> (Authentication en Firestore), een clouddienst van Google LLC, in een Europese datacenterregio.
+      Meer informatie: <a href="https://firebase.google.com/support/privacy" target="_blank">firebase.google.com/support/privacy</a>.
+    </p>
+    <p>
+      Bevestigingsmails worden verstuurd via <strong>EmailJS</strong>, een dienst voor het versturen van transactionele e-mail.
+      Meer informatie: <a href="https://www.emailjs.com/legal/privacy-policy/" target="_blank">emailjs.com/legal/privacy-policy</a>.
+    </p>
+
+    <h2>6. Hoe lang bewaren we je gegevens?</h2>
+    <p>
+      We bewaren jullie gegevens zolang jullie VvE gebruikmaakt van het platform. Bij beëindiging van de dienst
+      worden persoonsgegevens op verzoek verwijderd, met uitzondering van gegevens die we wettelijk verplicht zijn
+      te bewaren (zoals facturen, doorgaans 7 jaar volgens de fiscale bewaarplicht).
+    </p>
+
+    <h2>7. Jouw rechten (AVG)</h2>
+    <p>Op grond van de Algemene Verordening Gegevensbescherming (AVG) heb je de volgende rechten:</p>
+    <ul>
+      <li><strong>Recht op inzage</strong> &mdash; opvragen welke gegevens we van je hebben</li>
+      <li><strong>Recht op correctie</strong> &mdash; onjuiste gegevens laten aanpassen</li>
+      <li><strong>Recht op verwijdering</strong> &mdash; je account en gegevens laten verwijderen</li>
+      <li><strong>Recht op beperking</strong> &mdash; bezwaar maken tegen bepaald gebruik van je gegevens</li>
+    </ul>
+    <p>Neem voor het uitoefenen van deze rechten contact op met de beheerder.</p>
+
+    <h2>8. Cookies en lokale opslag</h2>
+    <p>
+      Dit platform gebruikt geen tracking- of advertentiecookies. Firebase gebruikt technische cookies die strikt
+      noodzakelijk zijn voor het inloggen. Je voortgang binnen modules wordt lokaal in je browser bijgehouden
+      (localStorage) en verlaat je apparaat niet.
+    </p>
+
+    <h2>9. Beveiliging</h2>
+    <p>
+      Toegang is beveiligd via Google Firebase Authentication. Alle communicatie verloopt via HTTPS.
+      Alleen goedgekeurde, ingelogde VvE's krijgen toegang tot de modules waarvoor ze toestemming hebben gekregen.
+    </p>
+
+    <h2>10. Wijzigingen in dit beleid</h2>
+    <p>
+      We kunnen dit privacybeleid aanpassen. De datum bovenaan dit document geeft aan wanneer het voor het laatst
+      is bijgewerkt.
+    </p>
+
+    <h2>11. Contact</h2>
+    <p>
+      Voor vragen over dit privacybeleid: Dave de Bruin (Digidave), Minckelerslaan 18, 3707 TJ Zeist.
+    </p>
+  </div>
+</div>
+
+</body>
+</html>
