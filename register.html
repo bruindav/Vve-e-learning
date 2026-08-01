@@ -1,4 +1,4 @@
-<!-- fix 22 -->
+<!-- fix 24 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -77,8 +77,8 @@
   </div>
 
   <form id="registerForm" class="active">
-    <label for="regNaam">Naam van de VvE (optioneel)</label>
-    <input type="text" id="regNaam" placeholder="bijv. VVE Fazantenkamp" autocomplete="organization">
+    <label for="regNaam">Naam van de VvE</label>
+    <input type="text" id="regNaam" placeholder="bijv. VVE Fazantenkamp" autocomplete="organization" required>
     <label for="regEmail">E-mailadres</label>
     <input type="email" id="regEmail" placeholder="bestuur@voorbeeld.nl" autocomplete="email" required>
     <label for="regPassword">Wachtwoord (minimaal 6 tekens)</label>
@@ -170,7 +170,11 @@
     e.preventDefault();
     var email = document.getElementById('regEmail').value;
     var password = document.getElementById('regPassword').value;
-    var naam = document.getElementById('regNaam').value;
+    var naam = document.getElementById('regNaam').value.trim();
+    if (!naam) {
+      showMsg('Vul de naam van de VvE in \u2014 dat hebben we nodig om de aanvraag te kunnen herkennen.', 'error');
+      return;
+    }
     registerBtn.disabled = true;
     registerBtn.textContent = 'Bezig...';
     try {
