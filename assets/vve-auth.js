@@ -1,4 +1,4 @@
-// fix 31
+// fix 32
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -30,7 +30,7 @@ import {
   EMAILJS_SERVICE_ID,
   EMAILJS_PUBLIC_KEY,
   EMAILJS_TEMPLATE_ID,
-} from "./firebase-config.js?v31";
+} from "./firebase-config.js?v32";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -134,6 +134,10 @@ export async function deleteVve(vveDocId) {
 
 // ======================= EmailJS bevestigingsmails =======================
 
+function _loginLink() {
+  return window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "register.html";
+}
+
 function _loadEmailJs() {
   if (window.emailjs) return Promise.resolve();
   return new Promise((resolve, reject) => {
@@ -156,11 +160,16 @@ export async function sendRegistrationEmail(email, naam) {
     await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       email: email,
       to_name: naam || email,
-      email_subject: "Aanvraag ontvangen — E-learning VvE-bestuur",
+      email_subject: "Aanmelding ontvangen — VvE e-learning",
       email_body:
-        "Bedankt voor jullie registratie bij de E-learning VvE-bestuur van Digidave.\n\n" +
-        "Jullie aanvraag wordt nu bekeken. Zodra deze is goedgekeurd, ontvangen jullie een " +
-        "bevestiging met de modules die voor jullie zijn vrijgegeven.",
+        "Bedankt voor je aanmelding bij de VvE e-learning!\n\n" +
+        "Je aanvraag wordt nu bekeken. Zodra deze is goedgekeurd, ontvang je een bevestiging " +
+        "met de modules die voor jullie VvE zijn vrijgegeven.\n\n" +
+        "Goed om te weten: ieder bestuurslid kan zich met het eigen e-mailadres apart aanmelden " +
+        "\u2014 je hoeft dit account dus niet te delen.\n\n" +
+        "We wensen je veel succes met het bestuurswerk!\n\n" +
+        "Inloggen kan hier zodra je bent goedgekeurd:\n" +
+        _loginLink(),
     });
   } catch (e) {
     console.error("[vve-auth] registratiemail mislukt:", e);
@@ -178,11 +187,13 @@ export async function sendApprovalEmail(email, naam, moduleAccess) {
     await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       email: email,
       to_name: naam || email,
-      email_subject: "Jullie toegang is geactiveerd — E-learning VvE-bestuur",
+      email_subject: "Je hebt toegang tot de VvE e-learning!",
       email_body:
-        "Goed nieuws — jullie registratie is goedgekeurd. Jullie hebben nu toegang tot:\n\n" +
+        "Goed nieuws \u2014 je aanmelding voor de VvE e-learning is goedgekeurd. Je hebt nu toegang tot:\n\n" +
         modulesText +
-        "\n\nLog in via de website om te starten.",
+        "\n\nWe wensen je veel succes en plezier met het bestuurswerk!\n\n" +
+        "Inloggen kan hier:\n" +
+        _loginLink(),
     });
   } catch (e) {
     console.error("[vve-auth] goedkeuringsmail mislukt:", e);

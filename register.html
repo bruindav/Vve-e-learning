@@ -1,4 +1,4 @@
-<!-- fix 26 -->
+<!-- fix 32 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -72,11 +72,11 @@
   <p class="sub">Registreer jullie VvE, of log in als jullie al een account hebben.</p>
 
   <div class="tabs">
-    <div class="tab active" id="tabRegister">Registreren</div>
-    <div class="tab" id="tabLogin">Inloggen</div>
+    <div class="tab" id="tabRegister">Registreren</div>
+    <div class="tab active" id="tabLogin">Inloggen</div>
   </div>
 
-  <form id="registerForm" class="active">
+  <form id="registerForm">
     <label for="regNaam">Naam van de VvE</label>
     <input type="text" id="regNaam" placeholder="bijv. VVE Fazantenkamp" autocomplete="organization" required>
     <label for="regEmail">E-mailadres</label>
@@ -86,7 +86,7 @@
     <button type="submit" id="registerBtn">Registreren</button>
   </form>
 
-  <form id="loginForm">
+  <form id="loginForm" class="active">
     <label for="loginEmail">E-mailadres</label>
     <input type="email" id="loginEmail" autocomplete="email" required>
     <label for="loginPassword">Wachtwoord</label>
@@ -104,7 +104,7 @@
 </div>
 
 <script type="module">
-  import { registerVve, loginVve, resetPasswordVve, watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v31';
+  import { registerVve, loginVve, resetPasswordVve, watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v32';
 
   const box = document.getElementById('box');
   const tabRegister = document.getElementById('tabRegister');
