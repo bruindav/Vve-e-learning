@@ -131,7 +131,12 @@
     white-space:nowrap;
   }
 
-  .card.locked{opacity:.7; cursor:default;}
+  .card.locked{
+    cursor:default; background:linear-gradient(180deg, var(--paper-dark), #d9cfb2);
+    border-style:dashed;
+  }
+  .card.locked h3, .card.locked li{color:var(--ink-text);}
+  .card.locked .kicker, .card.locked .time{color:var(--ink-fade);}
   .card.locked:hover{transform:none; box-shadow:none;}
   .locked-badge{
     font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.03em;
@@ -607,7 +612,7 @@
 </footer>
 
 <script type="module">
-  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v34';
+  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v35';
 
   function updateLoginStatus(user, vve){
     var link = document.getElementById('loginStatusLink');
