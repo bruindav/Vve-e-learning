@@ -103,8 +103,8 @@
 </main>
 
 <script type="module">
-  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, logout } from './assets/vve-auth.js?v37';
-  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v37';
+  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, logout } from './assets/vve-auth.js?v38';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v38';
 
   const loginWrap = document.getElementById('loginWrap');
   const main = document.getElementById('main');
@@ -214,6 +214,7 @@
     var grid = document.createElement('div');
     grid.className = 'module-grid';
     var hasPendingChange = false;
+    var beforeSnapshot = null;
 
     var notifyBtn = document.createElement('button');
     notifyBtn.type = 'button';
@@ -224,8 +225,9 @@
       notifyBtn.disabled = true;
       notifyBtn.textContent = 'Bezig...';
       try {
-        await sendModulesUpdatedEmail(vve.email, vve.naam, vve.moduleAccess);
+        await sendModulesUpdatedEmail(vve.email, vve.naam, vve.moduleAccess, beforeSnapshot);
         hasPendingChange = false;
+        beforeSnapshot = null;
         notifyBtn.style.display = 'none';
       } catch (err) {
         alert('Versturen mislukt: ' + (err && err.message ? err.message : err));
@@ -245,6 +247,11 @@
       checkbox.addEventListener('change', async function(){
         label.classList.add('saving');
         try {
+          if (!hasPendingChange) {
+            // Bewaar de stand van vóór deze reeks wijzigingen, voor het 'wat is
+            // gewijzigd'-overzicht in de mail.
+            beforeSnapshot = Object.assign({}, vve.moduleAccess || {});
+          }
           await setModuleAccess(vve.id, mod.slug, checkbox.checked);
           if (!vve.moduleAccess) vve.moduleAccess = {};
           vve.moduleAccess[mod.slug] = checkbox.checked;

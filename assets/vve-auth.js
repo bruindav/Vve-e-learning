@@ -1,4 +1,4 @@
-// fix 34
+// fix 38
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -31,7 +31,8 @@ import {
   EMAILJS_PUBLIC_KEY,
   EMAILJS_TEMPLATE_ID,
   ALL_MODULES,
-} from "./firebase-config.js?v37";
+  ADMIN_EMAIL,
+} from "./firebase-config.js?v38";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -54,6 +55,7 @@ export async function registerVve(email, password, naam) {
     createdAt: serverTimestamp(),
   });
   await sendRegistrationEmail(cleanEmail, naam);
+  await sendAdminNewRegistrationNotice(cleanEmail, naam);
   return cred.user;
 }
 
@@ -139,6 +141,10 @@ function _loginLink() {
   return window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "register.html";
 }
 
+function _adminLink() {
+  return window.location.origin + window.location.pathname.replace(/[^/]*$/, "") + "admin.html";
+}
+
 function _loadEmailJs() {
   if (window.emailjs) return Promise.resolve();
   return new Promise((resolve, reject) => {
@@ -177,7 +183,7 @@ export async function sendRegistrationEmail(email, naam) {
   }
 }
 
-export async function sendModulesUpdatedEmail(email, naam, moduleAccess) {
+export async function sendModulesUpdatedEmail(email, naam, moduleAccess, previousModuleAccess) {
   if (EMAILJS_SERVICE_ID === "VUL_IN") return; // EmailJS nog niet geconfigureerd
   if (!email) { console.warn("[vve-auth] update-mail overgeslagen: geen e-mailadres"); return; }
   try {
@@ -186,18 +192,80 @@ export async function sendModulesUpdatedEmail(email, naam, moduleAccess) {
       .filter((mod) => moduleAccess && moduleAccess[mod.slug] === true)
       .map((mod) => "- " + mod.title)
       .join("\n") || "(op dit moment geen modules)";
+
+    const added = ALL_MODULES.filter(
+      (mod) =>
+        moduleAccess && moduleAccess[mod.slug] === true &&
+        !(previousModuleAccess && previousModuleAccess[mod.slug] === true)
+    );
+    const removed = ALL_MODULES.filter(
+      (mod) =>
+        previousModuleAccess && previousModuleAccess[mod.slug] === true &&
+        !(moduleAccess && moduleAccess[mod.slug] === true)
+    );
+    let changeText = "";
+    if (added.length) {
+      changeText += "Nieuw toegevoegd:\n" + added.map((mod) => "- " + mod.title).join("\n") + "\n\n";
+    }
+    if (removed.length) {
+      changeText += "Niet langer beschikbaar:\n" + removed.map((mod) => "- " + mod.title).join("\n") + "\n\n";
+    }
+
     await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
       email: email,
       to_name: naam || email,
       email_subject: "Je moduletoegang is bijgewerkt \u2014 VvE e-learning",
       email_body:
-        "Je toegang tot de VvE e-learning is zojuist aangepast. Je hebt nu toegang tot de volgende modules:\n\n" +
+        "Je toegang tot de VvE e-learning is zojuist aangepast.\n\n" +
+        changeText +
+        "Je hebt nu in totaal toegang tot de volgende modules:\n\n" +
         modulesText +
         "\n\nInloggen kan hier:\n" +
         _loginLink(),
     });
   } catch (e) {
     console.error("[vve-auth] update-mail mislukt:", e);
+  }
+}
+
+export async function sendAdminNewRegistrationNotice(email, naam) {
+  if (EMAILJS_SERVICE_ID === "VUL_IN") return; // EmailJS nog niet geconfigureerd
+  try {
+    await _loadEmailJs();
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email: ADMIN_EMAIL,
+      to_name: "Dave",
+      email_subject: "Nieuwe registratie \u2014 VvE e-learning",
+      email_body:
+        "Er heeft zich een nieuwe VvE aangemeld voor de e-learning:\n\n" +
+        "Naam: " + (naam || "(niet ingevuld)") + "\n" +
+        "E-mail: " + email + "\n\n" +
+        "Beoordeel de aanvraag in het beheerscherm:\n" +
+        _adminLink(),
+    });
+  } catch (e) {
+    console.error("[vve-auth] beheer-notificatie mislukt:", e);
+  }
+}
+
+export async function sendModuleRequestEmail(email, naam, moduleTitle) {
+  if (EMAILJS_SERVICE_ID === "VUL_IN") return; // EmailJS nog niet geconfigureerd
+  try {
+    await _loadEmailJs();
+    await window.emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      email: ADMIN_EMAIL,
+      to_name: "Dave",
+      email_subject: "Aanvraag voor module \u2014 VvE e-learning",
+      email_body:
+        "Een VvE vraagt toegang aan tot een module:\n\n" +
+        "VvE: " + (naam || "(niet ingevuld)") + "\n" +
+        "E-mail: " + email + "\n" +
+        "Gevraagde module: " + moduleTitle + "\n\n" +
+        "Beoordeel dit in het beheerscherm:\n" +
+        _adminLink(),
+    });
+  } catch (e) {
+    console.error("[vve-auth] aanvraagmail mislukt:", e);
   }
 }
 

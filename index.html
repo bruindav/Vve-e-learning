@@ -1,4 +1,4 @@
-<!-- fix 35 -->
+<!-- fix 38 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -143,6 +143,14 @@
     color:var(--ink-fade); background:#00000009; border:1px solid var(--rule-soft); padding:4px 9px; border-radius:2px;
     white-space:nowrap;
   }
+
+  .request-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.03em;
+    color:#fff; background:var(--slate); border:1px solid var(--slate); padding:5px 10px; border-radius:2px;
+    white-space:nowrap; cursor:pointer;
+  }
+  .request-btn:hover{background:#2f4756;}
+  .request-btn:disabled{cursor:default; opacity:.75;}
 
   .card-done-badge{
     display:none; position:absolute; top:-14px; right:-10px; width:44px; height:44px;
@@ -612,7 +620,7 @@
 </footer>
 
 <script type="module">
-  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v37';
+  import { watchAuth, getVveDocForCurrentUser, sendModuleRequestEmail, logout } from './assets/vve-auth.js?v38';
 
   function updateLoginStatus(user, vve){
     var link = document.getElementById('loginStatusLink');
@@ -632,11 +640,23 @@
     }
   }
 
-  function applyAccess(moduleAccess){
+  function requestModuleAccess(btn, card, moduleTitle, vveInfo){
+    btn.disabled = true;
+    btn.textContent = 'Bezig...';
+    sendModuleRequestEmail(vveInfo.email, vveInfo.naam, moduleTitle).then(function(){
+      btn.textContent = '\u2713 Aanvraag verstuurd';
+    }).catch(function(){
+      btn.textContent = 'Mislukt, probeer opnieuw';
+      btn.disabled = false;
+    });
+  }
+
+  function applyAccess(moduleAccess, vveInfo){
     document.querySelectorAll('[data-slug]').forEach(function(card){
       var slug = card.getAttribute('data-slug');
       var authorized = !!(moduleAccess && moduleAccess[slug] === true);
-      var cta = card.querySelector('.soon, .locked-badge');
+      var cta = card.querySelector('.soon, .locked-badge, .request-btn');
+      if (!cta) return;
 
       if (authorized) {
         card.classList.remove('locked');
@@ -646,10 +666,10 @@
           card.style.cursor = 'pointer';
           card.onclick = function(){ window.location.href = 'modules/' + slug + '.html'; };
         }
-        if (cta) {
-          cta.className = 'soon';
-          cta.textContent = 'Start deze module \u2192';
-        }
+        var soonEl = document.createElement('span');
+        soonEl.className = 'soon';
+        soonEl.textContent = 'Start deze module \u2192';
+        cta.replaceWith(soonEl);
       } else {
         card.classList.add('locked');
         if (card.tagName === 'A') {
@@ -658,9 +678,23 @@
           card.onclick = null;
           card.style.cursor = 'default';
         }
-        if (cta) {
-          cta.className = 'locked-badge';
-          cta.innerHTML = '&#128274; Op aanvraag beschikbaar';
+        if (vveInfo) {
+          var moduleTitle = (card.querySelector('h3') || {}).textContent || slug;
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'request-btn';
+          btn.textContent = 'Vraag toegang aan';
+          btn.addEventListener('click', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            requestModuleAccess(btn, card, moduleTitle, vveInfo);
+          });
+          cta.replaceWith(btn);
+        } else {
+          var badgeEl = document.createElement('span');
+          badgeEl.className = 'locked-badge';
+          badgeEl.innerHTML = '&#128274; Op aanvraag beschikbaar';
+          cta.replaceWith(badgeEl);
         }
       }
     });
@@ -685,22 +719,22 @@
   // Standaard: alles op slot totdat we weten wat deze bezoeker mag (voorkomt dat
   // niet-geautoriseerde bezoekers even een klikbare 'Start'-knop zien voordat de
   // controle is uitgevoerd).
-  applyAccess({});
+  applyAccess({}, null);
   applyProgressBadges(null);
 
   watchAuth(async function(user){
-    if (!user) { applyAccess({}); updateLoginStatus(null, null); applyProgressBadges(null); return; }
+    if (!user) { applyAccess({}, null); updateLoginStatus(null, null); applyProgressBadges(null); return; }
     try {
       var vve = await getVveDocForCurrentUser();
       updateLoginStatus(user, vve);
       applyProgressBadges(user.uid);
       if (vve && vve.status === 'approved') {
-        applyAccess(vve.moduleAccess || {});
+        applyAccess(vve.moduleAccess || {}, { email: vve.email, naam: vve.naam });
       } else {
-        applyAccess({});
+        applyAccess({}, null);
       }
     } catch (e) {
-      applyAccess({});
+      applyAccess({}, null);
       updateLoginStatus(user, null);
       applyProgressBadges(user.uid);
     }

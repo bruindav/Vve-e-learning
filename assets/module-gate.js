@@ -1,5 +1,5 @@
 // fix 30
-import { watchAuth, hasModuleAccess, getVveDocForCurrentUser } from "./vve-auth.js?v37";
+import { watchAuth, hasModuleAccess, getVveDocForCurrentUser } from "./vve-auth.js?v38";
 
 function showScreen(opts) {
   document.documentElement.style.visibility = "";
