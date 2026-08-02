@@ -1,10 +1,13 @@
-<!-- fix 19 -->
+<!-- fix 30 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<script>document.documentElement.style.visibility='hidden';try{if(localStorage.getItem('vveGateOk_v1')==='1'){document.documentElement.style.visibility='';}}catch(e){}</script>
-<script src="../assets/access-gate.js" defer></script>
+<script>document.documentElement.style.visibility='hidden';</script>
+<script type="module">
+  import { guardModule } from '../assets/module-gate.js?v35';
+  guardModule('ledenadministratie-privacy');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ledenadministratie en privacy (AVG)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,6 +50,11 @@
   .brandbar .tagline{
     font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:#6f93a8; letter-spacing:.02em;
   }
+  .back-link{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:#e0a94b; text-decoration:none;
+    border:1px solid #e0a94b40; padding:5px 10px; border-radius:2px; white-space:nowrap;
+  }
+  .back-link:hover{background:#e0a94b1a;}
   @media (max-width:480px){ .brandbar .tagline{display:none;} }
 
   .progressbar{
@@ -202,6 +210,8 @@
 <body>
 
 <div class="brandbar">
+  <div style="display:flex; align-items:center; gap:14px;">
+  <a href="../index.html" class="back-link">&larr; Overzicht</a>
   <div class="brand">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <line x1="12" y1="12" x2="4" y2="5" stroke="#4a9fc9" stroke-width="1.4"/>
@@ -215,6 +225,7 @@
       <circle cx="12" cy="12" r="3.4" fill="#3fa9dc"/>
     </svg>
     <span>digidave</span>
+  </div>
   </div>
   <div class="tagline">Een app van digidave</div>
 </div>
@@ -538,7 +549,7 @@
       const answeredCount = Object.values(answered).filter(v=>v.correct).length;
       document.getElementById('doneScore').textContent = answeredCount + '/7';
       document.getElementById('doneBanner').classList.add('show');
-      try{ localStorage.setItem('vveModuleDone:ledenadministratie-privacy','1'); }catch(e){}
+      try{ var _uidKey = (window.__vveUid || 'anon'); localStorage.setItem('vveModuleDone:'+_uidKey+':ledenadministratie-privacy','1'); }catch(e){}
     }
   }
 

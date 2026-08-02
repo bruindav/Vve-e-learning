@@ -1,10 +1,8 @@
-<!-- fix contrast -->
+<!-- fix 35 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<script>document.documentElement.style.visibility='hidden';try{if(localStorage.getItem('vveGateOk_v1')==='1'){document.documentElement.style.visibility='';}}catch(e){}</script>
-<script src="assets/access-gate.js" defer></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>E-learning VvE-bestuur</title>
 <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -133,7 +131,12 @@
     white-space:nowrap;
   }
 
-  .card.locked{opacity:.7; cursor:default;}
+  .card.locked{
+    cursor:default; background:linear-gradient(180deg, var(--paper-dark), #d9cfb2);
+    border-style:dashed;
+  }
+  .card.locked h3, .card.locked li{color:var(--ink-text);}
+  .card.locked .kicker, .card.locked .time{color:var(--ink-fade);}
   .card.locked:hover{transform:none; box-shadow:none;}
   .locked-badge{
     font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.03em;
@@ -193,7 +196,10 @@
   <div class="brand">
     <img src="assets/logo.jpg" alt="digidave">
   </div>
-  <div class="tagline">Een app van digidave</div>
+  <div style="display:flex; align-items:center; gap:16px;">
+    <div class="tagline">Een app van digidave</div>
+    <a href="register.html" id="loginStatusLink" style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#e0a94b; text-decoration:none; border:1px solid #e0a94b55; padding:5px 10px; border-radius:2px;">Inloggen &rarr;</a>
+  </div>
 </div>
 
 <header class="hero">
@@ -218,8 +224,8 @@
     <p class="done-sub">Je hebt alle op dit moment beschikbare modules doorlopen.</p>
   </div>
 
-  <div class="route-label">Route 1 · start hier</div>
-  <a class="basis-card" href="modules/basis.html">
+  <div class="route-label">Fase 1 · start hier</div>
+  <a class="basis-card" href="modules/basis.html" data-slug="basis">
       <svg class="card-done-badge" data-done-slug="basis" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -248,12 +254,12 @@
     <div class="start">Start deze module <span class="arrow">→</span></div>
   </a>
 
-  <div class="route-label">Route 2 · optioneel, na de basis</div>
+  <div class="route-label">Fase 2 · optioneel, na de basis</div>
   <p class="verdieping-intro">Vijf aanvullende modules gaan verder op specifieke thema's. Los van elkaar te volgen, op basis van wat voor jullie VvE actueel is:</p>
 
   <div class="cards">
 
-    <a class="card" href="modules/gevorderden.html">
+    <a class="card" href="modules/gevorderden.html" data-slug="gevorderden">
       <svg class="card-done-badge" data-done-slug="gevorderden" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -282,7 +288,7 @@
       </div>
     </a>
 
-    <a class="card" href="modules/overeenkomsten-alv.html">
+    <a class="card" href="modules/overeenkomsten-alv.html" data-slug="overeenkomsten-alv">
       <svg class="card-done-badge" data-done-slug="overeenkomsten-alv" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -311,7 +317,7 @@
       </div>
     </a>
 
-    <a class="card" href="modules/mjop.html">
+    <a class="card" href="modules/mjop.html" data-slug="mjop">
       <svg class="card-done-badge" data-done-slug="mjop" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -340,7 +346,7 @@
       </div>
     </a>
 
-    <a class="card" href="modules/geld-risico.html">
+    <a class="card" href="modules/geld-risico.html" data-slug="geld-risico">
       <svg class="card-done-badge" data-done-slug="geld-risico" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -369,7 +375,7 @@
       </div>
     </a>
 
-    <a class="card" href="modules/verduurzaming.html">
+    <a class="card" href="modules/verduurzaming.html" data-slug="verduurzaming">
       <svg class="card-done-badge" data-done-slug="verduurzaming" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -400,11 +406,11 @@
 
   </div>
 
-  <div class="route-label" style="margin-top:40px;">Route 3 · op aanvraag beschikbaar</div>
-  <p class="verdieping-intro">Deze modules zijn al helemaal klaar. Hebben jullie interesse, dan zetten we de link voor jullie VvE open &mdash; hieronder kun je alvast zien wat erin zit.</p>
+  <div class="route-label" style="margin-top:40px;">Fase 3 · verdieping</div>
+  <p class="verdieping-intro">Nog meer te leren als VvE-bestuur: deze modules gaan verder de diepte in op specifieke onderwerpen, los van het basistraject hierboven.</p>
 
   <div class="cards">
-    <div class="card locked">
+    <div class="card locked" data-slug="statuten-reglementen">
       <svg class="card-done-badge" data-done-slug="statuten-reglementen" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -433,7 +439,7 @@
       </div>
     </div>
 
-    <div class="card locked">
+    <div class="card locked" data-slug="kascommissie">
       <svg class="card-done-badge" data-done-slug="kascommissie" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -462,7 +468,7 @@
       </div>
     </div>
 
-    <div class="card locked">
+    <div class="card locked" data-slug="ledenadministratie-privacy">
       <svg class="card-done-badge" data-done-slug="ledenadministratie-privacy" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -491,7 +497,7 @@
       </div>
     </div>
 
-    <div class="card locked">
+    <div class="card locked" data-slug="bijdragen-incasso">
       <svg class="card-done-badge" data-done-slug="bijdragen-incasso" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -520,7 +526,7 @@
       </div>
     </div>
 
-    <div class="card locked">
+    <div class="card locked" data-slug="vve-en-omgeving">
       <svg class="card-done-badge" data-done-slug="vve-en-omgeving" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -549,7 +555,7 @@
       </div>
     </div>
 
-    <div class="card locked">
+    <div class="card locked" data-slug="conflict-burenruzies">
       <svg class="card-done-badge" data-done-slug="conflict-burenruzies" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
         <circle cx="32" cy="32" r="30" fill="#3d6b52" stroke="#fff" stroke-width="3"/>
         <g fill="#fff">
@@ -601,26 +607,104 @@
   </div>
 </main>
 
-<footer>DIGIDAVE · E-LEARNING VVE-BESTUUR</footer>
+<footer>DIGIDAVE · E-LEARNING VVE-BESTUUR<br>
+  <a href="privacy.html" style="color:#7d7460;">Privacybeleid</a> &middot; <a href="disclaimer.html" style="color:#7d7460;">Disclaimer</a>
+</footer>
 
-<script>
-  (function(){
+<script type="module">
+  import { watchAuth, getVveDocForCurrentUser, logout } from './assets/vve-auth.js?v35';
+
+  function updateLoginStatus(user, vve){
+    var link = document.getElementById('loginStatusLink');
+    if (!link) return;
+    if (user) {
+      var label = (vve && vve.naam) ? vve.naam : user.email;
+      link.textContent = '\u2713 ' + label + ' \u2014 uitloggen';
+      link.href = '#';
+      link.onclick = function(e){
+        e.preventDefault();
+        logout().then(function(){ window.location.reload(); });
+      };
+    } else {
+      link.textContent = 'Inloggen \u2192';
+      link.href = 'register.html';
+      link.onclick = null;
+    }
+  }
+
+  function applyAccess(moduleAccess){
+    document.querySelectorAll('[data-slug]').forEach(function(card){
+      var slug = card.getAttribute('data-slug');
+      var authorized = !!(moduleAccess && moduleAccess[slug] === true);
+      var cta = card.querySelector('.soon, .locked-badge');
+
+      if (authorized) {
+        card.classList.remove('locked');
+        if (card.tagName === 'A') {
+          card.setAttribute('href', 'modules/' + slug + '.html');
+        } else {
+          card.style.cursor = 'pointer';
+          card.onclick = function(){ window.location.href = 'modules/' + slug + '.html'; };
+        }
+        if (cta) {
+          cta.className = 'soon';
+          cta.textContent = 'Start deze module \u2192';
+        }
+      } else {
+        card.classList.add('locked');
+        if (card.tagName === 'A') {
+          card.removeAttribute('href');
+        } else {
+          card.onclick = null;
+          card.style.cursor = 'default';
+        }
+        if (cta) {
+          cta.className = 'locked-badge';
+          cta.innerHTML = '&#128274; Op aanvraag beschikbaar';
+        }
+      }
+    });
+  }
+
+  function applyProgressBadges(uid){
     var availableModules = ['basis', 'gevorderden', 'overeenkomsten-alv', 'mjop', 'geld-risico', 'verduurzaming'];
     try {
+      var key = uid || 'anon';
       var allDone = availableModules.every(function(slug){
-        return localStorage.getItem('vveModuleDone:' + slug) === '1';
+        return localStorage.getItem('vveModuleDone:' + key + ':' + slug) === '1';
       });
-      if (allDone) {
-        document.getElementById('allDoneBanner').classList.add('show');
-      }
+      document.getElementById('allDoneBanner').classList.toggle('show', allDone);
       document.querySelectorAll('.card-done-badge').forEach(function(badge){
         var slug = badge.getAttribute('data-done-slug');
-        if (localStorage.getItem('vveModuleDone:' + slug) === '1') {
-          badge.classList.add('show');
-        }
+        var done = localStorage.getItem('vveModuleDone:' + key + ':' + slug) === '1';
+        badge.classList.toggle('show', done);
       });
     } catch (e) {}
-  })();
+  }
+
+  // Standaard: alles op slot totdat we weten wat deze bezoeker mag (voorkomt dat
+  // niet-geautoriseerde bezoekers even een klikbare 'Start'-knop zien voordat de
+  // controle is uitgevoerd).
+  applyAccess({});
+  applyProgressBadges(null);
+
+  watchAuth(async function(user){
+    if (!user) { applyAccess({}); updateLoginStatus(null, null); applyProgressBadges(null); return; }
+    try {
+      var vve = await getVveDocForCurrentUser();
+      updateLoginStatus(user, vve);
+      applyProgressBadges(user.uid);
+      if (vve && vve.status === 'approved') {
+        applyAccess(vve.moduleAccess || {});
+      } else {
+        applyAccess({});
+      }
+    } catch (e) {
+      applyAccess({});
+      updateLoginStatus(user, null);
+      applyProgressBadges(user.uid);
+    }
+  });
 </script>
 
 </body>

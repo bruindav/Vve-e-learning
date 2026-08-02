@@ -1,0 +1,107 @@
+<!-- fix 26 -->
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disclaimer — E-learning VvE-bestuur</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-navy:#132228; --ink-navy-deep:#0d1a1f; --paper:#ECE4D1; --rule-soft:#2F4F4433;
+    --ink-text:#2A2118; --ink-fade:#5A5040; --amber:#C98A2C; --amber-deep:#a86f1c; --credit:#3d6b52;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--ink-navy); font-family:'IBM Plex Sans', sans-serif; color:var(--ink-text);}
+  .brandbar{
+    background:var(--ink-navy-deep); padding:14px 24px; display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid #ffffff14;
+  }
+  .brandbar span{font-size:15px; font-weight:600; color:#f2efe6;}
+  .brandbar a{color:#8fa8b3; font-size:12.5px; text-decoration:none;}
+  .container{max-width:760px; margin:0 auto; padding:0 20px;}
+  .wrap{background:var(--paper); padding:36px 32px; border-radius:4px; margin-top:24px; margin-bottom:80px;}
+  h1{font-family:'Fraunces',serif; font-size:26px; margin:0 0 6px;}
+  .meta{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-fade); margin-bottom:28px;}
+  h2{font-family:'Fraunces',serif; font-size:17px; margin:30px 0 10px; border-bottom:1px solid var(--rule-soft); padding-bottom:6px;}
+  p, li{font-size:14.5px; line-height:1.65; color:var(--ink-text);}
+  ul{padding-left:20px;}
+  a{color:var(--amber-deep);}
+  .highlight{background:#C98A2C1a; border-left:3px solid var(--amber); padding:12px 16px; border-radius:0 3px 3px 0; margin:16px 0;}
+</style>
+</head>
+<body>
+
+<div class="brandbar">
+  <span>digidave</span>
+  <a href="index.html">&larr; Terug naar overzicht</a>
+</div>
+
+<div class="container">
+  <div class="wrap">
+    <h1>Disclaimer</h1>
+    <p class="meta">E-learning VvE-bestuur (Digidave) &middot; laatst bijgewerkt: 1 augustus 2026</p>
+
+    <h2>1. Doel van deze content</h2>
+    <p>
+      De modules op dit platform zijn bedoeld om VvE-bestuurders op een toegankelijke manier wegwijs te maken in
+      boekhouding, governance, onderhoud en aanverwante onderwerpen. Het is <strong>algemene, educatieve
+      informatie</strong> &mdash; geen juridisch, fiscaal of financieel advies toegespitst op de situatie van jullie
+      specifieke VvE.
+    </p>
+    <p>
+      Waar de content verwijst naar standaardregelingen (zoals een modelreglement), is dat gebaseerd op algemeen
+      gangbare versies. De eigen splitsingsakte en het eigen reglement van jullie VvE zijn altijd leidend, ook als
+      dat op onderdelen afwijkt van wat in een module wordt beschreven.
+    </p>
+
+    <h2>2. Deze content is (mede) met AI gemaakt</h2>
+    <div class="highlight">
+      De teksten, voorbeelden en controlevragen in deze modules zijn opgesteld met behulp van kunstmatige
+      intelligentie (Claude, Anthropic), onder begeleiding en met menselijke redactie door Digidave. Vanaf
+      2 augustus 2026 geldt in de EU (artikel 50 AI Act) een transparantieverplichting voor bepaalde vormen van
+      AI-gegenereerde content &mdash; deze vermelding is daar een uiting van, vooruitlopend op en in lijn met die
+      verplichting.
+    </div>
+    <p>
+      Ondanks zorgvuldige samenstelling en controle kan content onvolledigheden of fouten bevatten. Neem bij twijfel
+      over een specifiek onderwerp contact op met de beheerder, of raadpleeg een deskundige (notaris, accountant,
+      jurist) voor advies dat is toegespitst op jullie situatie.
+    </p>
+
+    <h2>3. Geen aansprakelijkheid</h2>
+    <p>
+      Digidave aanvaardt geen aansprakelijkheid voor beslissingen die worden genomen op basis van de informatie in
+      deze modules, of voor eventuele schade die daaruit voortvloeit. Gebruik van dit platform is voor eigen
+      rekening en risico.
+    </p>
+
+    <h2>4. Auteursrecht</h2>
+    <p>
+      De inhoud van deze modules is auteursrechtelijk beschermd en bedoeld voor gebruik door VvE's die hiervoor
+      een licentie hebben afgenomen. Verspreiding, kopiëren of doorverkopen van de content zonder toestemming van
+      Digidave is niet toegestaan.
+    </p>
+
+    <h2>5. Contact</h2>
+    <p>
+      Vragen over deze disclaimer, of over specifieke content in een module? Neem contact op met Dave de Bruin
+      (Digidave). <span id="addr-1" class="addr-hidden">Postadres beschikbaar na inloggen.</span>
+    </p>
+  </div>
+</div>
+
+<script type="module">
+  import { watchAuth } from './assets/vve-auth.js?v35';
+  watchAuth(function(user){
+    if (user) {
+      document.querySelectorAll('.addr-hidden').forEach(function(el){
+        el.textContent = 'Minckelerslaan 18, 3707 TJ Zeist.';
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

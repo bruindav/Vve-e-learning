@@ -1,0 +1,31 @@
+// fix 21
+// Plak deze regels in: Firebase Console > Firestore Database > Rules > tekst vervangen > Publiceren
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'davedebruin123@gmail.com';
+    }
+
+    match /vves/{uid} {
+      // Een VvE mag alleen het eigen document lezen; de beheerder mag alles lezen.
+      allow read: if isSignedIn() && (request.auth.uid == uid || isAdmin());
+
+      // Bij registratie maakt de gebruiker zelf het eigen document aan, met vaste
+      // beginwaarden (status altijd 'pending', nog geen moduletoegang).
+      allow create: if isSignedIn() && request.auth.uid == uid
+                    && request.resource.data.keys().hasOnly(['email', 'naam', 'status', 'moduleAccess', 'createdAt'])
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.moduleAccess == {};
+
+      // Alleen de beheerder mag goedkeuren, modules toewijzen, of iets anders wijzigen.
+      allow update: if isAdmin();
+
+      // Alleen de beheerder mag een registratie verwijderen.
+      allow delete: if isAdmin();
+    }
+  }
+}
