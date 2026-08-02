@@ -1,4 +1,4 @@
-// fix 39
+// fix 40
 // VUL HIERONDER JE EIGEN FIREBASE-CONFIGURATIE IN
 // (Firebase Console > Projectinstellingen > Jouw apps > Web app > SDK setup and configuration)
 export const firebaseConfig = {
@@ -27,7 +27,7 @@ export const PAYMENT_TNV = "D.R. de Bruin";
 export const PAYMENT_PRICE = "\u20ac15";
 // Tikkie-betaalverzoek (optioneel). Zelf aanmaken via de Tikkie-app en de link hier
 // invullen. Laat op "VUL_IN" staan om de Tikkie-optie te verbergen.
-export const TIKKIE_LINK = "VUL_IN";
+export const TIKKIE_LINK = "https://tikkie.me/pay/8jneoloi1gnmkethkvdh";
 // Alle modules die in het systeem bestaan. slug moet overeenkomen met de bestandsnaam
 // (zonder .html) in de map modules/.
 export const ALL_MODULES = [

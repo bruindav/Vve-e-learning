@@ -32,7 +32,7 @@ import {
   EMAILJS_TEMPLATE_ID,
   ALL_MODULES,
   ADMIN_EMAIL,
-} from "./firebase-config.js?v39";
+} from "./firebase-config.js?v40";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
