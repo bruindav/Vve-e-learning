@@ -31,7 +31,7 @@ import {
   EMAILJS_PUBLIC_KEY,
   EMAILJS_TEMPLATE_ID,
   ALL_MODULES,
-} from "./firebase-config.js?v36";
+} from "./firebase-config.js?v37";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

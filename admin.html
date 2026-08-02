@@ -1,4 +1,4 @@
-<!-- fix 36 -->
+<!-- fix 37 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -103,8 +103,8 @@
 </main>
 
 <script type="module">
-  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, logout } from './assets/vve-auth.js?v36';
-  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v36';
+  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, logout } from './assets/vve-auth.js?v37';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v37';
 
   const loginWrap = document.getElementById('loginWrap');
   const main = document.getElementById('main');
@@ -130,8 +130,6 @@
       googleLoginBtn.disabled = false;
     }
   });
-
-  var updateEmailTimers = {}; // vve.id -> timeout handle, om snelle opeenvolgende wijzigingen te bundelen
 
   function attachDelete(card, vve){
     card.querySelector('.delete-btn').addEventListener('click', async function(){
@@ -215,6 +213,28 @@
 
     var grid = document.createElement('div');
     grid.className = 'module-grid';
+    var hasPendingChange = false;
+
+    var notifyBtn = document.createElement('button');
+    notifyBtn.type = 'button';
+    notifyBtn.className = 'approve-btn';
+    notifyBtn.textContent = '\u2713 Wijzigingen doorgeven (mail versturen)';
+    notifyBtn.style.display = 'none';
+    notifyBtn.addEventListener('click', async function(){
+      notifyBtn.disabled = true;
+      notifyBtn.textContent = 'Bezig...';
+      try {
+        await sendModulesUpdatedEmail(vve.email, vve.naam, vve.moduleAccess);
+        hasPendingChange = false;
+        notifyBtn.style.display = 'none';
+      } catch (err) {
+        alert('Versturen mislukt: ' + (err && err.message ? err.message : err));
+      } finally {
+        notifyBtn.disabled = false;
+        notifyBtn.textContent = '\u2713 Wijzigingen doorgeven (mail versturen)';
+      }
+    });
+
     ALL_MODULES.forEach(function(mod){
       var enabled = !!(vve.moduleAccess && vve.moduleAccess[mod.slug] === true);
       var label = document.createElement('label');
@@ -228,13 +248,10 @@
           await setModuleAccess(vve.id, mod.slug, checkbox.checked);
           if (!vve.moduleAccess) vve.moduleAccess = {};
           vve.moduleAccess[mod.slug] = checkbox.checked;
-          // Debounce: bij meerdere snelle wijzigingen op dezelfde VvE wordt maar
-          // één mail verstuurd, met de stand na de laatste wijziging.
-          if (updateEmailTimers[vve.id]) clearTimeout(updateEmailTimers[vve.id]);
-          updateEmailTimers[vve.id] = setTimeout(function(){
-            delete updateEmailTimers[vve.id];
-            sendModulesUpdatedEmail(vve.email, vve.naam, vve.moduleAccess);
-          }, 3000);
+          // Wijziging wordt direct opgeslagen, maar de mail gaat pas na een
+          // bewuste klik op 'Wijzigingen doorgeven' hieronder.
+          hasPendingChange = true;
+          notifyBtn.style.display = 'inline-block';
         } catch (err) {
           alert('Opslaan mislukt: ' + (err && err.message ? err.message : err));
           checkbox.checked = !checkbox.checked;
@@ -247,6 +264,7 @@
       grid.appendChild(label);
     });
     card.appendChild(grid);
+    card.appendChild(notifyBtn);
 
     attachDelete(card, vve);
     return card;
