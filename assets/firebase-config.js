@@ -1,4 +1,4 @@
-// fix 26
+// fix 39
 // VUL HIERONDER JE EIGEN FIREBASE-CONFIGURATIE IN
 // (Firebase Console > Projectinstellingen > Jouw apps > Web app > SDK setup and configuration)
 export const firebaseConfig = {
@@ -21,6 +21,13 @@ export const EMAILJS_SERVICE_ID = "service_am7yhzo";
 export const EMAILJS_PUBLIC_KEY = "grly1relpuAh_73z7";
 export const EMAILJS_TEMPLATE_ID = "template_mss670k";
 
+// Betaalgegevens die getoond worden bij een moduleaanvraag.
+export const PAYMENT_IBAN = "NL43 ABNA 0476 7127 85";
+export const PAYMENT_TNV = "D.R. de Bruin";
+export const PAYMENT_PRICE = "\u20ac15";
+// Tikkie-betaalverzoek (optioneel). Zelf aanmaken via de Tikkie-app en de link hier
+// invullen. Laat op "VUL_IN" staan om de Tikkie-optie te verbergen.
+export const TIKKIE_LINK = "VUL_IN";
 // Alle modules die in het systeem bestaan. slug moet overeenkomen met de bestandsnaam
 // (zonder .html) in de map modules/.
 export const ALL_MODULES = [

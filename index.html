@@ -1,4 +1,4 @@
-<!-- fix 38 -->
+<!-- fix 39 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -151,6 +151,25 @@
   }
   .request-btn:hover{background:#2f4756;}
   .request-btn:disabled{cursor:default; opacity:.75;}
+
+  .payment-panel{
+    margin-top:10px; padding:12px 14px; background:#00000009; border:1px dashed var(--rule-soft);
+    border-radius:3px; font-size:12.5px;
+  }
+  .payment-title{font-weight:600; color:var(--ink-text); margin:0 0 4px;}
+  .payment-bank{color:var(--ink-fade); margin:0 0 10px; line-height:1.5;}
+  .payment-tikkie{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .payment-tikkie a{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--amber-deep);}
+  .payment-actions{display:flex; gap:8px; flex-wrap:wrap;}
+  .payment-actions .confirm-btn{background:var(--credit); border-color:var(--credit);}
+  .payment-actions .confirm-btn:hover{background:#2c5240;}
+  .cancel-btn{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.03em;
+    color:var(--ink-fade); background:none; border:1px solid var(--rule-soft); padding:5px 10px;
+    border-radius:2px; cursor:pointer;
+  }
+  .cancel-btn:hover{background:#00000009;}
+  .payment-done{color:var(--credit); font-weight:600; margin:0;}
 
   .card-done-badge{
     display:none; position:absolute; top:-14px; right:-10px; width:44px; height:44px;
@@ -620,7 +639,8 @@
 </footer>
 
 <script type="module">
-  import { watchAuth, getVveDocForCurrentUser, sendModuleRequestEmail, logout } from './assets/vve-auth.js?v38';
+  import { watchAuth, getVveDocForCurrentUser, sendModuleRequestEmail, logout } from './assets/vve-auth.js?v39';
+  import { PAYMENT_IBAN, PAYMENT_TNV, PAYMENT_PRICE, TIKKIE_LINK } from './assets/firebase-config.js?v39';
 
   function updateLoginStatus(user, vve){
     var link = document.getElementById('loginStatusLink');
@@ -640,14 +660,61 @@
     }
   }
 
-  function requestModuleAccess(btn, card, moduleTitle, vveInfo){
-    btn.disabled = true;
-    btn.textContent = 'Bezig...';
-    sendModuleRequestEmail(vveInfo.email, vveInfo.naam, moduleTitle).then(function(){
-      btn.textContent = '\u2713 Aanvraag verstuurd';
-    }).catch(function(){
-      btn.textContent = 'Mislukt, probeer opnieuw';
-      btn.disabled = false;
+  function showPaymentPanel(ctaBtn, card, slug, moduleTitle, vveInfo){
+    var panel = document.createElement('div');
+    panel.className = 'payment-panel';
+
+    var tikkieHtml = '';
+    if (TIKKIE_LINK && TIKKIE_LINK !== 'VUL_IN') {
+      var qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=' + encodeURIComponent(TIKKIE_LINK);
+      tikkieHtml =
+        '<div class="payment-tikkie">' +
+          '<img src="' + qrSrc + '" alt="Tikkie QR-code" width="110" height="110">' +
+          '<a href="' + TIKKIE_LINK + '" target="_blank" rel="noopener">Open Tikkie \u2192</a>' +
+        '</div>';
+    }
+
+    panel.innerHTML =
+      '<p class="payment-title">Kosten: ' + PAYMENT_PRICE + ' (eenmalig, onbeperkt gebruik)</p>' +
+      '<p class="payment-bank">Over te maken naar <strong>' + PAYMENT_IBAN + '</strong> t.n.v. ' + PAYMENT_TNV + '</p>' +
+      tikkieHtml +
+      '<div class="payment-actions">' +
+        '<button type="button" class="request-btn confirm-btn">Aanvraag bevestigen</button>' +
+        '<button type="button" class="cancel-btn">Toch maar niet</button>' +
+      '</div>';
+
+    ctaBtn.replaceWith(panel);
+
+    panel.querySelector('.cancel-btn').addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var badgeEl = document.createElement('span');
+      badgeEl.className = 'locked-badge';
+      badgeEl.innerHTML = '&#128274; Op aanvraag beschikbaar';
+      var newBtn = document.createElement('button');
+      newBtn.type = 'button';
+      newBtn.className = 'request-btn';
+      newBtn.textContent = 'Vraag toegang aan';
+      newBtn.addEventListener('click', function(ev){
+        ev.preventDefault();
+        ev.stopPropagation();
+        showPaymentPanel(newBtn, card, slug, moduleTitle, vveInfo);
+      });
+      panel.replaceWith(newBtn);
+    });
+
+    panel.querySelector('.confirm-btn').addEventListener('click', function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var confirmBtn = panel.querySelector('.confirm-btn');
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Bezig...';
+      sendModuleRequestEmail(vveInfo.email, vveInfo.naam, moduleTitle).then(function(){
+        panel.innerHTML = '<p class="payment-done">\u2713 Aanvraag verstuurd \u2014 je hoort snel van ons.</p>';
+      }).catch(function(){
+        confirmBtn.textContent = 'Mislukt, probeer opnieuw';
+        confirmBtn.disabled = false;
+      });
     });
   }
 
@@ -687,7 +754,7 @@
           btn.addEventListener('click', function(e){
             e.preventDefault();
             e.stopPropagation();
-            requestModuleAccess(btn, card, moduleTitle, vveInfo);
+            showPaymentPanel(btn, card, slug, moduleTitle, vveInfo);
           });
           cta.replaceWith(btn);
         } else {
