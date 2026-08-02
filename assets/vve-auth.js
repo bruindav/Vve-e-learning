@@ -1,4 +1,4 @@
-// fix 38
+// fix 41
 // Gedeelde Firebase Authentication + Firestore helpers.
 // Patroon: registratie met e-mail/wachtwoord -> pending-status -> admin keurt goed en
 // wijst modules toe -> bevestigingsmail bij registratie én bij goedkeuring (via EmailJS).
@@ -32,7 +32,7 @@ import {
   EMAILJS_TEMPLATE_ID,
   ALL_MODULES,
   ADMIN_EMAIL,
-} from "./firebase-config.js?v40";
+} from "./firebase-config.js?v41";
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
@@ -133,6 +133,25 @@ export async function setModuleAccess(vveDocId, slug, enabled) {
 
 export async function deleteVve(vveDocId) {
   await deleteDoc(doc(db, "vves", vveDocId));
+}
+
+// ======================= Tikkie-configuratie =======================
+
+export async function getTikkieConfig() {
+  const ref = doc(db, "config", "tikkie");
+  const snap = await getDoc(ref);
+  return snap.exists() ? snap.data() : null; // { link, expiresAt } — expiresAt als 'YYYY-MM-DD'
+}
+
+export async function setTikkieConfig(link, expiresAt) {
+  const ref = doc(db, "config", "tikkie");
+  await setDoc(ref, { link: link || "", expiresAt: expiresAt || "" });
+}
+
+export function isTikkieValid(cfg) {
+  if (!cfg || !cfg.link || !cfg.expiresAt) return false;
+  const today = new Date().toISOString().slice(0, 10);
+  return cfg.expiresAt >= today;
 }
 
 // ======================= EmailJS bevestigingsmails =======================

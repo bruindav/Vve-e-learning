@@ -1,4 +1,4 @@
-// fix 21
+// fix 41
 // Plak deze regels in: Firebase Console > Firestore Database > Rules > tekst vervangen > Publiceren
 
 rules_version = '2';
@@ -26,6 +26,13 @@ service cloud.firestore {
 
       // Alleen de beheerder mag een registratie verwijderen.
       allow delete: if isAdmin();
+    }
+
+    match /config/{docId} {
+      // Publiek leesbaar (nodig om bv. de Tikkie-betaalinfo op de site te tonen),
+      // alleen de beheerder mag dit wijzigen.
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

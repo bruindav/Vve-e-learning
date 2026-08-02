@@ -1,4 +1,4 @@
-<!-- fix 37 -->
+<!-- fix 41 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -93,6 +93,17 @@
 </div>
 
 <main id="main">
+  <h2>Tikkie-instellingen</h2>
+  <p class="section-sub">Wordt getoond bij een moduleaanvraag. Verloopt de vervaldatum, dan wordt de Tikkie-optie automatisch uitgegrijsd op de site.</p>
+  <div class="vve-card">
+    <label style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Tikkie-link</label>
+    <input type="url" id="tikkieLink" placeholder="https://tikkie.me/pay/..." style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--rule-soft); border-radius:3px; font-size:14px; margin-bottom:14px;">
+    <label style="display:block; font-size:12.5px; font-weight:600; margin-bottom:6px;">Geldig t/m</label>
+    <input type="date" id="tikkieExpiry" style="width:100%; box-sizing:border-box; padding:10px 12px; border:1px solid var(--rule-soft); border-radius:3px; font-size:14px; margin-bottom:14px;">
+    <button type="button" id="tikkieSaveBtn">Opslaan</button>
+    <span id="tikkieSaveMsg" style="margin-left:10px; font-size:12.5px; color:var(--credit); display:none;">&#10003; Opgeslagen</span>
+  </div>
+
   <h2>Wachtend op goedkeuring</h2>
   <p class="section-sub">Nieuwe registraties. Ken modules toe om ze goed te keuren — de VvE krijgt dan een bevestigingsmail.</p>
   <div id="pendingList"><div class="empty">Bezig met laden...</div></div>
@@ -103,8 +114,8 @@
 </main>
 
 <script type="module">
-  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, logout } from './assets/vve-auth.js?v40';
-  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v40';
+  import { auth, watchAuth, adminSignInWithGoogle, getAllVves, approveVve, setModuleAccess, sendModulesUpdatedEmail, deleteVve, getTikkieConfig, setTikkieConfig, logout } from './assets/vve-auth.js?v41';
+  import { ADMIN_EMAIL, ALL_MODULES } from './assets/firebase-config.js?v41';
 
   const loginWrap = document.getElementById('loginWrap');
   const main = document.getElementById('main');
@@ -297,6 +308,39 @@
     }
   }
 
+  async function initTikkieForm(){
+    var linkInput = document.getElementById('tikkieLink');
+    var expiryInput = document.getElementById('tikkieExpiry');
+    var saveBtn = document.getElementById('tikkieSaveBtn');
+    var saveMsg = document.getElementById('tikkieSaveMsg');
+
+    try {
+      var cfg = await getTikkieConfig();
+      if (cfg) {
+        linkInput.value = cfg.link || '';
+        expiryInput.value = cfg.expiresAt || '';
+      }
+    } catch (e) {
+      console.error('Tikkie-config laden mislukt:', e);
+    }
+
+    saveBtn.onclick = async function(){
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Bezig...';
+      saveMsg.style.display = 'none';
+      try {
+        await setTikkieConfig(linkInput.value.trim(), expiryInput.value);
+        saveMsg.style.display = 'inline';
+        setTimeout(function(){ saveMsg.style.display = 'none'; }, 3000);
+      } catch (err) {
+        alert('Opslaan mislukt: ' + (err && err.message ? err.message : err));
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Opslaan';
+      }
+    };
+  }
+
   watchAuth(function(user){
     if (user && user.email === ADMIN_EMAIL) {
       loginWrap.style.display = 'none';
@@ -304,6 +348,7 @@
       loginError.classList.remove('show');
       switchAccountLink.style.display = 'none';
       renderAll();
+      initTikkieForm();
     } else if (user) {
       // Let op: bewust GEEN logout() hier. Firebase-sessies zijn gedeeld over alle
       // tabbladen van dezelfde browser; een uitlog hier zou ook een actieve VvE-sessie

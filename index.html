@@ -1,4 +1,4 @@
-<!-- fix 39 -->
+<!-- fix 41 -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -159,6 +159,11 @@
   .payment-title{font-weight:600; color:var(--ink-text); margin:0 0 4px;}
   .payment-bank{color:var(--ink-fade); margin:0 0 10px; line-height:1.5;}
   .payment-tikkie{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .payment-tikkie-expired{opacity:.55;}
+  .tikkie-disabled{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-fade);
+    border:1px dashed var(--rule-soft); padding:8px 12px; border-radius:3px;
+  }
   .payment-tikkie a{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--amber-deep);}
   .payment-actions{display:flex; gap:8px; flex-wrap:wrap;}
   .payment-actions .confirm-btn{background:var(--credit); border-color:var(--credit);}
@@ -639,8 +644,8 @@
 </footer>
 
 <script type="module">
-  import { watchAuth, getVveDocForCurrentUser, sendModuleRequestEmail, logout } from './assets/vve-auth.js?v40';
-  import { PAYMENT_IBAN, PAYMENT_TNV, PAYMENT_PRICE, TIKKIE_LINK } from './assets/firebase-config.js?v40';
+  import { watchAuth, getVveDocForCurrentUser, sendModuleRequestEmail, getTikkieConfig, isTikkieValid, logout } from './assets/vve-auth.js?v41';
+  import { PAYMENT_IBAN, PAYMENT_TNV, PAYMENT_PRICE } from './assets/firebase-config.js?v41';
 
   function updateLoginStatus(user, vve){
     var link = document.getElementById('loginStatusLink');
@@ -660,18 +665,30 @@
     }
   }
 
-  function showPaymentPanel(ctaBtn, card, slug, moduleTitle, vveInfo){
+  async function showPaymentPanel(ctaBtn, card, slug, moduleTitle, vveInfo){
     var panel = document.createElement('div');
     panel.className = 'payment-panel';
+    panel.innerHTML = '<p class="payment-bank">Bezig met laden...</p>';
+    ctaBtn.replaceWith(panel);
 
     var tikkieHtml = '';
-    if (TIKKIE_LINK && TIKKIE_LINK !== 'VUL_IN') {
-      var qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=' + encodeURIComponent(TIKKIE_LINK);
-      tikkieHtml =
-        '<div class="payment-tikkie">' +
-          '<img src="' + qrSrc + '" alt="Tikkie QR-code" width="110" height="110">' +
-          '<a href="' + TIKKIE_LINK + '" target="_blank" rel="noopener">Open Tikkie \u2192</a>' +
-        '</div>';
+    try {
+      var tikkieCfg = await getTikkieConfig();
+      if (isTikkieValid(tikkieCfg)) {
+        var qrSrc = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=' + encodeURIComponent(tikkieCfg.link);
+        tikkieHtml =
+          '<div class="payment-tikkie">' +
+            '<img src="' + qrSrc + '" alt="Tikkie QR-code" width="110" height="110">' +
+            '<a href="' + tikkieCfg.link + '" target="_blank" rel="noopener">Open Tikkie \u2192</a>' +
+          '</div>';
+      } else if (tikkieCfg && tikkieCfg.link) {
+        tikkieHtml =
+          '<div class="payment-tikkie payment-tikkie-expired">' +
+            '<span class="tikkie-disabled">Tikkie tijdelijk niet beschikbaar (verlopen)</span>' +
+          '</div>';
+      }
+    } catch (e) {
+      // Geen Tikkie-config beschikbaar; gewoon doorgaan met alleen de IBAN.
     }
 
     panel.innerHTML =
@@ -683,7 +700,6 @@
         '<button type="button" class="cancel-btn">Toch maar niet</button>' +
       '</div>';
 
-    ctaBtn.replaceWith(panel);
 
     panel.querySelector('.cancel-btn').addEventListener('click', function(e){
       e.preventDefault();
